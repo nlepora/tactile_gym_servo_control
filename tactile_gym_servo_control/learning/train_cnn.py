@@ -1,5 +1,5 @@
 """
-python train_cnn.py -t surface_3d
+python train_cnn.py -t surface_3d -m nature_cnn
 python train_cnn.py -t edge_2d
 python train_cnn.py -t edge_3d
 python train_cnn.py -t edge_5d
@@ -18,6 +18,8 @@ import torch.nn as nn
 import torch
 import matplotlib.pyplot as plt
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 from tactile_gym.utils.general_utils import save_json_obj, check_dir
 
 from tactile_gym_servo_control.learning.learning_utils import get_pose_limits
@@ -35,10 +37,8 @@ from tactile_gym_servo_control.learning.image_generator import ImageDataGenerato
 from tactile_gym_servo_control.learning.test_cnn import test_cnn
 
 
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
-data_path = os.path.join(os.path.dirname(__file__), '../data/')
-model_path = os.path.join(os.path.dirname(__file__), '../learned_models')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -59,12 +59,12 @@ def train_cnn(
     # data dir
     # can specifiy multiple directories that get combined in generator
     train_data_dirs = [
-        os.path.join(data_path, task, 'tap', 'train')
+        os.path.join(data_path, task, 'train')
     ]
     train_pose_limits = get_pose_limits(train_data_dirs, save_dir_name)
 
     validation_data_dirs = [
-        os.path.join(data_path, task, 'tap', 'val')
+        os.path.join(data_path, task, 'val')
     ]
 
     # set generators and loaders
@@ -355,53 +355,29 @@ if __name__ == "__main__":
         default=['surface_3d']
     )
     parser.add_argument(
+        '-m', '--models',
+        nargs='+',
+        help="Choose model from ['simple_cnn', 'nature_cnn', 'resnet', 'vit'].",
+        default=['simple_cnn']
+    )
+    parser.add_argument(
         '-d', '--device',
         type=str,
         help="Choose device from ['cpu', 'cuda'].",
-        default='cpu'
+        default='cuda'
     )
 
     # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
+    models = args.models
     device = args.device
-
-    model_params = {
-        # 'model_type': 'simple_cnn',
-        # 'model_kwargs': {
-        #     'conv_layers': [16, 32, 32, 32],
-        #     'conv_kernel_sizes': [5, 5, 5, 5],
-        #     'fc_layers': [512, 512],
-        #     'dropout': 0.0,
-        #     'apply_batchnorm': True,
-        # },
-
-        'model_type': 'nature_cnn',
-        'model_kwargs': {
-            'fc_layers': [512, 512],
-            'dropout': 0.0,
-        },
-
-        # 'model_type': 'resnet',
-        # 'model_kwargs': {
-        #     'layers': [2, 2, 2, 2],
-        # },
-
-        # 'model_type': 'vit',
-        # 'model_kwargs': {
-        #     'patch_size': 32,
-        #     'dim': 128,
-        #     'depth': 6,
-        #     'heads': 8,
-        #     'mlp_dim': 512,
-        # },
-    }
 
     # Parameters
     learning_params = {
         'seed': 42,
         'batch_size': 128,
-        'epochs': 250,
+        'epochs': 50,#250
         'lr': 1e-4,
         'lr_factor': 0.5,
         'lr_patience': 10,
@@ -425,46 +401,81 @@ if __name__ == "__main__":
         'noise_var': None,
     }
 
-    for task in tasks:
+    for model_type in models:
 
-        seed_everything(learning_params['seed'])
+        model_params = {
+            'model_type': model_type
+        }
 
-        # set save dir
-        save_dir_name = os.path.join(
-            model_path,
-            task,
-            'tap',
-        )
+        if model_type == 'simple_cnn':
+            model_params['model_kwargs'] = {
+                    'conv_layers': [16, 32, 32, 32],
+                    'conv_kernel_sizes': [5, 5, 5, 5],
+                    'fc_layers': [512, 512],
+                    'dropout': 0.0,
+                    'apply_batchnorm': True,
+            }
 
-        # check save dir exists
-        check_dir(save_dir_name)
-        os.makedirs(save_dir_name, exist_ok=True)
+        elif model_type == 'nature_cnn':
+            model_params['model_kwargs'] = {
+                'fc_layers': [512, 512],
+                'dropout': 0.0,
+            }
 
-        # save parameters
-        save_json_obj(model_params, os.path.join(save_dir_name, 'model_params'))
-        save_json_obj(learning_params, os.path.join(save_dir_name, 'learning_params'))
-        save_json_obj(image_processing_params, os.path.join(save_dir_name, 'image_processing_params'))
-        save_json_obj(augmentation_params, os.path.join(save_dir_name, 'augmentation_params'))
+        elif model_type == 'resnet':
+            model_params['model_kwargs'] = {
+                'layers': [2, 2, 2, 2],
+            }
 
-        # set the correct accuracy metric and label generator
-        out_dim, label_names = import_task(task)
+        elif model_type == 'vit':
+            model_params['model_kwargs'] = {
+                'patch_size': 32,
+                'dim': 128,
+                'depth': 6,
+                'heads': 8,
+                'mlp_dim': 512,
+            }
 
-        # create the model
-        model = create_model(
-            image_processing_params['dims'],
-            out_dim,
-            model_params,
-            saved_model_dir=None,
-            device=device
-        )
+        for task in tasks:
 
-        train_cnn(
-            task,
-            model,
-            label_names,
-            learning_params,
-            image_processing_params,
-            augmentation_params,
-            save_dir_name,
-            device
-        )
+            seed_everything(learning_params['seed'])
+
+            # set save dir
+            save_dir_name = os.path.join(
+                model_path,
+                task,
+                model_type
+            )
+
+            # check save dir exists
+            check_dir(save_dir_name)
+            os.makedirs(save_dir_name, exist_ok=True)
+
+            # save parameters
+            save_json_obj(model_params, os.path.join(save_dir_name, 'model_params'))
+            save_json_obj(learning_params, os.path.join(save_dir_name, 'learning_params'))
+            save_json_obj(image_processing_params, os.path.join(save_dir_name, 'image_processing_params'))
+            save_json_obj(augmentation_params, os.path.join(save_dir_name, 'augmentation_params'))
+
+            # set the correct accuracy metric and label generator
+            out_dim, label_names = import_task(task)
+
+            # create the model
+            model = create_model(
+                image_processing_params['dims'],
+                out_dim,
+                model_params,
+                saved_model_dir=None,
+                device=device
+            )
+
+            train_cnn(
+                task,
+                model,
+                label_names,
+                learning_params,
+                image_processing_params,
+                augmentation_params,
+                save_dir_name,
+                device
+            )

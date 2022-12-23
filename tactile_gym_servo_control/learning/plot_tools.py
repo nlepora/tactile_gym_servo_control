@@ -8,7 +8,7 @@ from tactile_gym.utils.general_utils import load_json_obj
 
 
 sns.set_theme(style="darkgrid")
-model_path = os.path.join(os.path.dirname(__file__), '../learned_models')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
 
 
 def plot_error(

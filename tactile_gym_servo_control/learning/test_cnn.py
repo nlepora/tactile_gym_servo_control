@@ -11,6 +11,8 @@ import pandas as pd
 from torch.autograd import Variable
 import torch
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 from tactile_gym.utils.general_utils import load_json_obj
 
 from tactile_gym_servo_control.learning.learning_utils import import_task
@@ -23,10 +25,8 @@ from tactile_gym_servo_control.learning.image_generator import ImageDataGenerato
 from tactile_gym_servo_control.learning.plot_tools import plot_error
 
 
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
-data_path = os.path.join(os.path.dirname(__file__), '../data/')
-model_path = os.path.join(os.path.dirname(__file__), '../learned_models')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -47,7 +47,7 @@ def test_cnn(
     # data dir
     # can specifiy multiple directories that get combined in generator
     test_data_dirs = [
-        os.path.join(data_path, task, 'tap', 'val')
+        os.path.join(data_path, task, 'val')
     ]
 
     # set generators and loaders
@@ -130,6 +130,12 @@ if __name__ == "__main__":
         default=['surface_3d']
     )
     parser.add_argument(
+        '-m', '--models',
+        nargs='+',
+        help="Choose model from ['simple_cnn', 'nature_cnn', 'resnet', 'vit'].",
+        default=['nature_cnn']
+    )
+    parser.add_argument(
         '-d', '--device',
         type=str,
         help="Choose device from ['cpu', 'cuda'].",
@@ -139,45 +145,48 @@ if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
+    models = args.models
+
     device = args.device
 
     # test the trained networks
-    for task in tasks:
+    for model_type in models:
+        for task in tasks:
 
-        save_dir_name = os.path.join(
-            model_path,
-            task,
-            'tap',
-        )
+            save_dir_name = os.path.join(
+                model_path,
+                task,
+                model_type
+            )
 
-        model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))
-        learning_params = load_json_obj(os.path.join(save_dir_name, 'learning_params'))
-        image_processing_params = load_json_obj(os.path.join(save_dir_name, 'image_processing_params'))
+            model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))
+            learning_params = load_json_obj(os.path.join(save_dir_name, 'learning_params'))
+            image_processing_params = load_json_obj(os.path.join(save_dir_name, 'image_processing_params'))
 
-        # set the correct accuracy metric and label generator
-        out_dim, label_names = import_task(task)
+            # set the correct accuracy metric and label generator
+            out_dim, label_names = import_task(task)
 
-        # get the pose limits used for encoding/decoding pose/predictions
-        pose_limits_dict = load_json_obj(os.path.join(save_dir_name, 'pose_limits'))
-        pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
+            # get the pose limits used for encoding/decoding pose/predictions
+            pose_limits_dict = load_json_obj(os.path.join(save_dir_name, 'pose_limits'))
+            pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
-        # create the model
-        model = create_model(
-            image_processing_params['dims'],
-            out_dim,
-            model_params,
-            saved_model_dir=save_dir_name,
-            device=device
-        )
-        model.eval()
+            # create the model
+            model = create_model(
+                image_processing_params['dims'],
+                out_dim,
+                model_params,
+                saved_model_dir=save_dir_name,
+                device=device
+            )
+            model.eval()
 
-        test_cnn(
-            task,
-            model,
-            label_names,
-            pose_limits,
-            learning_params,
-            image_processing_params,
-            save_dir_name,
-            device
-        )
+            test_cnn(
+                task,
+                model,
+                label_names,
+                pose_limits,
+                learning_params,
+                image_processing_params,
+                save_dir_name,
+                device
+            )

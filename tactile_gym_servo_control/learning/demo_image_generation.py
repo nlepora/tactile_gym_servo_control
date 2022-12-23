@@ -13,12 +13,13 @@ import cv2
 import numpy as np
 import torch
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
 from tactile_gym_servo_control.learning.image_generator import numpy_collate
 
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-data_path = os.path.join(os.path.dirname(__file__), '../data')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
 
 
 def run(data_dirs, learning_params, image_processing_params, augmentation_param):
@@ -90,8 +91,8 @@ if __name__ == '__main__':
     }
 
     data_dirs = [
-        os.path.join(data_path, task, 'tap', 'train') for task in tasks
-        # os.path.join(data_path, task, 'tap', 'val') for task in tasks
+        os.path.join(data_path, task, 'train') for task in tasks
+        # os.path.join(data_path, task, 'val') for task in tasks
     ]
 
     run(data_dirs, learning_params, image_processing_params, augmentation_params)
