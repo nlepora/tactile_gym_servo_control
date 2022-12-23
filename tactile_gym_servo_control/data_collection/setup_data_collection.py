@@ -9,7 +9,6 @@ from tactile_gym_servo_control.data_collection.data_collection_utils import crea
 
 def setup_surface_3d_data_collection(
     num_samples=100,
-    apply_shear=False,
     shuffle_data=False,
     collect_dir_name=None,
 ):
@@ -23,11 +22,10 @@ def setup_surface_3d_data_collection(
         [0.0, 0.0, 0.5, -25.0, -25.0, 0.0],
         [0.0, 0.0, 5.5,  25.0,  25.0, 0.0]
     ]
-
-    if apply_shear:
-        moves_rng = [[-5, -5, 0, -5, -5, -5], [5, 5, 0, 5, 5, 5]]
-    else:
-        moves_rng = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+    moves_rng = [
+        [0, 0, 0, 0, 0, 0], 
+        [0, 0, 0, 0, 0, 0]
+    ]
 
     target_df = make_target_df_rand(
         poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
@@ -36,7 +34,6 @@ def setup_surface_3d_data_collection(
     collect_dir, image_dir = create_data_dir(
         target_df,
         "surface_3d",
-        apply_shear=apply_shear,
         collect_dir_name=collect_dir_name,
     )
 
@@ -55,7 +52,6 @@ def setup_surface_3d_data_collection(
 
 def setup_edge_2d_data_collection(
     num_samples=100,
-    apply_shear=False,
     shuffle_data=False,
     collect_dir_name=None,
 ):
@@ -69,11 +65,10 @@ def setup_edge_2d_data_collection(
         [0.0, -4.0, 2.0, -2.5, -2.5, -180.0],
         [0.0,  4.0, 5.5,  2.5,  2.5,  180.0]
     ]
-
-    if apply_shear:
-        moves_rng = [[-5, -5, 0, -5, -5, -5], [5, 5, 0, 5, 5, 5]]
-    else:
-        moves_rng = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+    moves_rng = [
+        [0, 0, 0, 0, 0, 0], 
+        [0, 0, 0, 0, 0, 0]
+    ]
 
     target_df = make_target_df_rand(
         poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
@@ -82,7 +77,6 @@ def setup_edge_2d_data_collection(
     collect_dir, image_dir = create_data_dir(
         target_df,
         "edge_2d",
-        apply_shear=apply_shear,
         collect_dir_name=collect_dir_name,
     )
 
@@ -101,7 +95,6 @@ def setup_edge_2d_data_collection(
 
 def setup_edge_3d_data_collection(
     num_samples=100,
-    apply_shear=False,
     shuffle_data=False,
     collect_dir_name=None,
 ):
@@ -115,11 +108,10 @@ def setup_edge_3d_data_collection(
         [0.0, -3.0, 2.0, -20.0, -20.0, -180.0],
         [0.0,  3.0, 5.5,  20.0,  20.0,  180.0]
     ]
-
-    if apply_shear:
-        moves_rng = [[-5, -5, 0, -5, -5, -5], [5, 5, 0, 5, 5, 5]]
-    else:
-        moves_rng = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+    moves_rng = [
+        [0, 0, 0, 0, 0, 0], 
+        [0, 0, 0, 0, 0, 0]
+    ]
 
     target_df = make_target_df_rand(
         poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
@@ -128,7 +120,6 @@ def setup_edge_3d_data_collection(
     collect_dir, image_dir = create_data_dir(
         target_df,
         "edge_3d",
-        apply_shear=apply_shear,
         collect_dir_name=collect_dir_name,
     )
 
@@ -147,7 +138,6 @@ def setup_edge_3d_data_collection(
 
 def setup_edge_5d_data_collection(
     num_samples=100,
-    apply_shear=False,
     shuffle_data=False,
     collect_dir_name=None,
 ):
@@ -161,12 +151,11 @@ def setup_edge_5d_data_collection(
         [0.0, -4.0, 2.0, -15.0, -15.0, -180.0],
         [0.0,  4.0, 5.5,  15.0,  15.0,  180.0]
     ]
-
-    if apply_shear:
-        moves_rng = [[-5, -5, 0, -5, -5, -5], [5, 5, 0, 5, 5, 5]]
-    else:
-        moves_rng = [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
-
+    moves_rng = [
+        [0, 0, 0, 0, 0, 0], 
+        [0, 0, 0, 0, 0, 0]
+    ]
+    
     target_df = make_target_df_rand(
         poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
     )
@@ -174,7 +163,6 @@ def setup_edge_5d_data_collection(
     collect_dir, image_dir = create_data_dir(
         target_df,
         "edge_5d",
-        apply_shear=apply_shear,
         collect_dir_name=collect_dir_name,
     )
 

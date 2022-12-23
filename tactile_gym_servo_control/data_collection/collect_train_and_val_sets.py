@@ -50,7 +50,8 @@ if __name__ == "__main__":
             "turn_off_border": False,
         }
 
-        show_gui = False
+
+        show_gui = True # gui needed on windows
         show_tactile = False
         quick_mode = True
 
@@ -70,7 +71,6 @@ if __name__ == "__main__":
 
             target_df, image_dir, workframe_pos, workframe_rpy = setup_data_collection(
                 num_samples=num_samples,
-                apply_shear=False,
                 shuffle_data=False,
                 collect_dir_name=collect_dir_name,
             )

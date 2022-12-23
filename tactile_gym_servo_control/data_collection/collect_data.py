@@ -140,7 +140,6 @@ if __name__ == "__main__":
         show_tactile = True
         quick_mode = False
         num_samples = 10
-        apply_shear = False
         collect_dir_name = "example_data"
 
         # setup stimulus
@@ -153,7 +152,6 @@ if __name__ == "__main__":
 
         target_df, image_dir, workframe_pos, workframe_rpy = setup_data_collection(
             num_samples=num_samples,
-            apply_shear=apply_shear,
             shuffle_data=False,
             collect_dir_name=collect_dir_name,
         )
