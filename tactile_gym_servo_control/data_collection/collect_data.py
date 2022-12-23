@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
         if task == "surface_3d":
             setup_data_collection = setup_surface_3d_data_collection
-        if task == "edge_2d":
+        elif task == "edge_2d":
             setup_data_collection = setup_edge_2d_data_collection
         elif task == "edge_3d":
             setup_data_collection = setup_edge_3d_data_collection

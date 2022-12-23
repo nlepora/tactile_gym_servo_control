@@ -13,6 +13,8 @@ import torch
 from torch.autograd import Variable
 import imageio
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 from tactile_gym.utils.general_utils import load_json_obj
 
 from tactile_gym_servo_control.learning.learning_utils import import_task
@@ -28,10 +30,9 @@ from tactile_gym_servo_control.servo_control.setup_servo_control import setup_ed
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_3d_servo_control
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_5d_servo_control
 
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
 stimuli_path = os.path.join(os.path.dirname(__file__), "../stimuli")
-model_path = os.path.join(os.path.dirname(__file__), '../learned_models')
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models")
+videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
 def load_embodiment_and_env(init_ref_pose, stim_name="square"):
@@ -228,7 +229,7 @@ def run_servo_control(
 
     if record_vid:
         imageio.mimwrite(
-            os.path.join(os.path.dirname(__file__), "../../example_videos", "render.mp4"),
+            os.path.join(videos_path, "render.mp4"),
             np.stack(render_frames),
             fps=24
         )
@@ -260,7 +261,7 @@ if __name__ == '__main__':
         # get the correct setup for the current task
         if task == "surface_3d":
             setup_servo_control = setup_surface_3d_servo_control
-        if task == "edge_2d":
+        elif task == "edge_2d":
             setup_servo_control = setup_edge_2d_servo_control
         elif task == "edge_3d":
             setup_servo_control = setup_edge_3d_servo_control
@@ -271,7 +272,7 @@ if __name__ == '__main__':
         save_dir_name = os.path.join(
             model_path,
             task,
-            'tap',
+            'nature_cnn'
         )
 
         # get limits and labels used during training
@@ -312,5 +313,6 @@ if __name__ == '__main__':
                 pose_limits=pose_limits,
                 ref_pose_ids=ref_pose_ids,
                 ep_len=ep_len,
-                quick_mode=False
+                quick_mode=False,
+                record_vid=True
             )
