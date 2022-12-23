@@ -3,11 +3,9 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
-**/0_VRDemoSettings.txt
-**/data/
-**/experimental_models/
 *.pyc
 __pycache__/
+tactile_gym_servo_control.egg-info/
 
 # Node artifact files
 node_modules/
