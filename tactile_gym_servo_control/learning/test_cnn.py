@@ -155,8 +155,8 @@ if __name__ == "__main__":
 
             save_dir_name = os.path.join(
                 model_path,
-                task,
-                model_type
+                model_type,
+                task
             )
 
             model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))

@@ -443,8 +443,8 @@ if __name__ == "__main__":
             # set save dir
             save_dir_name = os.path.join(
                 model_path,
-                task,
-                model_type
+                model_type,
+                task
             )
 
             # check save dir exists

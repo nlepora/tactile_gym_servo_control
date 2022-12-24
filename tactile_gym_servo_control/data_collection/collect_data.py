@@ -22,15 +22,57 @@ np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 stimuli_path = os.path.join(os.path.dirname(__file__), "../stimuli")
 
 
+def load_embodiment_and_env(
+    stim_name="square", 
+    show_gui=True, 
+    show_tactile=True
+):
+
+    assert stim_name in ["square", "foil",
+                         "clover", "circle",
+                         "saddle"], "Invalid Stimulus"
+
+    tactip_params = {
+        "name": "tactip",
+        "type": "standard",
+        "core": "no_core",
+        "dynamics": {},
+        "image_size": [128, 128],
+        "turn_off_border": False,
+    }
+
+    # setup stimulus
+    stimulus_pos = [0.6, 0.0, 0.0125]
+    stimulus_rpy = [0, 0, 0]
+    stim_path = os.path.join(
+        stimuli_path,
+        stim_name,
+        stim_name + ".urdf"
+    )
+
+    # set the work frame of the robot (relative to world frame)
+    workframe_pos = [0.6, 0.0, 0.0525]
+    workframe_rpy = [-np.pi, 0.0, np.pi / 2]
+
+    # setup robot data collection env
+    embodiment, _ = setup_pybullet_env(
+        stim_path,
+        tactip_params,
+        stimulus_pos,
+        stimulus_rpy,
+        workframe_pos,
+        workframe_rpy,
+        show_gui,
+        show_tactile,
+    )
+
+    return embodiment
+
+
 def collect_data(
     embodiment,
     target_df,
     image_dir,
-    workframe_pos,
-    workframe_rpy,
-    tactip_params,
-    show_gui=True,
-    show_tactile=True,
     quick_mode=False,
 ):
 
@@ -111,71 +153,35 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['surface_3d']
+        default=['edge_3d']
     )
+
+    # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
 
+    setup_data_collection = {
+        "surface_3d": setup_surface_3d_data_collection,
+        "edge_2d": setup_edge_2d_data_collection,
+        "edge_3d": setup_edge_3d_data_collection,
+        "edge_5d": setup_edge_5d_data_collection
+    }
+
+    num_samples = 10
+    collect_dir_name = "example_data"
+    
     for task in tasks:
 
-        if task == "surface_3d":
-            setup_data_collection = setup_surface_3d_data_collection
-        elif task == "edge_2d":
-            setup_data_collection = setup_edge_2d_data_collection
-        elif task == "edge_3d":
-            setup_data_collection = setup_edge_3d_data_collection
-        elif task == "edge_5d":
-            setup_data_collection = setup_edge_5d_data_collection
-
-        tactip_params = {
-            "name": "tactip",
-            "type": "standard",
-            "core": "no_core",
-            "dynamics": {},
-            "image_size": [256, 256],
-            "turn_off_border": False,
-        }
-
-        show_gui = True
-        show_tactile = True
-        quick_mode = False
-        num_samples = 10
-        collect_dir_name = "example_data"
-
-        # setup stimulus
-        stimulus_pos = [0.6, 0.0, 0.0125]
-        stimulus_rpy = [0, 0, 0]
-        stim_path = os.path.join(
-            stimuli_path,
-            "square/square.urdf"
-        )
-
-        target_df, image_dir, workframe_pos, workframe_rpy = setup_data_collection(
+        target_df, image_dir, workframe_pos, workframe_rpy = setup_data_collection[task](
             num_samples=num_samples,
             shuffle_data=False,
             collect_dir_name=collect_dir_name,
         )
 
-        # setup robot data collection env
-        embodiment, _ = setup_pybullet_env(
-            stim_path,
-            tactip_params,
-            stimulus_pos,
-            stimulus_rpy,
-            workframe_pos,
-            workframe_rpy,
-            show_gui,
-            show_tactile,
-        )
+        embodiment = load_embodiment_and_env()
 
         collect_data(
             embodiment,
             target_df,
-            image_dir,
-            workframe_pos,
-            workframe_rpy,
-            tactip_params,
-            show_gui=show_gui,
-            show_tactile=show_tactile,
-            quick_mode=quick_mode
+            image_dir
         )

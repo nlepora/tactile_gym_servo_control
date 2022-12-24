@@ -17,6 +17,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import load_json_obj
 
+from tactile_gym_servo_control.data_collection.collect_data import load_embodiment_and_env
+
 from tactile_gym_servo_control.learning.learning_utils import import_task
 from tactile_gym_servo_control.learning.learning_utils import decode_pose
 from tactile_gym_servo_control.learning.learning_utils import POSE_LABEL_NAMES, POS_LABEL_NAMES, ROT_LABEL_NAMES
@@ -31,52 +33,11 @@ from tactile_gym_servo_control.servo_control.setup_servo_control import setup_ed
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_5d_servo_control
 
 stimuli_path = os.path.join(os.path.dirname(__file__), "../stimuli")
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models")
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/nature_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
-def load_embodiment_and_env(init_ref_pose, stim_name="square"):
-
-    assert stim_name in ["square", "foil",
-                         "clover", "circle",
-                         "saddle"], "Invalid Stimulus"
-
-    tactip_params = {
-        "name": "tactip",
-        "type": "standard",
-        "core": "no_core",
-        "dynamics": {},
-        "image_size": [128, 128],
-        "turn_off_border": False,
-    }
-
-    show_gui = True
-    show_tactile = True
-
-    # setup stimulus
-    stimulus_pos = [0.6, 0.0, 0.0125]
-    stimulus_rpy = [0, 0, 0]
-    stim_path = os.path.join(
-        stimuli_path,
-        stim_name,
-        stim_name + ".urdf"
-    )
-
-    # set the work frame of the robot (relative to world frame)
-    workframe_pos = [0.6, 0.0, 0.0525]
-    workframe_rpy = [-np.pi, 0.0, np.pi / 2]
-
-    # setup robot data collection env
-    embodiment, _ = setup_pybullet_env(
-        stim_path,
-        tactip_params,
-        stimulus_pos,
-        stimulus_rpy,
-        workframe_pos,
-        workframe_rpy,
-        show_gui,
-        show_tactile,
-    )
+def add_gui(embodiment, init_ref_pose):
 
     # add user controllable ref pose to GUI
     ref_pose_ids = []
@@ -87,7 +48,7 @@ def load_embodiment_and_env(init_ref_pose, stim_name="square"):
     ref_pose_ids.append(embodiment._pb.addUserDebugParameter('Ry', -15.0, 15.0, init_ref_pose[POSE_LABEL_NAMES.index('Ry')]))
     ref_pose_ids.append(embodiment._pb.addUserDebugParameter('Rz', -180.0, 180.0, init_ref_pose[POSE_LABEL_NAMES.index('Rz')]))
 
-    return embodiment, ref_pose_ids
+    return  ref_pose_ids
 
 
 def get_prediction(
@@ -256,23 +217,19 @@ if __name__ == '__main__':
     tasks = args.tasks
     device = args.device
 
-    for task in tasks:
+    setup_servo_control = {
+        "surface_3d": setup_surface_3d_servo_control,
+        "edge_2d": setup_edge_2d_servo_control,
+        "edge_3d": setup_edge_3d_servo_control,
+        "edge_5d": setup_edge_5d_servo_control
+    }
 
-        # get the correct setup for the current task
-        if task == "surface_3d":
-            setup_servo_control = setup_surface_3d_servo_control
-        elif task == "edge_2d":
-            setup_servo_control = setup_edge_2d_servo_control
-        elif task == "edge_3d":
-            setup_servo_control = setup_edge_3d_servo_control
-        elif task == "edge_5d":
-            setup_servo_control = setup_edge_5d_servo_control
+    for task in tasks:
 
         # set save dir
         save_dir_name = os.path.join(
             model_path,
-            task,
-            'nature_cnn'
+            task
         )
 
         # get limits and labels used during training
@@ -281,13 +238,15 @@ if __name__ == '__main__':
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
         # setup the task
-        move_init_pose, stim_names, ep_len, init_ref_pose, p_gains = setup_servo_control()
+        move_init_pose, stim_names, ep_len, init_ref_pose, p_gains = setup_servo_control[task]()
 
         # perform the servo control
         for stim_name in stim_names:
 
-            embodiment, ref_pose_ids = load_embodiment_and_env(init_ref_pose, stim_name)
-
+            embodiment = load_embodiment_and_env(stim_name)
+     
+            ref_pose_ids = add_gui(embodiment, init_ref_pose)
+            
             move_init_pose(embodiment, stim_name)
 
             # load params
