@@ -14,7 +14,8 @@ stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
 def load_embodiment_and_env(
     stim_name="square", 
     show_gui=True, 
-    show_tactile=True
+    show_tactile=True,
+    quick_mode=False
 ):
 
     assert stim_name in ["square", "foil", "clover", "circle",
@@ -53,6 +54,11 @@ def load_embodiment_and_env(
         show_gui,
         show_tactile,
     )
+
+    def move_linear(pos, rpy):
+        embodiment.move_linear(pos, rpy, quick_mode=quick_mode)
+
+    embodiment.move = move_linear
 
     return embodiment
 

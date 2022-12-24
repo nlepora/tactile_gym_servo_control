@@ -59,12 +59,12 @@ if __name__ == "__main__":
             )
 
             embodiment = load_embodiment_and_env(
-                show_tactile=show_tactile
+                show_tactile=show_tactile,
+                quick_mode=quick_mode
             )
 
             collect_data(
                 embodiment,
                 target_df,
-                image_dir,
-                quick_mode=quick_mode
+                image_dir
             )

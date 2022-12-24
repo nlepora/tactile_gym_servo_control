@@ -44,7 +44,6 @@ def run_servo_control(
             ep_len=400,
             init_pos=np.zeros(3),
             init_rpy=np.zeros(3),
-            # quick_mode=True,
             record_vid=False,
         ):
 
@@ -52,7 +51,7 @@ def run_servo_control(
         render_frames = []
 
     # move to initial pose
-    embodiment.move_linear(init_pos, init_rpy)#, quick_mode=False)
+    embodiment.move(init_pos, init_rpy)
 
     # iterate through servo control
     for i in range(ep_len):
@@ -89,7 +88,7 @@ def run_servo_control(
         )
 
         # move to new pose
-        embodiment.move_linear(target_pose[:3], target_pose[3:])#, quick_mode=quick_mode)
+        embodiment.move(target_pose[:3], target_pose[3:])
 
         # draw TCP frame
         embodiment.arm.draw_TCP(lifetime=10.0)
@@ -187,6 +186,5 @@ if __name__ == '__main__':
                 ep_len=ep_len,
                 init_pos=init_pos,
                 init_rpy=init_rpy,
-                # quick_mode=False,
                 record_vid=True
             )

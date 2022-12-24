@@ -23,14 +23,13 @@ np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 def collect_data(
     embodiment,
     target_df,
-    image_dir,
-    quick_mode=False,
+    image_dir
 ):
 
-    hover_dist = 0.0075
+    hover_pos = [0, 0, 0.0075]
 
     # move to work frame
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move([0, 0, 0], [0, 0, 0])
 
     # ==== data collection loop ====
     for _, row in target_df.iterrows():
@@ -60,35 +59,19 @@ def collect_data(
             print(f"Collecting data for object {i_obj}, pose {i_pose}: ...")
 
         # move to slightly above new pose (avoid changing pose in contact with object)
-        embodiment.move_linear(
-            final_pos - move_pos - [0, 0, hover_dist],
-            final_rpy - move_rpy,
-            quick_mode
-        )
-
+        embodiment.move(final_pos - move_pos - hover_pos, final_rpy - move_rpy)
+ 
         # move down to offset position
-        embodiment.move_linear(
-            final_pos - move_pos,
-            final_rpy - move_rpy,
-            quick_mode
-        )
+        embodiment.move(final_pos - move_pos, final_rpy - move_rpy)
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(
-            final_pos,
-            final_rpy,
-            quick_mode
-        )
+        embodiment.move(final_pos, final_rpy)
 
         # process frames
         img = embodiment.process_sensor()
 
         # raise tip before next move
-        embodiment.move_linear(
-            final_pos - [0, 0, hover_dist],
-            final_rpy,
-            quick_mode
-        )
+        embodiment.move(final_pos - hover_pos, final_rpy)
 
         # save image
         image_outfile = os.path.join(image_dir, sensor_image)
