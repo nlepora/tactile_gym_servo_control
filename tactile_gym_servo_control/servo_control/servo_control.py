@@ -9,8 +9,6 @@ python servo_control.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 import numpy as np
-import torch
-from torch.autograd import Variable
 import imageio
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -20,13 +18,12 @@ from tactile_gym.utils.general_utils import load_json_obj
 from tactile_gym_servo_control.data_collection.data_collection_utils import load_embodiment_and_env
 
 from tactile_gym_servo_control.learning.learning_utils import import_task
-from tactile_gym_servo_control.learning.learning_utils import decode_pose
 from tactile_gym_servo_control.learning.learning_utils import POSE_LABEL_NAMES, POS_LABEL_NAMES, ROT_LABEL_NAMES
-from tactile_gym_servo_control.cri_wrapper.cri_embodiment import quat2euler, euler2quat, transform, inv_transform
-from tactile_gym_servo_control.utils.pybullet_utils import setup_pybullet_env
 from tactile_gym_servo_control.learning.networks import create_model
-from tactile_gym_servo_control.utils.image_transforms import process_image
 
+from tactile_gym_servo_control.servo_control.servo_control_utils import add_gui
+from tactile_gym_servo_control.servo_control.servo_control_utils import get_prediction
+from tactile_gym_servo_control.servo_control.servo_control_utils import compute_target_pose
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_surface_3d_servo_control
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_2d_servo_control
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_3d_servo_control
@@ -34,88 +31,6 @@ from tactile_gym_servo_control.servo_control.setup_servo_control import setup_ed
 
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/nature_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
-
-
-def add_gui(embodiment, init_ref_pose):
-
-    # add user controllable ref pose to GUI
-    ref_pose_ids = []
-    ref_pose_ids.append(embodiment._pb.addUserDebugParameter('x', -2.0, 2.0, init_ref_pose[POSE_LABEL_NAMES.index('x')]))
-    ref_pose_ids.append(embodiment._pb.addUserDebugParameter('y', -2.0, 2.0, init_ref_pose[POSE_LABEL_NAMES.index('y')]))
-    ref_pose_ids.append(embodiment._pb.addUserDebugParameter('z', 2.0, 5.0, init_ref_pose[POSE_LABEL_NAMES.index('z')]))
-    ref_pose_ids.append(embodiment._pb.addUserDebugParameter('Rx', -15.0, 15.0, init_ref_pose[POSE_LABEL_NAMES.index('Rx')]))
-    ref_pose_ids.append(embodiment._pb.addUserDebugParameter('Ry', -15.0, 15.0, init_ref_pose[POSE_LABEL_NAMES.index('Ry')]))
-    ref_pose_ids.append(embodiment._pb.addUserDebugParameter('Rz', -180.0, 180.0, init_ref_pose[POSE_LABEL_NAMES.index('Rz')]))
-
-    return  ref_pose_ids
-
-
-def get_prediction(
-    trained_model,
-    tactile_image,
-    image_processing_params,
-    label_names,
-    pose_limits,
-    device='cpu'
-):
-
-    # process image (as done for training)
-    processed_image = process_image(
-        tactile_image,
-        gray=False,
-        bbox=image_processing_params['bbox'],
-        dims=image_processing_params['dims'],
-        stdiz=image_processing_params['stdiz'],
-        normlz=image_processing_params['normlz'],
-        thresh=image_processing_params['thresh'],
-    )
-
-    # channel first for pytorch
-    processed_image = np.rollaxis(processed_image, 2, 0)
-
-    # add batch dim
-    processed_image = processed_image[np.newaxis, ...]
-
-    # perform inference with the trained model
-    model_input = Variable(torch.from_numpy(processed_image)).float().to(device)
-    raw_predictions = trained_model(model_input)
-
-    # decode the prediction
-    predictions_dict = decode_pose(raw_predictions, label_names, pose_limits)
-
-    print("")
-    print("Predictions")
-    predictions_arr = np.zeros(6)
-    for label_name in label_names:
-        if label_name in POS_LABEL_NAMES:
-            predicted_val = predictions_dict[label_name].detach().cpu().numpy() * 0.001
-        if label_name in ROT_LABEL_NAMES:
-            predicted_val = predictions_dict[label_name].detach().cpu().numpy() * np.pi / 180
-
-        print(label_name, predicted_val)
-        predictions_arr[POSE_LABEL_NAMES.index(label_name)] = predicted_val
-
-    return predictions_arr
-
-
-def compute_target_pose(pred_pose, ref_pose, p_gains, tcp_pose):
-    """
-    Compute workframe pose for maintaining reference pose from predicted pose
-    """
-    # calculate deltas between reference and predicted pose
-    ref_pose_q = euler2quat(ref_pose)
-    pred_pose_q = euler2quat(pred_pose)
-    pose_deltas = quat2euler(transform(ref_pose_q, pred_pose_q))
-
-    # control signal in tcp frame (e.g frame of training data labels)
-    control_signal = p_gains * pose_deltas
-
-    # transform control signal from feature frame to TCP frame
-    control_signal_q = euler2quat(control_signal)
-    tcp_pose_q = euler2quat(tcp_pose)
-    target_pose = quat2euler(inv_transform(control_signal_q, tcp_pose_q))
-
-    return target_pose
 
 
 def run_servo_control(
@@ -127,13 +42,19 @@ def run_servo_control(
             pose_limits=[],
             ref_pose_ids=[],
             ep_len=400,
-            quick_mode=True,
+            init_pos=np.zeros(3),
+            init_rpy=np.zeros(3),
+            # quick_mode=True,
             record_vid=False,
         ):
 
     if record_vid:
         render_frames = []
 
+    # move to initial pose
+    embodiment.move_linear(init_pos, init_rpy)#, quick_mode=False)
+
+    # iterate through servo control
     for i in range(ep_len):
 
         # get current tactile observation
@@ -150,8 +71,6 @@ def run_servo_control(
                     ref *= 1e-3
                 if label_name in ROT_LABEL_NAMES:
                     ref *= np.pi/180
-                if p_gains[j] == 0.0:
-                    ref = 0
             ref_pose.append(ref)
 
         # predict pose from observation
@@ -170,7 +89,7 @@ def run_servo_control(
         )
 
         # move to new pose
-        embodiment.move_linear(target_pose[:3], target_pose[3:], quick_mode=quick_mode)
+        embodiment.move_linear(target_pose[:3], target_pose[3:])#, quick_mode=quick_mode)
 
         # draw TCP frame
         embodiment.arm.draw_TCP(lifetime=10.0)
@@ -226,10 +145,7 @@ if __name__ == '__main__':
     for task in tasks:
 
         # set save dir
-        save_dir_name = os.path.join(
-            model_path,
-            task
-        )
+        save_dir_name = os.path.join(model_path, task)
 
         # get limits and labels used during training
         out_dim, label_names = import_task(task)
@@ -237,17 +153,15 @@ if __name__ == '__main__':
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
         # setup the task
-        move_init_pose, stim_names, ep_len, init_ref_pose, p_gains = setup_servo_control[task]()
+        stim_names, ep_len, init_pose, ref_pose, p_gains = setup_servo_control[task]()
 
         # perform the servo control
         for stim_name in stim_names:
 
             embodiment = load_embodiment_and_env(stim_name)
-     
-            ref_pose_ids = add_gui(embodiment, init_ref_pose)
+            ref_pose_ids = add_gui(embodiment, ref_pose)
+            init_pos, init_rpy = init_pose(stim_name)
             
-            move_init_pose(embodiment, stim_name)
-
             # load params
             model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))
             learning_params = load_json_obj(os.path.join(save_dir_name, 'learning_params'))
@@ -271,6 +185,8 @@ if __name__ == '__main__':
                 pose_limits=pose_limits,
                 ref_pose_ids=ref_pose_ids,
                 ep_len=ep_len,
-                quick_mode=False,
+                init_pos=init_pos,
+                init_rpy=init_rpy,
+                # quick_mode=False,
                 record_vid=True
             )

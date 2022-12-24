@@ -33,7 +33,7 @@ def collect_data(
     embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
 
     # ==== data collection loop ====
-    for index, row in target_df.iterrows():
+    for _, row in target_df.iterrows():
         i_obj = int(row.loc["obj_id"])
         i_pose = int(row.loc["pose_id"])
         pose = row.loc["pose_1":"pose_6"].values.astype(np.float32)
