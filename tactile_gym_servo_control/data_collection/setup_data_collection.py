@@ -13,10 +13,6 @@ def setup_surface_3d_data_collection(
     collect_dir_name=None,
 ):
 
-    # set the work frame of the robot (relative to world frame)
-    workframe_pos = [0.6, 0.0, 0.0525]
-    workframe_rpy = [-np.pi, 0.0, np.pi / 2]
-
     obj_poses = [[0, 0, 0, 0, 0, 0]]
     poses_rng = [
         [0.0, 0.0, 0.5, -25.0, -25.0, 0.0],
@@ -38,8 +34,6 @@ def setup_surface_3d_data_collection(
     )
 
     collection_params = {
-        'workframe_pos': workframe_pos,
-        'workframe_rpy': workframe_rpy,
         'obj_poses': obj_poses,
         'poses_rng': poses_rng,
         'moves_rng': moves_rng,
@@ -47,7 +41,7 @@ def setup_surface_3d_data_collection(
 
     save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
 
-    return target_df, image_dir, workframe_pos, workframe_rpy
+    return target_df, image_dir
 
 
 def setup_edge_2d_data_collection(
@@ -55,10 +49,6 @@ def setup_edge_2d_data_collection(
     shuffle_data=False,
     collect_dir_name=None,
 ):
-
-    # set the work frame of the robot (relative to world frame)
-    workframe_pos = [0.55, 0.0, 0.0525]
-    workframe_rpy = [-np.pi, 0.0, np.pi / 2]
 
     obj_poses = [[0, 0, 0, 0, 0, 0]]
     poses_rng = [
@@ -81,8 +71,6 @@ def setup_edge_2d_data_collection(
     )
 
     collection_params = {
-        'workframe_pos': workframe_pos,
-        'workframe_rpy': workframe_rpy,
         'obj_poses': obj_poses,
         'poses_rng': poses_rng,
         'moves_rng': moves_rng,
@@ -90,7 +78,7 @@ def setup_edge_2d_data_collection(
 
     save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
 
-    return target_df, image_dir, workframe_pos, workframe_rpy
+    return target_df, image_dir
 
 
 def setup_edge_3d_data_collection(
@@ -98,10 +86,6 @@ def setup_edge_3d_data_collection(
     shuffle_data=False,
     collect_dir_name=None,
 ):
-
-    # set the work frame of the robot (relative to world frame)
-    workframe_pos = [0.55, 0.0, 0.0525]
-    workframe_rpy = [-np.pi, 0.0, np.pi / 2]
 
     obj_poses = [[0, 0, 0, 0, 0, 0]]
     poses_rng = [
@@ -124,8 +108,6 @@ def setup_edge_3d_data_collection(
     )
 
     collection_params = {
-        'workframe_pos': workframe_pos,
-        'workframe_rpy': workframe_rpy,
         'obj_poses': obj_poses,
         'poses_rng': poses_rng,
         'moves_rng': moves_rng,
@@ -133,7 +115,7 @@ def setup_edge_3d_data_collection(
 
     save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
 
-    return target_df, image_dir, workframe_pos, workframe_rpy
+    return target_df, image_dir
 
 
 def setup_edge_5d_data_collection(
@@ -141,10 +123,6 @@ def setup_edge_5d_data_collection(
     shuffle_data=False,
     collect_dir_name=None,
 ):
-
-    # set the work frame of the robot (relative to world frame)
-    workframe_pos = [0.55, 0.0, 0.0525]
-    workframe_rpy = [-np.pi, 0.0, np.pi / 2]
 
     obj_poses = [[0, 0, 0, 0, 0, 0]]
     poses_rng = [
@@ -167,8 +145,6 @@ def setup_edge_5d_data_collection(
     )
 
     collection_params = {
-        'workframe_pos': workframe_pos,
-        'workframe_rpy': workframe_rpy,
         'obj_poses': obj_poses,
         'poses_rng': poses_rng,
         'moves_rng': moves_rng,
@@ -176,4 +152,4 @@ def setup_edge_5d_data_collection(
 
     save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
 
-    return target_df, image_dir, workframe_pos, workframe_rpy
+    return target_df, image_dir

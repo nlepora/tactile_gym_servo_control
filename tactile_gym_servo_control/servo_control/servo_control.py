@@ -17,7 +17,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.data_collection.collect_data import load_embodiment_and_env
+from tactile_gym_servo_control.data_collection.data_collection_utils import load_embodiment_and_env
 
 from tactile_gym_servo_control.learning.learning_utils import import_task
 from tactile_gym_servo_control.learning.learning_utils import decode_pose
@@ -32,7 +32,6 @@ from tactile_gym_servo_control.servo_control.setup_servo_control import setup_ed
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_3d_servo_control
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_5d_servo_control
 
-stimuli_path = os.path.join(os.path.dirname(__file__), "../stimuli")
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/nature_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 

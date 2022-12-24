@@ -9,7 +9,6 @@ python collect_train_and_val_sets.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 
-from tactile_gym_servo_control.utils.pybullet_utils import setup_pybullet_env
 from tactile_gym_servo_control.data_collection.collect_data import load_embodiment_and_env
 from tactile_gym_servo_control.data_collection.collect_data import collect_data
 from tactile_gym_servo_control.data_collection.setup_data_collection import setup_surface_3d_data_collection
@@ -27,7 +26,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['edge_3d']
+        default=['surface_3d']
     )
 
     # parse arguments
@@ -53,7 +52,7 @@ if __name__ == "__main__":
 
         for collect_dir_name, num_samples in collection_params.items():
 
-            target_df, image_dir, workframe_pos, workframe_rpy = setup_data_collection[task](
+            target_df, image_dir = setup_data_collection[task](
                 num_samples=num_samples,
                 shuffle_data=False,
                 collect_dir_name=collect_dir_name,
