@@ -1,7 +1,4 @@
-import os
 import numpy as np
-
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
 def setup_surface_3d_servo_control():
@@ -65,6 +62,14 @@ def setup_edge_5d_servo_control():
     p_gains = np.array([1.0, 1.0, 0.5, 0.05, 0.05, 0.05])
 
     return stim_names, ep_len, init_poses, ref_pose, p_gains
+
+
+SETUP_SERVO_CONTROL = {
+    "surface_3d": setup_surface_3d_servo_control,
+    "edge_2d": setup_edge_2d_servo_control,
+    "edge_3d": setup_edge_3d_servo_control,
+    "edge_5d": setup_edge_5d_servo_control
+}
 
 
 if __name__ == '__main__':

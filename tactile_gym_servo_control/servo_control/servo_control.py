@@ -11,23 +11,16 @@ import argparse
 import numpy as np
 import imageio
 
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.data_collection.data_collection_utils import load_embodiment_and_env
-
+from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
 from tactile_gym_servo_control.learning.learning_utils import import_task
 from tactile_gym_servo_control.learning.networks import create_model
 
+from tactile_gym_servo_control.servo_control.setup_servo_control import SETUP_SERVO_CONTROL
 from tactile_gym_servo_control.servo_control.servo_control_utils import add_gui
 from tactile_gym_servo_control.servo_control.servo_control_utils import get_prediction
 from tactile_gym_servo_control.servo_control.servo_control_utils import compute_target_pose
-
-from tactile_gym_servo_control.servo_control.setup_servo_control import setup_surface_3d_servo_control
-from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_2d_servo_control
-from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_3d_servo_control
-from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_5d_servo_control
 
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/nature_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
@@ -132,13 +125,6 @@ if __name__ == '__main__':
     tasks = args.tasks
     device = args.device
 
-    setup_servo_control = {
-        "surface_3d": setup_surface_3d_servo_control,
-        "edge_2d": setup_edge_2d_servo_control,
-        "edge_3d": setup_edge_3d_servo_control,
-        "edge_5d": setup_edge_5d_servo_control
-    }
-
     for task in tasks:
 
         # set save dir
@@ -155,7 +141,7 @@ if __name__ == '__main__':
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
         # setup the task
-        stim_names, ep_len, init_poses, ref_pose, p_gains = setup_servo_control[task]()
+        stim_names, ep_len, init_poses, ref_pose, p_gains = SETUP_SERVO_CONTROL[task]()
 
         # perform the servo control
         for j, stim_name in enumerate(stim_names):

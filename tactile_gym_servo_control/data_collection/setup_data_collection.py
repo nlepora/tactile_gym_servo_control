@@ -1,5 +1,4 @@
 import os
-import numpy as np
 
 from tactile_gym.utils.general_utils import save_json_obj
 
@@ -115,3 +114,15 @@ def setup_edge_5d_data_collection(
     save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
 
     return target_df, image_dir
+
+
+SETUP_DATA_COLLECTION = {
+    "surface_3d": setup_surface_3d_data_collection,
+    "edge_2d": setup_edge_2d_data_collection,
+    "edge_3d": setup_edge_3d_data_collection,
+    "edge_5d": setup_edge_5d_data_collection
+}
+
+
+if __name__ == '__main__':
+    pass
