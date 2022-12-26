@@ -57,23 +57,20 @@ def get_pose_limits(data_dirs, save_dir_name):
     """
     pose_llims, pose_ulims = [], []
     for data_dir in data_dirs:
-        collection_params = load_json_obj(os.path.join(data_dir,  'collection_params'))
-        pose_llims.append(collection_params['poses_rng'][0])
-        pose_ulims.append(collection_params['poses_rng'][1])
+        pose_limits_dict = load_json_obj(os.path.join(data_dir,  'pose_limits'))
+        pose_llims.append(pose_limits_dict['pose_llims'])
+        pose_ulims.append(pose_limits_dict['pose_ulims'])
 
     pose_llims = np.min(pose_llims, axis=0)
     pose_ulims = np.max(pose_ulims, axis=0)
 
-    # save limits for use during inference
+    # save limits
     pose_limits = {
         'pose_llims': list(pose_llims),
         'pose_ulims': list(pose_ulims),
     }
 
-    save_json_obj(
-        pose_limits,
-        os.path.join(save_dir_name, 'pose_limits')
-    )
+    save_json_obj(pose_limits, os.path.join(save_dir_name, 'pose_limits'))
 
     return pose_llims, pose_ulims
 
@@ -181,7 +178,7 @@ def err_metric(labels, predictions, target_label_names):
             targ_rot = labels[label_name] * np.pi/180
             pred_rot = predictions[label_name] * np.pi/180
 
-            # Calculate the difference between angles, takining into account the periodicity of angles (thanks ChatGPT)
+            # Calculate angle difference, taking into account periodicity (thanks ChatGPT)
             abs_err = torch.abs(
                 torch.atan2(torch.sin(targ_rot - pred_rot), torch.cos(targ_rot - pred_rot))
             ).detach().cpu().numpy() * (180.0 / np.pi)

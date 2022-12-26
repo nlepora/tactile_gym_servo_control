@@ -303,7 +303,7 @@ def train_cnn(
 
     print("Training finished, took {:.6f}s".format(time.time() - training_start_time))
 
-    # save the final
+    # save final model
     torch.save(
         model.state_dict(),
         os.path.join(save_dir_name, 'final_model.pth')
