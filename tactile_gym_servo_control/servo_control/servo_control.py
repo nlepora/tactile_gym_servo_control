@@ -18,12 +18,12 @@ from tactile_gym.utils.general_utils import load_json_obj
 from tactile_gym_servo_control.data_collection.data_collection_utils import load_embodiment_and_env
 
 from tactile_gym_servo_control.learning.learning_utils import import_task
-from tactile_gym_servo_control.learning.learning_utils import POSE_LABEL_NAMES, POS_LABEL_NAMES, ROT_LABEL_NAMES
 from tactile_gym_servo_control.learning.networks import create_model
 
 from tactile_gym_servo_control.servo_control.servo_control_utils import add_gui
 from tactile_gym_servo_control.servo_control.servo_control_utils import get_prediction
 from tactile_gym_servo_control.servo_control.servo_control_utils import compute_target_pose
+
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_surface_3d_servo_control
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_2d_servo_control
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_edge_3d_servo_control
@@ -40,18 +40,21 @@ def run_servo_control(
             p_gains=np.zeros(6),
             label_names=[],
             pose_limits=[],
-            ref_pose_ids=[],
+            ref_pose=np.zeros(6),
             ep_len=400,
-            init_pos=np.zeros(3),
-            init_rpy=np.zeros(3),
+            init_pose=np.zeros(6),
             record_vid=False,
+            show_gui=True
         ):
 
+    if show_gui:
+        ref_pose_ids = add_gui(embodiment, ref_pose)
+        
     if record_vid:
         render_frames = []
 
     # move to initial pose
-    embodiment.move(init_pos, init_rpy)
+    embodiment.move(init_pose)
 
     # iterate through servo control
     for i in range(ep_len):
@@ -61,16 +64,6 @@ def run_servo_control(
 
         # get current TCP pose
         tcp_pose = embodiment.get_tcp_pose()
-
-        ref_pose = []
-        for j, label_name in enumerate(POSE_LABEL_NAMES):
-            ref = embodiment._pb.readUserDebugParameter(ref_pose_ids[j])
-            if ref is not None:
-                if label_name in POS_LABEL_NAMES:
-                    ref *= 1e-3
-                if label_name in ROT_LABEL_NAMES:
-                    ref *= np.pi/180
-            ref_pose.append(ref)
 
         # predict pose from observation
         pred_pose = get_prediction(
@@ -88,19 +81,24 @@ def run_servo_control(
         )
 
         # move to new pose
-        embodiment.move(target_pose[:3], target_pose[3:])
+        embodiment.move(target_pose)
 
         # draw TCP frame
         embodiment.arm.draw_TCP(lifetime=10.0)
+
+        # show gui
+        if show_gui:
+            for j in range(len(ref_pose)):
+                ref_pose[j] = embodiment._pb.readUserDebugParameter(ref_pose_ids[j]) 
 
         # render frames
         if record_vid:
             render_img = embodiment.render()
             render_frames.append(render_img)
 
-        q_key = ord("q")
+        # quit if press 'q' key
         keys = embodiment._pb.getKeyboardEvents()
-        if q_key in keys and keys[q_key] & embodiment._pb.KEY_WAS_TRIGGERED:
+        if ord('q') in keys and embodiment._pb.KEY_WAS_TRIGGERED:
             exit()
 
     embodiment.close()
@@ -146,26 +144,25 @@ if __name__ == '__main__':
         # set save dir
         save_dir_name = os.path.join(model_path, task)
 
+        # load params
+        model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))
+        learning_params = load_json_obj(os.path.join(save_dir_name, 'learning_params'))
+        image_processing_params = load_json_obj(os.path.join(save_dir_name, 'image_processing_params'))
+        pose_limits_dict = load_json_obj(os.path.join(save_dir_name, 'pose_limits'))
+ 
         # get limits and labels used during training
         out_dim, label_names = import_task(task)
-        pose_limits_dict = load_json_obj(os.path.join(save_dir_name, 'pose_limits'))
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
         # setup the task
-        stim_names, ep_len, init_pose, ref_pose, p_gains = setup_servo_control[task]()
+        stim_names, ep_len, init_poses, ref_pose, p_gains = setup_servo_control[task]()
 
         # perform the servo control
-        for stim_name in stim_names:
+        for j, stim_name in enumerate(stim_names):
 
             embodiment = load_embodiment_and_env(stim_name)
-            ref_pose_ids = add_gui(embodiment, ref_pose)
-            init_pos, init_rpy = init_pose(stim_name)
+            init_pose = init_poses[j]
             
-            # load params
-            model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))
-            learning_params = load_json_obj(os.path.join(save_dir_name, 'learning_params'))
-            image_processing_params = load_json_obj(os.path.join(save_dir_name, 'image_processing_params'))
-
             trained_model = create_model(
                 image_processing_params['dims'],
                 out_dim,
@@ -182,9 +179,8 @@ if __name__ == '__main__':
                 p_gains=p_gains,
                 label_names=label_names,
                 pose_limits=pose_limits,
-                ref_pose_ids=ref_pose_ids,
+                ref_pose=ref_pose,
                 ep_len=ep_len,
-                init_pos=init_pos,
-                init_rpy=init_rpy,
+                init_pose=init_pose,
                 record_vid=True
             )

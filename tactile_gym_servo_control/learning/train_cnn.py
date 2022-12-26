@@ -56,8 +56,7 @@ def train_cnn(
     device='cpu'
 ):
 
-    # data dir
-    # can specifiy multiple directories that get combined in generator
+    # data dir - can specify multiple directories combined in generator
     train_data_dirs = [
         os.path.join(data_path, task, 'train')
     ]

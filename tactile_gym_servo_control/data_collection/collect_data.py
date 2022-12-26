@@ -26,10 +26,10 @@ def collect_data(
     image_dir
 ):
 
-    hover_pos = [0, 0, 0.0075]
+    hover = [0, 0, 7.5*1e-3, 0, 0, 0]
 
     # move to work frame
-    embodiment.move([0, 0, 0], [0, 0, 0])
+    embodiment.move([0, 0, 0, 0, 0, 0])
 
     # ==== data collection loop ====
     for _, row in target_df.iterrows():
@@ -40,38 +40,27 @@ def collect_data(
         obj_pose = row.loc["obj_pose"]
         sensor_image = row.loc["sensor_image"]
 
-        # define the new pos and rpy
-        # careful around offset for camera orientation
-        obj_pose_array = np.array([float(i) for i in obj_pose])
-        pose_array = np.array([float(i) for i in pose])
-        move_array = np.array([float(i) for i in move])
-
-        # combine relative pose and object pose
-        new_pose = obj_pose_array + pose_array
-
-        # convert to pybullet form
-        final_pos = new_pose[:3] * 0.001  # to mm
-        final_rpy = new_pose[3:] * np.pi / 180  # to rad
-        move_pos = move_array[:3] * 0.001  # to mm
-        move_rpy = move_array[3:] * np.pi / 180  # to rad
-
         with np.printoptions(precision=2, suppress=True):
             print(f"Collecting data for object {i_obj}, pose {i_pose}: ...")
+            
+        # convert to pybullet form
+        pose *= [1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180]
+        move *= [1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180]
+
+        # pose is relative to object
+        pose += obj_pose
 
         # move to slightly above new pose (avoid changing pose in contact with object)
-        embodiment.move(final_pos - move_pos - hover_pos, final_rpy - move_rpy)
+        embodiment.move(pose - move - hover)
  
         # move down to offset position
-        embodiment.move(final_pos - move_pos, final_rpy - move_rpy)
+        embodiment.move(pose - move)
 
         # move to target positon inducing shear effects
-        embodiment.move(final_pos, final_rpy)
+        embodiment.move(pose)
 
         # process frames
         img = embodiment.process_sensor()
-
-        # raise tip before next move
-        embodiment.move(final_pos - hover_pos, final_rpy)
 
         # save image
         image_outfile = os.path.join(image_dir, sensor_image)

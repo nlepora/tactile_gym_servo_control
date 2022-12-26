@@ -1,5 +1,4 @@
 import os
-import time
 import numpy as np
 import pandas as pd
 import json
@@ -55,7 +54,9 @@ def load_embodiment_and_env(
         show_tactile,
     )
 
-    def move_linear(pos, rpy):
+    def move_linear(pose):
+        pos = pose[:3]
+        rpy = pose[3:]
         embodiment.move_linear(pos, rpy, quick_mode=quick_mode)
 
     embodiment.move = move_linear

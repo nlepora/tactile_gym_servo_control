@@ -6,99 +6,65 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 def setup_surface_3d_servo_control():
 
-    def init_pose(stim_name):
+    setup_servo_control = {
+        "saddle": [-0.04, 0.0, -0.01, 0.0, 0.0, 0.0], # [m, m, m, rad, rad, rad]
+    }
 
-        if stim_name in ["saddle"]:
-            init_pos = [-0.04, 0.0, -0.01]
-            init_rpy = [0.0, 0.0, 0.0]
-
-        return init_pos, init_rpy
-
-    stim_names = ["saddle"]
+    stim_names = list(setup_servo_control.keys())
     ep_len = 200
+    init_poses = list(setup_servo_control.values())
+    ref_pose = [1.0, 0.0, 2.5, 0.0, 0.0, 0.0] # [mm, mm, mm, deg, deg, deg]
+    p_gains = [0.5, 0.5, 0.5, 0.1, 0.1, 0.0]
 
-    # set reference pose and gains
-    ref_pose = np.array([
-        1.0, 0.0, 2.5,  # millimeters
-        0.0, 0.0, 0.0  # degrees
-    ])
-    p_gains = np.array([0.5, 0.5, 0.5, 0.1, 0.1, 0.0])
-
-    return stim_names, ep_len, init_pose, ref_pose, p_gains
+    return stim_names, ep_len, init_poses, ref_pose, p_gains
 
 
 def setup_edge_2d_servo_control():
 
-    def init_pose(stim_name):
+    setup_servo_control = {
+        "square": [0.0, -0.05, 0.004, 0.0, 0.0, 0.0], # [m, m, m, rad, rad, rad]
+        "circle": [0.0, -0.05, 0.004, 0.0, 0.0, 0.0],
+        "clover": [0.0, -0.05, 0.004, 0.0, 0.0, 0.0],
+        "foil":   [0.0, -0.04, 0.004, 0.0, 0.0, 0.0],
+    }
 
-        # move to initial pose for starting episode
-        if stim_name in ["square", "circle", "clover"]:
-            init_pos = [0.0, -0.05, 0.004]
-            init_rpy = [0.0, 0.0, 0.0]
-
-        if stim_name in ["foil"]:
-            init_pos = [0.0, -0.04, 0.004]
-            init_rpy = [0.0, 0.0, 0.0]
-
-        return init_pos, init_rpy
-
-    stim_names = ["square", "circle", "clover", "foil"]
+    stim_names = list(setup_servo_control.keys())
     ep_len = 350
+    init_poses = list(setup_servo_control.values())
+    ref_pose = [1.0, 0.0, 2.5, 0.0, 0.0, 0.0] # [mm, mm, mm, deg, deg, deg]
+    p_gains = [1.0, 1.0, 0.0, 0.0, 0.0, 0.1]
 
-    # set reference pose and gains
-    ref_pose = np.array([
-            1.0, 0.0, 2.5,  # millimeters
-            0.0, 0.0, 0.0  # degrees
-    ])
-    p_gains = np.array([1.0, 1.0, 0.0, 0.0, 0.0, 0.1])
-
-    return stim_names, ep_len, init_pose, ref_pose, p_gains
+    return stim_names, init_poses, ep_len, ref_pose, p_gains
 
 
 def setup_edge_3d_servo_control():
 
-    def init_pose(stim_name):
+    setup_servo_control = {
+        "saddle": [-0.07, 0.0, -0.02, 0.0, 0.0, -np.pi/2], # [m, m, m, rad, rad, rad]
+    }
 
-        if stim_name in ["saddle"]:
-            init_pos = [-0.07, 0.0, -0.02]
-            init_rpy = [0.0, 0.0, -np.pi/2]
-
-        return init_pos, init_rpy
-
-    stim_names = ["saddle"]
+    stim_names = list(setup_servo_control.keys())
     ep_len = 500
+    init_poses = list(setup_servo_control.values())
+    ref_pose = [1.0, 0.0, 3.5, 0.0, 0.0, 0.0] # [mm, mm, mm, deg, deg, deg]
+    p_gains = [1.0, 1.0, 0.5, 0.0, 0.0, 0.05]
 
-    # set reference pose and gains
-    ref_pose = np.array([
-            1.0, 0.0, 3.5,  # millimeters
-            0.0, 0.0, 0.0  # degrees
-    ])
-    p_gains = np.array([1.0, 1.0, 0.5, 0.0, 0.0, 0.05])
-
-    return stim_names, ep_len, init_pose, ref_pose, p_gains
+    return stim_names, ep_len, init_poses, ref_pose, p_gains
 
 
 def setup_edge_5d_servo_control():
 
-    def init_pose(embodiment, stim_name):
+    setup_servo_control = {
+        "saddle": [-0.07, 0.0, -0.02, 0.0, 0.0, -np.pi/2], # [m, m, m, rad, rad, rad]
+    }
 
-        if stim_name in ["saddle"]:
-            init_pos = [-0.07, 0.0, -0.02]
-            init_rpy = [0.0, 0.0, -np.pi/2]
-
-        return init_pos, init_rpy
-
-    stim_names = ["saddle"]
+    stim_names = list(setup_servo_control.keys())
     ep_len = 500
-
-    # set reference pose and gains
-    ref_pose = np.array([
-            1.0, 0.0, 4.0,  # millimeters
-            0.0, 0.0, 0.0  # degrees
-    ])
+    init_poses = list(setup_servo_control.values())
+    ref_pose = [1.0, 0.0, 4.0, 0.0, 0.0, 0.0] # [mm, mm, mm, deg, deg, deg]
     p_gains = np.array([1.0, 1.0, 0.5, 0.05, 0.05, 0.05])
 
-    return stim_names, ep_len, init_pose, ref_pose, p_gains
+    return stim_names, ep_len, init_poses, ref_pose, p_gains
 
 
 if __name__ == '__main__':
