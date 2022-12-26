@@ -6,150 +6,112 @@ from tactile_gym.utils.general_utils import save_json_obj
 from tactile_gym_servo_control.data_collection.data_collection_utils import make_target_df_rand
 from tactile_gym_servo_control.data_collection.data_collection_utils import create_data_dir
 
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
+
 
 def setup_surface_3d_data_collection(
-    num_samples=100,
+    num_samples=10,
+    collect_dir_name="data",
     shuffle_data=False,
-    collect_dir_name=None,
 ):
 
-    obj_poses = [[0, 0, 0, 0, 0, 0]]
-    poses_rng = [
-        [0.0, 0.0, 0.5, -25.0, -25.0, 0.0],
-        [0.0, 0.0, 5.5,  25.0,  25.0, 0.0]
-    ]
-    moves_rng = [
-        [0, 0, 0, 0, 0, 0], 
-        [0, 0, 0, 0, 0, 0]
-    ]
-
-    target_df = make_target_df_rand(
-        poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
-    )
-
-    collect_dir, image_dir = create_data_dir(
-        target_df,
-        "surface_3d",
-        collect_dir_name=collect_dir_name,
-    )
-
-    collection_params = {
-        'obj_poses': obj_poses,
-        'poses_rng': poses_rng,
-        'moves_rng': moves_rng,
+    pose_limits = {
+        'pose_llims': [0, 0, 0.5, -25, -25, 0],
+        'pose_ulims': [0, 0, 5.5,  25,  25, 0],
+        'obj_poses':[[0, 0, 0, 0, 0, 0]]
     }
 
-    save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
+    collect_dir = os.path.join(
+        data_path, 'surface_3d', collect_dir_name
+    )
+
+    target_df = make_target_df_rand(
+        num_samples, shuffle_data, **pose_limits
+    )
+
+    image_dir = create_data_dir(collect_dir, target_df)
+
+    save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
 
     return target_df, image_dir
 
 
 def setup_edge_2d_data_collection(
-    num_samples=100,
+    num_samples=10,
+    collect_dir_name="data",
     shuffle_data=False,
-    collect_dir_name=None,
 ):
 
-    obj_poses = [[0, 0, 0, 0, 0, 0]]
-    poses_rng = [
-        [0.0, -4.0, 2.0, -2.5, -2.5, -180.0],
-        [0.0,  4.0, 5.5,  2.5,  2.5,  180.0]
-    ]
-    moves_rng = [
-        [0, 0, 0, 0, 0, 0], 
-        [0, 0, 0, 0, 0, 0]
-    ]
-
-    target_df = make_target_df_rand(
-        poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
-    )
-
-    collect_dir, image_dir = create_data_dir(
-        target_df,
-        "edge_2d",
-        collect_dir_name=collect_dir_name,
-    )
-
-    collection_params = {
-        'obj_poses': obj_poses,
-        'poses_rng': poses_rng,
-        'moves_rng': moves_rng,
+    pose_limits = {
+        'pose_llims': [0, -4, 2,  -2.5, -2.5, -180],
+        'pose_ulims': [0,  4, 5.5, 2.5,  2.5,  180],
+        'obj_poses':[[0, 0, 0, 0, 0, 0]]
     }
 
-    save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
+    collect_dir = os.path.join(
+        data_path, 'surface_3d', collect_dir_name
+    )
+
+    target_df = make_target_df_rand(
+        num_samples, shuffle_data, **pose_limits
+    )
+
+    image_dir = create_data_dir(collect_dir, target_df)
+
+    save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
 
     return target_df, image_dir
 
 
 def setup_edge_3d_data_collection(
-    num_samples=100,
+    num_samples=10,
+    collect_dir_name="data",
     shuffle_data=False,
-    collect_dir_name=None,
 ):
 
-    obj_poses = [[0, 0, 0, 0, 0, 0]]
-    poses_rng = [
-        [0.0, -3.0, 2.0, -20.0, -20.0, -180.0],
-        [0.0,  3.0, 5.5,  20.0,  20.0,  180.0]
-    ]
-    moves_rng = [
-        [0, 0, 0, 0, 0, 0], 
-        [0, 0, 0, 0, 0, 0]
-    ]
-
-    target_df = make_target_df_rand(
-        poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
-    )
-
-    collect_dir, image_dir = create_data_dir(
-        target_df,
-        "edge_3d",
-        collect_dir_name=collect_dir_name,
-    )
-
-    collection_params = {
-        'obj_poses': obj_poses,
-        'poses_rng': poses_rng,
-        'moves_rng': moves_rng,
+    pose_limits = {
+        'pose_llims': [0, -3, 2,  -20, -20, -180],
+        'pose_ulims': [0,  3, 5.5, 20,  20,  180],
+        'obj_poses':[[0, 0, 0, 0, 0, 0]]
     }
 
-    save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
+    collect_dir = os.path.join(
+        data_path, 'surface_3d', collect_dir_name
+    )
+
+    target_df = make_target_df_rand(
+        num_samples, shuffle_data, **pose_limits
+    )
+
+    image_dir = create_data_dir(collect_dir, target_df)
+
+    save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
 
     return target_df, image_dir
 
 
 def setup_edge_5d_data_collection(
-    num_samples=100,
+    num_samples=10,
+    collect_dir_name="data",
     shuffle_data=False,
-    collect_dir_name=None,
 ):
 
-    obj_poses = [[0, 0, 0, 0, 0, 0]]
-    poses_rng = [
-        [0.0, -4.0, 2.0, -15.0, -15.0, -180.0],
-        [0.0,  4.0, 5.5,  15.0,  15.0,  180.0]
-    ]
-    moves_rng = [
-        [0, 0, 0, 0, 0, 0], 
-        [0, 0, 0, 0, 0, 0]
-    ]
-    
-    target_df = make_target_df_rand(
-        poses_rng, moves_rng, num_samples, obj_poses, shuffle_data
-    )
-
-    collect_dir, image_dir = create_data_dir(
-        target_df,
-        "edge_5d",
-        collect_dir_name=collect_dir_name,
-    )
-
-    collection_params = {
-        'obj_poses': obj_poses,
-        'poses_rng': poses_rng,
-        'moves_rng': moves_rng,
+    pose_limits = {
+        'pose_llims': [0, -4,   2, -15, -15, -180],
+        'pose_ulims': [0,  4, 5.5,  15,  15,  180],
+        'obj_poses':[[0, 0, 0, 0, 0, 0]]
     }
 
-    save_json_obj(collection_params, os.path.join(collect_dir, 'collection_params'))
+    collect_dir = os.path.join(
+        data_path, 'surface_3d', collect_dir_name
+    )
+
+    target_df = make_target_df_rand(
+        num_samples, shuffle_data, **pose_limits
+    )
+
+    image_dir = create_data_dir(collect_dir, target_df)
+
+    save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
 
     return target_df, image_dir

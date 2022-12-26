@@ -11,10 +11,7 @@ import argparse
 
 from tactile_gym_servo_control.data_collection.collect_data import load_embodiment_and_env
 from tactile_gym_servo_control.data_collection.collect_data import collect_data
-from tactile_gym_servo_control.data_collection.setup_data_collection import setup_surface_3d_data_collection
-from tactile_gym_servo_control.data_collection.setup_data_collection import setup_edge_2d_data_collection
-from tactile_gym_servo_control.data_collection.setup_data_collection import setup_edge_3d_data_collection
-from tactile_gym_servo_control.data_collection.setup_data_collection import setup_edge_5d_data_collection
+from tactile_gym_servo_control.data_collection.collect_data import SETUP_DATA_COLLECTION
 
 stimuli_path = os.path.join(os.path.dirname(__file__), "../stimuli")
 
@@ -33,13 +30,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     tasks = args.tasks
 
-    setup_data_collection = {
-        "surface_3d": setup_surface_3d_data_collection,
-        "edge_2d": setup_edge_2d_data_collection,
-        "edge_3d": setup_edge_3d_data_collection,
-        "edge_5d": setup_edge_5d_data_collection
-    }
-
     show_tactile = False
     quick_mode = True
 
@@ -52,9 +42,8 @@ if __name__ == "__main__":
 
         for collect_dir_name, num_samples in collection_params.items():
 
-            target_df, image_dir = setup_data_collection[task](
+            target_df, image_dir = SETUP_DATA_COLLECTION[task](
                 num_samples=num_samples,
-                shuffle_data=False,
                 collect_dir_name=collect_dir_name,
             )
 

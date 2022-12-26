@@ -6,7 +6,6 @@ import json
 from tactile_gym_servo_control.utils.pybullet_utils import setup_pybullet_env
 from tactile_gym.utils.general_utils import check_dir
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
 stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
 
 
@@ -65,16 +64,23 @@ def load_embodiment_and_env(
 
 
 def make_target_df_rand(
-    poses_rng, moves_rng, num_poses, obj_poses, shuffle_data=False
+    num_poses, 
+    shuffle_data=False,
+    pose_llims=[0, 0, 0, 0, 0, 0], 
+    pose_ulims=[0, 0, 0, 0, 0, 0], 
+    move_llims=[0, 0, 0, 0, 0, 0], 
+    move_ulims=[0, 0, 0, 0, 0, 0], 
+    obj_poses=[[0, 0, 0, 0, 0, 0]]  
 ):
+
     # generate random poses
     np.random.seed()
     poses = np.random.uniform(
-        low=poses_rng[0], high=poses_rng[1], size=(num_poses, 6)
+        low=pose_llims, high=pose_ulims, size=(num_poses, 6)
     )
     poses = poses[np.lexsort((poses[:, 1], poses[:, 5]))]
     moves = np.random.uniform(
-        low=moves_rng[0], high=moves_rng[1], size=(num_poses, 6)
+        low=move_llims, high=move_ulims, size=(num_poses, 6)
     )
 
     # generate and save target data
@@ -106,15 +112,11 @@ def make_target_df_rand(
 
 
 def create_data_dir(
-    target_df,
-    task_name,
-    collect_dir_name="data",
+    collect_dir,
+    target_df
 ):
 
     # experiment metadata
-    home_dir = os.path.join(data_path, task_name)
-
-    collect_dir = os.path.join(home_dir, collect_dir_name)
     image_dir = os.path.join(collect_dir, "images")
     target_file = os.path.join(collect_dir, "targets.csv")
 
@@ -125,13 +127,13 @@ def create_data_dir(
     os.makedirs(collect_dir, exist_ok=True)
     os.makedirs(image_dir, exist_ok=True)
 
-    # save metadata (remove unneccesary non json serializable stuff)
-    meta = locals().copy()
-    del meta["collect_dir_name"], meta["target_df"]
-    with open(os.path.join(collect_dir, "meta.json"), "w") as f:
-        json.dump(meta, f)
+    # save directory names and paths
+    paths = locals().copy()
+    del paths["target_df"] # not a path
+    with open(os.path.join(collect_dir, "paths.json"), 'w') as f:
+        json.dump(paths, f)
 
     # save target csv
     target_df.to_csv(target_file, index=False)
 
-    return collect_dir, image_dir
+    return image_dir

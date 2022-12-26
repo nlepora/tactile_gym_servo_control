@@ -17,6 +17,13 @@ from tactile_gym_servo_control.data_collection.setup_data_collection import setu
 from tactile_gym_servo_control.data_collection.setup_data_collection import setup_edge_3d_data_collection
 from tactile_gym_servo_control.data_collection.setup_data_collection import setup_edge_5d_data_collection
 
+SETUP_DATA_COLLECTION = {
+    "surface_3d": setup_surface_3d_data_collection,
+    "edge_2d": setup_edge_2d_data_collection,
+    "edge_3d": setup_edge_3d_data_collection,
+    "edge_5d": setup_edge_5d_data_collection
+}
+
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 
@@ -50,7 +57,7 @@ def collect_data(
         # pose is relative to object
         pose += obj_pose
 
-        # move to slightly above new pose (avoid changing pose in contact with object)
+        # move to above new pose (avoid changing pose in contact with object)
         embodiment.move(pose - move - hover)
  
         # move down to offset position
@@ -82,24 +89,10 @@ if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
-
-    setup_data_collection = {
-        "surface_3d": setup_surface_3d_data_collection,
-        "edge_2d": setup_edge_2d_data_collection,
-        "edge_3d": setup_edge_3d_data_collection,
-        "edge_5d": setup_edge_5d_data_collection
-    }
-
-    num_samples = 10
-    collect_dir_name = "example_data"
     
     for task in tasks:
 
-        target_df, image_dir = setup_data_collection[task](
-            num_samples=num_samples,
-            shuffle_data=False,
-            collect_dir_name=collect_dir_name,
-        )
+        target_df, image_dir = SETUP_DATA_COLLECTION[task]()
 
         embodiment = load_embodiment_and_env()
 
