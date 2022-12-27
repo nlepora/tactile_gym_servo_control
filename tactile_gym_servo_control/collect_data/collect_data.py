@@ -12,7 +12,7 @@ import numpy as np
 import cv2
 
 from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
-from tactile_gym_servo_control.data_collection.setup_data_collection import SETUP_DATA_COLLECTION
+from tactile_gym_servo_control.collect_data.setup_collect_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
         embodiment = load_embodiment_and_env()
 
-        target_df, image_dir = SETUP_DATA_COLLECTION[task]()
+        target_df, image_dir = setup_collect_data[task]()
 
         collect_data(
             embodiment,

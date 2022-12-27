@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from tactile_gym_servo_control.learning.learning_utils import POSE_LABEL_NAMES
+from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym.utils.general_utils import load_json_obj
 
 

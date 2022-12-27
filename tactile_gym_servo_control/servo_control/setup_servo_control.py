@@ -64,7 +64,7 @@ def setup_edge_5d_servo_control():
     return stim_names, ep_len, init_poses, ref_pose, p_gains
 
 
-SETUP_SERVO_CONTROL = {
+setup_servo_control = {
     "surface_3d": setup_surface_3d_servo_control,
     "edge_2d": setup_edge_2d_servo_control,
     "edge_3d": setup_edge_3d_servo_control,

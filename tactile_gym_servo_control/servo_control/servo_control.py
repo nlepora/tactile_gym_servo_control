@@ -14,13 +14,13 @@ import imageio
 from tactile_gym.utils.general_utils import load_json_obj
 
 from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
-from tactile_gym_servo_control.learning.learning_utils import import_task
+from tactile_gym_servo_control.learning.utils_learning import import_task
 from tactile_gym_servo_control.learning.networks import create_model
 
-from tactile_gym_servo_control.servo_control.setup_servo_control import SETUP_SERVO_CONTROL
-from tactile_gym_servo_control.servo_control.servo_control_utils import add_gui
-from tactile_gym_servo_control.servo_control.servo_control_utils import get_prediction
-from tactile_gym_servo_control.servo_control.servo_control_utils import compute_target_pose
+from tactile_gym_servo_control.servo_control.setup_servo_control import setup_servo_control
+from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
+from tactile_gym_servo_control.servo_control.utils_servo_control import get_prediction
+from tactile_gym_servo_control.servo_control.utils_servo_control import compute_target_pose
 
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/nature_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
@@ -141,7 +141,7 @@ if __name__ == '__main__':
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
         # setup the task
-        stim_names, ep_len, init_poses, ref_pose, p_gains = SETUP_SERVO_CONTROL[task]()
+        stim_names, ep_len, init_poses, ref_pose, p_gains = setup_servo_control[task]()
 
         # perform the servo control
         for j, stim_name in enumerate(stim_names):
