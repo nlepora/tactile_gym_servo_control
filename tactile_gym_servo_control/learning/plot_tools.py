@@ -3,9 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym.utils.general_utils import load_json_obj
-
 
 sns.set_theme(style="darkgrid")
 model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
@@ -176,12 +177,10 @@ if __name__ == '__main__':
     # task = 'edge_3d'
     # task = 'edge_5d'
 
+    model = 'simple_cnn'
+
     # model for loading
-    save_dir_name = os.path.join(
-        model_path,
-        task,
-        'tap',
-    )
+    save_dir_name = os.path.join(model_path, model, task)
 
     train_loss = np.load(os.path.join(save_dir_name, 'train_loss.npy'))
     val_loss = np.load(os.path.join(save_dir_name, 'val_loss.npy'))
@@ -196,3 +195,10 @@ if __name__ == '__main__':
         n_epochs=learning_params['epochs'],
         save_file=os.path.join(save_dir_name, 'training_curves.png')
     )
+
+    # plot_error(
+    #     pred_df, targ_df, err_df,
+    #     targ_label_names,
+    #     pose_limits,
+    #     save_file=None
+    # )

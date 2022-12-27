@@ -23,7 +23,6 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 from tactile_gym.utils.general_utils import save_json_obj, check_dir
 
 from tactile_gym_servo_control.learning.utils_learning import get_pose_limits
-from tactile_gym_servo_control.learning.utils_learning import import_task
 from tactile_gym_servo_control.learning.utils_learning import encode_pose
 from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
@@ -35,7 +34,9 @@ from tactile_gym_servo_control.learning.plot_tools import plot_error
 from tactile_gym_servo_control.learning.networks import create_model
 from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
 from tactile_gym_servo_control.learning.test_cnn import test_cnn
-
+from tactile_gym_servo_control.learning.setup_learning import setup_task
+from tactile_gym_servo_control.learning.setup_learning import setup_learning
+from tactile_gym_servo_control.learning.setup_learning import setup_model
 
 data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
 model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
@@ -372,92 +373,22 @@ if __name__ == "__main__":
     models = args.models
     device = args.device
 
-    # Parameters
-    learning_params = {
-        'seed': 42,
-        'batch_size': 128,
-        'epochs': 50,#250
-        'lr': 1e-4,
-        'lr_factor': 0.5,
-        'lr_patience': 10,
-        'shuffle': True,
-        'n_cpu': 8,
-        'plot_during_training': False,  # slows training noticably
-    }
-
-    image_processing_params = {
-        'dims': (128, 128),
-        'bbox': None,
-        'thresh': False,
-        'stdiz': False,
-        'normlz': True,
-    }
-
-    augmentation_params = {
-        'rshift': (0.025, 0.025),
-        'rzoom': None,
-        'brightlims': None,
-        'noise_var': None,
-    }
-
-    for model_type in models:
-
-        model_params = {
-            'model_type': model_type
-        }
-
-        if model_type == 'simple_cnn':
-            model_params['model_kwargs'] = {
-                    'conv_layers': [16, 32, 32, 32],
-                    'conv_kernel_sizes': [5, 5, 5, 5],
-                    'fc_layers': [512, 512],
-                    'dropout': 0.0,
-                    'apply_batchnorm': True,
-            }
-
-        elif model_type == 'nature_cnn':
-            model_params['model_kwargs'] = {
-                'fc_layers': [512, 512],
-                'dropout': 0.0,
-            }
-
-        elif model_type == 'resnet':
-            model_params['model_kwargs'] = {
-                'layers': [2, 2, 2, 2],
-            }
-
-        elif model_type == 'vit':
-            model_params['model_kwargs'] = {
-                'patch_size': 32,
-                'dim': 128,
-                'depth': 6,
-                'heads': 8,
-                'mlp_dim': 512,
-            }
-
-        for task in tasks:
-
-            seed_everything(learning_params['seed'])
+    for task in tasks:
+        for model_type in models:
 
             # set save dir
-            save_dir_name = os.path.join(
-                model_path,
-                model_type,
-                task
-            )
+            save_dir_name = os.path.join(model_path, model_type, task)
 
             # check save dir exists
             check_dir(save_dir_name)
             os.makedirs(save_dir_name, exist_ok=True)
 
-            # save parameters
-            save_json_obj(model_params, os.path.join(save_dir_name, 'model_params'))
-            save_json_obj(learning_params, os.path.join(save_dir_name, 'learning_params'))
-            save_json_obj(image_processing_params, os.path.join(save_dir_name, 'image_processing_params'))
-            save_json_obj(augmentation_params, os.path.join(save_dir_name, 'augmentation_params'))
+            # setup parameters            
+            model_params = setup_model(model_type, save_dir_name)
+            learning_params, image_processing_params, augmentation_params = setup_learning(save_dir_name)
+            out_dim, label_names = setup_task(task)            
 
-            # set the correct accuracy metric and label generator
-            out_dim, label_names = import_task(task)
+            seed_everything(learning_params['seed'])
 
             # create the model
             model = create_model(
