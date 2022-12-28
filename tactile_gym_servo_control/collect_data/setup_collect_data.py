@@ -42,8 +42,8 @@ def setup_edge_2d_collect_data(
 ):
 
     pose_limits = {
-        'pose_llims': [0, -4, 2,  -2.5, -2.5, -180],
-        'pose_ulims': [0,  4, 5.5, 2.5,  2.5,  180],
+        'pose_llims': [0, -4, 2.5, -2.5, -2.5, -180],
+        'pose_ulims': [0,  4, 3.5,  2.5,  2.5,  180],
         'obj_poses':[[0, 0, 0, 0, 0, 0]]
     }
 
