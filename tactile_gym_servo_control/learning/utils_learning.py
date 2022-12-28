@@ -21,7 +21,7 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
 
 
-def get_pose_limits(data_dirs, save_dir_name):
+def get_pose_limits(data_dirs, save_dir):
     """
      Get limits for poses of data collected, used to encode/decode pose for prediction
      data_dirs is expected to be a list of data directories
@@ -43,7 +43,7 @@ def get_pose_limits(data_dirs, save_dir_name):
         'pose_ulims': list(pose_ulims),
     }
 
-    save_json_obj(pose_limits, os.path.join(save_dir_name, 'pose_limits'))
+    save_json_obj(pose_limits, os.path.join(save_dir, 'pose_limits'))
 
     return pose_llims, pose_ulims
 

@@ -30,7 +30,7 @@ def setup_task(task_name):
     return out_dim, label_names
 
 
-def setup_learning(save_dir_name):
+def setup_learning(save_dir):
 
     # Parameters
     learning_params = {
@@ -59,14 +59,14 @@ def setup_learning(save_dir_name):
         'noise_var': None,
     }
 
-    save_json_obj(learning_params, os.path.join(save_dir_name, 'learning_params'))
-    save_json_obj(image_processing_params, os.path.join(save_dir_name, 'image_processing_params'))
-    save_json_obj(augmentation_params, os.path.join(save_dir_name, 'augmentation_params'))
+    save_json_obj(learning_params, os.path.join(save_dir, 'learning_params'))
+    save_json_obj(image_processing_params, os.path.join(save_dir, 'image_processing_params'))
+    save_json_obj(augmentation_params, os.path.join(save_dir, 'augmentation_params'))
 
     return learning_params, image_processing_params, augmentation_params
 
 
-def setup_model(model_type, save_dir_name):
+def setup_model(model_type, save_dir):
     
     model_params = {
         'model_type': model_type
@@ -102,6 +102,6 @@ def setup_model(model_type, save_dir_name):
         }
 
     # save parameters
-    save_json_obj(model_params, os.path.join(save_dir_name, 'model_params'))
+    save_json_obj(model_params, os.path.join(save_dir, 'model_params'))
 
     return model_params

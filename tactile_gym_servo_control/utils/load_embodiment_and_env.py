@@ -3,6 +3,8 @@ import numpy as np
 
 from tactile_gym_servo_control.utils.pybullet_utils import setup_pybullet_env
 
+POSE_UNITS = np.array([1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180])
+
 stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
 
 
@@ -26,8 +28,8 @@ def load_embodiment_and_env(
     }
 
     # setup stimulus
-    stimulus_pos = [0.6, 0.0, 0.0125]
-    stimulus_rpy = [0, 0, 0]
+    stimulus_pos = [600, 0, 12.5] * POSE_UNITS[:3]
+    stimulus_rpy = [0, 0, 0] * POSE_UNITS[3:]
     stim_path = os.path.join(
         stimuli_path,
         stim_name,
@@ -35,8 +37,8 @@ def load_embodiment_and_env(
     )
 
     # set the work frame of the robot (relative to world frame)
-    workframe_pos = [0.6, 0.0, 0.0525]
-    workframe_rpy = [-np.pi, 0.0, np.pi / 2]
+    workframe_pos = [600, 0, 52.5] * POSE_UNITS[:3]
+    workframe_rpy = [-180, 0, 90] * POSE_UNITS[3:]
 
     # setup robot data collection env
     embodiment, _ = setup_pybullet_env(

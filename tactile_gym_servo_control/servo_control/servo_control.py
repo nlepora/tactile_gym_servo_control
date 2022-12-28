@@ -14,8 +14,8 @@ import imageio
 from tactile_gym.utils.general_utils import load_json_obj
 
 from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
-from tactile_gym_servo_control.learning.utils_learning import import_task
-from learning.setup_network import create_model
+from tactile_gym_servo_control.learning.setup_learning import setup_task
+from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
@@ -37,7 +37,8 @@ def run_servo_control(
             ep_len=400,
             init_pose=np.zeros(6),
             record_vid=False,
-            show_gui=True
+            show_gui=True,
+            device='cpu'
         ):
 
     if show_gui:
@@ -117,7 +118,7 @@ if __name__ == '__main__':
         '-d', '--device',
         type=str,
         help="Choose device from ['cpu', 'cuda'].",
-        default='cpu'
+        default='cuda'
     )
 
     # parse arguments
@@ -137,7 +138,7 @@ if __name__ == '__main__':
         pose_limits_dict = load_json_obj(os.path.join(save_dir, 'pose_limits'))
  
         # get limits and labels used during training
-        out_dim, label_names = import_task(task)
+        out_dim, label_names = setup_task(task)
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
         # setup the task
@@ -149,7 +150,7 @@ if __name__ == '__main__':
             embodiment = load_embodiment_and_env(stim_name)
             init_pose = init_poses[j]
             
-            trained_model = create_model(
+            trained_model = setup_network(
                 image_processing_params['dims'],
                 out_dim,
                 model_params,
@@ -168,5 +169,6 @@ if __name__ == '__main__':
                 ref_pose=ref_pose,
                 ep_len=ep_len,
                 init_pose=init_pose,
-                record_vid=True
+                record_vid=True,
+                device=device
             )

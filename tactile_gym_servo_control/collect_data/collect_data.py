@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 import cv2
 
+from tactile_gym_servo_control.utils.load_embodiment_and_env import POSE_UNITS
 from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
 from tactile_gym_servo_control.collect_data.setup_collect_data import setup_collect_data
 
@@ -23,7 +24,7 @@ def collect_data(
     image_dir
 ):
 
-    hover = [0, 0, 7.5*1e-3, 0, 0, 0]
+    hover = [0, 0, 7.5, 0, 0, 0] * POSE_UNITS
 
     # move to work frame
     embodiment.move([0, 0, 0, 0, 0, 0])
@@ -40,9 +41,9 @@ def collect_data(
         with np.printoptions(precision=2, suppress=True):
             print(f"Collecting data for object {i_obj}, pose {i_pose}: ...")
             
-        # convert to pybullet form
-        pose *= [1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180]
-        move *= [1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180]
+        # convert to pybullet units
+        pose *= POSE_UNITS
+        move *= POSE_UNITS
 
         # pose is relative to object
         pose += obj_pose
