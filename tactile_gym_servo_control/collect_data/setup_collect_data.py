@@ -13,7 +13,12 @@ def setup_surface_3d_collect_data(
     collect_dir_name="data",
     shuffle_data=False,
 ):
-
+    env_params = {
+        'stim_name': 'square',
+        'stim_pose': [600, 0, 12.5, 0, 0, 0],
+        'workframe': [600, 0, 52.5, -180, 0, 90]
+    }
+    
     pose_limits = {
         'pose_llims': [0, 0, 0.5, -25, -25, 0],
         'pose_ulims': [0, 0, 5.5,  25,  25, 0],
@@ -31,8 +36,9 @@ def setup_surface_3d_collect_data(
     image_dir = create_data_dir(collect_dir, target_df)
 
     save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
+    save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir
+    return target_df, image_dir, env_params
 
 
 def setup_edge_2d_collect_data(
@@ -40,6 +46,11 @@ def setup_edge_2d_collect_data(
     collect_dir_name="data",
     shuffle_data=False,
 ):
+    env_params = {
+        'stim_name': 'square',
+        'stim_pose': [600, 0, 12.5, 0, 0, 0],
+        'workframe': [650, 0, 52.5, -180, 0, 90]
+    }
 
     pose_limits = {
         'pose_llims': [0, -4, 2.5, -2.5, -2.5, -180],
@@ -48,7 +59,7 @@ def setup_edge_2d_collect_data(
     }
 
     collect_dir = os.path.join(
-        data_path, 'surface_3d', collect_dir_name
+        data_path, 'edge_2d', collect_dir_name
     )
 
     target_df = make_target_df_rand(
@@ -58,8 +69,9 @@ def setup_edge_2d_collect_data(
     image_dir = create_data_dir(collect_dir, target_df)
 
     save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
+    save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir
+    return target_df, image_dir, env_params
 
 
 def setup_edge_3d_collect_data(
@@ -67,6 +79,11 @@ def setup_edge_3d_collect_data(
     collect_dir_name="data",
     shuffle_data=False,
 ):
+    env_params = {
+        'stim_name': 'square',
+        'stim_pose': [600, 0, 12.5, 0, 0, 0],
+        'workframe': [650, 0, 52.5, -180, 0, 90]
+    }
 
     pose_limits = {
         'pose_llims': [0, -3, 2,  -20, -20, -180],
@@ -75,7 +92,7 @@ def setup_edge_3d_collect_data(
     }
 
     collect_dir = os.path.join(
-        data_path, 'surface_3d', collect_dir_name
+        data_path, 'edge_3d', collect_dir_name
     )
 
     target_df = make_target_df_rand(
@@ -85,8 +102,9 @@ def setup_edge_3d_collect_data(
     image_dir = create_data_dir(collect_dir, target_df)
 
     save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
+    save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir
+    return target_df, image_dir, env_params
 
 
 def setup_edge_5d_collect_data(
@@ -94,6 +112,11 @@ def setup_edge_5d_collect_data(
     collect_dir_name="data",
     shuffle_data=False,
 ):
+    env_params = {
+        'stim_name': 'square',
+        'stim_pose': [600, 0, 12.5, 0, 0, 0],
+        'workframe': [650, 0, 52.5, -180, 0, 90]
+    }
 
     pose_limits = {
         'pose_llims': [0, -4,   2, -15, -15, -180],
@@ -102,7 +125,7 @@ def setup_edge_5d_collect_data(
     }
 
     collect_dir = os.path.join(
-        data_path, 'surface_3d', collect_dir_name
+        data_path, 'edge_5d', collect_dir_name
     )
 
     target_df = make_target_df_rand(
@@ -112,8 +135,9 @@ def setup_edge_5d_collect_data(
     image_dir = create_data_dir(collect_dir, target_df)
 
     save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
+    save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir
+    return target_df, image_dir, env_params
 
 
 setup_collect_data = {

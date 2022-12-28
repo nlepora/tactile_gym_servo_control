@@ -22,7 +22,7 @@ from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
 from tactile_gym_servo_control.servo_control.utils_servo_control import get_prediction
 from tactile_gym_servo_control.servo_control.utils_servo_control import compute_target_pose
 
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models/nature_cnn")
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
@@ -51,7 +51,7 @@ def run_servo_control(
     embodiment.move(init_pose)
 
     # iterate through servo control
-    for i in range(ep_len):
+    for _ in range(ep_len):
 
         # get current tactile observation
         tactile_image = embodiment.get_tactile_observation()

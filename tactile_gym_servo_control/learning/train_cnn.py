@@ -22,10 +22,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import check_dir
 
+from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.learning.utils_learning import get_pose_limits
 from tactile_gym_servo_control.learning.utils_learning import encode_pose
 from tactile_gym_servo_control.learning.utils_learning import decode_pose
-from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.learning.utils_learning import acc_metric
 from tactile_gym_servo_control.learning.utils_learning import err_metric
 from tactile_gym_servo_control.learning.utils_learning import seed_everything
@@ -182,7 +182,7 @@ def train_cnn(
 
     if plot_during_training:
         plot_train = PlotTrain(save_dir)
-        plot_error = PlotError(save_dir)
+        plot_error = PlotError(save_dir, name='val_error_plot.png')
 
     with tqdm(total=learning_params['epochs']) as pbar:
 
@@ -265,7 +265,7 @@ def train_cnn(
         plot_train.update(
             train_loss, val_loss, train_acc, val_acc
         )        
-        plot_error = PlotError(save_dir, final_plot=True)
+        plot_error = PlotError(save_dir, final_plot=True, name='final_error_plot.png')
         plot_error.update(
             val_pred_df, val_targ_df, val_err_df, label_names
         )

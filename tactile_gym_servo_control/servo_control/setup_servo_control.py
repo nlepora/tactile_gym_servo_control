@@ -1,5 +1,3 @@
-import numpy as np
-
 from tactile_gym_servo_control.utils.load_embodiment_and_env import POSE_UNITS
 
 
@@ -33,7 +31,7 @@ def setup_edge_2d_servo_control():
     ref_pose = [1, 0, 0, 0, 0, 0] 
     p_gains = [1, 0.5, 0, 0, 0, 0.5]
 
-    return stim_names, init_poses, ep_len, ref_pose, p_gains
+    return stim_names, ep_len, init_poses, ref_pose, p_gains
 
 
 def setup_edge_3d_servo_control():

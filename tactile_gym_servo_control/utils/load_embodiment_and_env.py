@@ -9,7 +9,9 @@ stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
 
 
 def load_embodiment_and_env(
-    stim_name="square", 
+    stim_name="square",
+    stim_pose=[600, 0, 12.5, 0, 0, 0],
+    workframe=[600, 0, 52.5, -180, 0, 90],
     show_gui=True, 
     show_tactile=True,
     quick_mode=False
@@ -27,27 +29,23 @@ def load_embodiment_and_env(
         "turn_off_border": False,
     }
 
-    # setup stimulus
-    stimulus_pos = [600, 0, 12.5] * POSE_UNITS[:3]
-    stimulus_rpy = [0, 0, 0] * POSE_UNITS[3:]
+    # setup stimulus in worldframe
+    stim_pos = stim_pose[:3] * POSE_UNITS[:3]
+    stim_rpy = stim_pose[3:] * POSE_UNITS[3:]
     stim_path = os.path.join(
-        stimuli_path,
-        stim_name,
-        stim_name + ".urdf"
+        stimuli_path, stim_name, stim_name + ".urdf"
     )
 
-    # set the work frame of the robot (relative to world frame)
-    workframe_pos = [600, 0, 52.5] * POSE_UNITS[:3]
-    workframe_rpy = [-180, 0, 90] * POSE_UNITS[3:]
+    # set the base frame of the robot (relative to world frame)
+    workframe_pos = workframe[:3] * POSE_UNITS[:3]
+    workframe_rpy = workframe[3:] * POSE_UNITS[3:]
 
     # setup robot data collection env
     embodiment, _ = setup_pybullet_env(
         stim_path,
         tactip_params,
-        stimulus_pos,
-        stimulus_rpy,
-        workframe_pos,
-        workframe_rpy,
+        stim_pos, stim_rpy,
+        workframe_pos, workframe_rpy,
         show_gui,
         show_tactile,
     )

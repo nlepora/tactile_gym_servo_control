@@ -29,21 +29,23 @@ if __name__ == "__main__":
 
     collection_params = {
         'train': 5000,
-        'val': 2000
+        'val': 2000,
+        'test': 2000
     }
 
     for task in tasks:
 
         for collect_dir_name, num_samples in collection_params.items():
 
-            embodiment = load_embodiment_and_env(
-                show_tactile=False,
-                quick_mode=True
-            )
-
-            target_df, image_dir = setup_collect_data[task](
+            target_df, image_dir, env_params = setup_collect_data[task](
                 num_samples=num_samples,
                 collect_dir_name=collect_dir_name,
+            )
+
+            embodiment = load_embodiment_and_env(
+                show_tactile=False,
+                quick_mode=True,
+                **env_params
             )
 
             collect_data(

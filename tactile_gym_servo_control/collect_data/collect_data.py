@@ -26,7 +26,7 @@ def collect_data(
 
     hover = [0, 0, 7.5, 0, 0, 0] * POSE_UNITS
 
-    # move to work frame
+    # move to workframe origin
     embodiment.move([0, 0, 0, 0, 0, 0])
 
     # ==== data collection loop ====
@@ -83,9 +83,11 @@ if __name__ == "__main__":
     
     for task in tasks:
 
-        embodiment = load_embodiment_and_env()
+        target_df, image_dir, env_params = setup_collect_data[task]()
 
-        target_df, image_dir = setup_collect_data[task]()
+        embodiment = load_embodiment_and_env(
+            **env_params
+        )
 
         collect_data(
             embodiment,

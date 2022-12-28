@@ -15,8 +15,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import acc_metric
 from tactile_gym_servo_control.learning.utils_learning import err_metric
 from tactile_gym_servo_control.learning.utils_plots import PlotError
@@ -46,7 +46,7 @@ def test_cnn(
 
     # data dir (can specifiy multiple directories combined in generator)
     test_data_dirs = [
-        os.path.join(data_path, task, 'val')
+        os.path.join(data_path, task, 'test')
     ]
 
     # set generators and loaders
