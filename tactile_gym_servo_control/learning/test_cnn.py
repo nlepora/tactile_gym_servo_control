@@ -15,15 +15,15 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.learning.utils_learning import import_task
 from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.learning.utils_learning import acc_metric
 from tactile_gym_servo_control.learning.utils_learning import err_metric
-from tactile_gym_servo_control.learning.networks import create_model
-from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
-from tactile_gym_servo_control.learning.plot_tools import plot_error
+from tactile_gym_servo_control.learning.utils_plots import PlotError
 
+from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
+from tactile_gym_servo_control.learning.setup_network import setup_network
+from tactile_gym_servo_control.learning.setup_learning import setup_task
 
 data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
 model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
@@ -40,12 +40,11 @@ def test_cnn(
     pose_limits,
     learning_params,
     image_processing_params,
-    save_dir_name,
+    save_dir,
     device='cpu'
 ):
 
-    # data dir
-    # can specifiy multiple directories that get combined in generator
+    # data dir (can specifiy multiple directories combined in generator)
     test_data_dirs = [
         os.path.join(data_path, task, 'val')
     ]
@@ -109,14 +108,9 @@ def test_cnn(
     print(err_df[label_names].mean())
 
     # plot full error graph
-    plot_error(
-        pred_df,
-        targ_df,
-        err_df,
-        label_names,
-        pose_limits,
-        save_file=os.path.join(save_dir_name, 'error_plot.png'),
-        show_plot=True
+    plot_error = PlotError(save_dir, final_plot=True, name='test_error_plot.png')
+    plot_error.update(
+        pred_df, targ_df, err_df, label_names
     )
 
 
@@ -133,13 +127,13 @@ if __name__ == "__main__":
         '-m', '--models',
         nargs='+',
         help="Choose model from ['simple_cnn', 'nature_cnn', 'resnet', 'vit'].",
-        default=['nature_cnn']
+        default=['simple_cnn']
     )
     parser.add_argument(
         '-d', '--device',
         type=str,
         help="Choose device from ['cpu', 'cuda'].",
-        default='cpu'
+        default='cuda'
     )
 
     # parse arguments
@@ -153,29 +147,25 @@ if __name__ == "__main__":
     for model_type in models:
         for task in tasks:
 
-            save_dir_name = os.path.join(
-                model_path,
-                model_type,
-                task
-            )
+            # set save dir
+            save_dir = os.path.join(model_path, model_type, task)
 
-            model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))
-            learning_params = load_json_obj(os.path.join(save_dir_name, 'learning_params'))
-            image_processing_params = load_json_obj(os.path.join(save_dir_name, 'image_processing_params'))
-
-            # set the correct accuracy metric and label generator
-            out_dim, label_names = import_task(task)
+            # setup parameters            
+            model_params = load_json_obj(os.path.join(save_dir, 'model_params'))
+            learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
+            image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
+            out_dim, label_names = setup_task(task)
 
             # get the pose limits used for encoding/decoding pose/predictions
-            pose_limits_dict = load_json_obj(os.path.join(save_dir_name, 'pose_limits'))
+            pose_limits_dict = load_json_obj(os.path.join(save_dir, 'pose_limits'))
             pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
             # create the model
-            model = create_model(
+            model = setup_network(
                 image_processing_params['dims'],
                 out_dim,
                 model_params,
-                saved_model_dir=save_dir_name,
+                saved_model_dir=save_dir,
                 device=device
             )
             model.eval()
@@ -187,6 +177,6 @@ if __name__ == "__main__":
                 pose_limits,
                 learning_params,
                 image_processing_params,
-                save_dir_name,
-                device
+                save_dir,
+                device=device
             )

@@ -9,6 +9,7 @@ python train_cnn.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 import time
+import pickle
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -16,11 +17,10 @@ from torch.autograd import Variable
 import torch.optim as optim
 import torch.nn as nn
 import torch
-import matplotlib.pyplot as plt
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-from tactile_gym.utils.general_utils import save_json_obj, check_dir
+from tactile_gym.utils.general_utils import check_dir
 
 from tactile_gym_servo_control.learning.utils_learning import get_pose_limits
 from tactile_gym_servo_control.learning.utils_learning import encode_pose
@@ -29,11 +29,11 @@ from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.learning.utils_learning import acc_metric
 from tactile_gym_servo_control.learning.utils_learning import err_metric
 from tactile_gym_servo_control.learning.utils_learning import seed_everything
-from tactile_gym_servo_control.learning.plot_tools import plot_training
-from tactile_gym_servo_control.learning.plot_tools import plot_error
-from tactile_gym_servo_control.learning.networks import create_model
+from tactile_gym_servo_control.learning.utils_plots import PlotError
+from tactile_gym_servo_control.learning.utils_plots import PlotTrain
+
 from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
-from tactile_gym_servo_control.learning.test_cnn import test_cnn
+from tactile_gym_servo_control.learning.setup_network import setup_network
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_learning import setup_learning
 from tactile_gym_servo_control.learning.setup_learning import setup_model
@@ -53,7 +53,8 @@ def train_cnn(
     learning_params,
     image_processing_params,
     augmentation_params,
-    save_dir_name,
+    save_dir,
+    plot_during_training=True,  # slows training noticably
     device='cpu'
 ):
 
@@ -61,7 +62,7 @@ def train_cnn(
     train_data_dirs = [
         os.path.join(data_path, task, 'train')
     ]
-    train_pose_limits = get_pose_limits(train_data_dirs, save_dir_name)
+    pose_limits = get_pose_limits(train_data_dirs, save_dir)
 
     validation_data_dirs = [
         os.path.join(data_path, task, 'val')
@@ -120,7 +121,7 @@ def train_cnn(
             inputs = Variable(inputs).float().to(device)
 
             # get labels
-            labels = encode_pose(labels_dict, label_names, train_pose_limits, device)
+            labels = encode_pose(labels_dict, label_names, pose_limits, device)
 
             # set the parameter gradients to zero
             if training:
@@ -135,7 +136,7 @@ def train_cnn(
                 optimizer.step()
 
             # count correct for accuracy metric
-            predictions_dict = decode_pose(outputs, label_names, train_pose_limits)
+            predictions_dict = decode_pose(outputs, label_names, pose_limits)
 
             if not training:
                 # append predictions and labels to dataframes
@@ -179,68 +180,9 @@ def train_cnn(
     # for saving best model
     lowest_val_loss = np.inf
 
-    if learning_params['plot_during_training']:
-        # create figures for updating
-        plt.ion()
-        train_fig, train_axs = plt.subplots(1, 2, figsize=(12, 4))
-        err_fig, err_axs = plt.subplots(ncols=3, nrows=2, figsize=(12, 6))
-        plt.show()
-        plt.pause(0.01)
-
-    def update_train_plot(train_loss, val_loss, train_acc, val_acc, n_epochs):
-
-        # clear axis
-        for ax in train_axs.flat:
-            ax.clear()
-
-        # plot training
-        plot_training(
-            train_loss,
-            val_loss,
-            train_acc,
-            val_acc,
-            n_epochs=n_epochs,
-            fig=train_fig,
-            axs=train_axs,
-            save_file=os.path.join(save_dir_name, 'training_curves.png'),
-            show_plot=False
-        )
-
-        for ax in train_axs.flat:
-            ax.relim()
-            ax.set_xlim([0, learning_params['epochs']])
-            ax.autoscale_view(True, True, True)
-
-        # show results
-        train_fig.canvas.draw()
-        plt.pause(0.01)
-
-    def update_error_plot(
-        pred_df,
-        targ_df,
-        err_df,
-    ):
-
-        # clear axis
-        for ax in err_axs.flat:
-            ax.clear()
-
-        # plot error
-        plot_error(
-            pred_df,
-            targ_df,
-            err_df,
-            label_names,
-            train_pose_limits,
-            fig=err_fig,
-            axs=err_axs,
-            save_file=os.path.join(save_dir_name, 'error_plot.png'),
-            show_plot=False
-        )
-
-        # show results
-        err_fig.canvas.draw()
-        plt.pause(0.01)
+    if plot_during_training:
+        plot_train = PlotTrain(save_dir)
+        plot_error = PlotError(save_dir)
 
     with tqdm(total=learning_params['epochs']) as pbar:
 
@@ -248,53 +190,60 @@ def train_cnn(
         for epoch in range(1, learning_params['epochs'] + 1):
 
             train_epoch_loss, train_epoch_acc, train_acc_df, train_err_df = run_epoch(
-                train_loader, n_train_batches, training=True)
+                train_loader, n_train_batches, training=True
+            )
 
             # ========= Validation =========
             model.eval()
             val_epoch_loss, val_epoch_acc, val_acc_df, val_err_df, val_pred_df, val_targ_df = run_epoch(
-                val_loader, n_val_batches, training=False)
+                val_loader, n_val_batches, training=False
+            )
             model.train()
 
             # append loss and acc
-            train_loss.extend(train_epoch_loss)
-            train_acc.extend(train_epoch_acc)
-            val_loss.extend(val_epoch_loss)
-            val_acc.extend(val_epoch_acc)
+            train_loss.append(train_epoch_loss)
+            train_acc.append(train_epoch_acc)
+            val_loss.append(val_epoch_loss)
+            val_acc.append(val_epoch_acc)
 
             # print metrics
-            print("")
-            print("")
-            print("Epoch: {}".format(epoch+1))
-            print("")
-
-            print("Train Metrics")
-            print("train_acc: {:.6f}".format(np.mean(train_epoch_acc)))
-            print(train_acc_df[label_names].mean())
-            print("train_err: {:.6f}".format(np.mean(train_epoch_loss)))
-            print(train_err_df[label_names].mean())
-
-            print("")
-            print("Validation Metrics")
-            print("val_acc: {:.6f}".format(np.mean(val_epoch_acc)))
-            print(val_acc_df[label_names].mean())
-            print("val_err: {:.6f}".format(np.mean(val_epoch_loss)))
-            print(val_err_df[label_names].mean())
-            print("")
+            print(f"\nEpoch {epoch}")
+            print(f"train_acc {np.mean(train_epoch_acc):.6f}", end=', ')
+            print(train_acc_df[label_names].mean().to_string().replace('\n',',   '))
+            print("train_err {:.6f}".format(np.mean(train_epoch_loss)), end=', ')
+            print(train_err_df[label_names].mean().to_string().replace('\n',', '))
+            print(f"val_acc   {np.mean(val_epoch_acc):.6f}", end=', ')
+            print(val_acc_df[label_names].mean().to_string().replace('\n',',   '))
+            print("val_err   {:.6f}".format(np.mean(val_epoch_loss)), end=', ')
+            print(val_err_df[label_names].mean().to_string().replace('\n',', '))
 
             # update plots
-            if learning_params['plot_during_training']:
-                update_train_plot(train_loss, val_loss, train_acc, val_acc, epoch)
-                update_error_plot(val_pred_df, val_targ_df, val_err_df)
+            if plot_during_training:
+                plot_train.update(
+                    train_loss, val_loss, train_acc, val_acc
+                )
+                plot_error.update(
+                    val_pred_df, val_targ_df, val_err_df, label_names
+                )
 
             # save the model with lowest val loss
             if np.mean(val_epoch_loss) < lowest_val_loss:
                 lowest_val_loss = np.mean(val_epoch_loss)
+                
                 print('Saving Best Model')
                 torch.save(
                     model.state_dict(),
-                    os.path.join(save_dir_name, 'best_model.pth')
+                    os.path.join(save_dir, 'best_model.pth')
                 )
+
+                # save loss and acc, save val 
+                save_vars = [train_loss, val_loss, train_acc, val_acc]
+                with open(os.path.join(save_dir, 'train_val_loss_acc.pkl'), 'bw') as f:  
+                    pickle.dump(save_vars, f)
+                
+                save_vars = [val_pred_df, val_targ_df, val_err_df, label_names]
+                with open(os.path.join(save_dir, 'val_pred_targ_err.pkl'), 'bw') as f:  
+                    pickle.dump(save_vars, f)
 
             # decay the lr
             lr_scheduler.step(np.mean(val_epoch_loss))
@@ -307,42 +256,19 @@ def train_cnn(
     # save final model
     torch.save(
         model.state_dict(),
-        os.path.join(save_dir_name, 'final_model.pth')
+        os.path.join(save_dir, 'final_model.pth')
     )
 
-    # convert lists to arrays
-    train_loss = np.array(train_loss)
-    val_loss = np.array(val_loss)
-    train_acc = np.array(train_acc)
-    val_acc = np.array(val_acc)
-
-    # save loss and acc lists
-    np.save(os.path.join(save_dir_name, 'train_loss.npy'), train_loss)
-    np.save(os.path.join(save_dir_name, 'val_loss.npy'), val_loss)
-    np.save(os.path.join(save_dir_name, 'train_acc.npy'), train_acc)
-    np.save(os.path.join(save_dir_name, 'val_acc.npy'), val_acc)
-
-    # plot progress
-    plot_training(
-        train_loss,
-        val_loss,
-        train_acc,
-        val_acc,
-        n_epochs=learning_params['epochs'],
-        save_file=os.path.join(save_dir_name, 'training_curves.png'),
-        show_plot=True
-    )
-
-    test_cnn(
-        task,
-        model,
-        label_names,
-        train_pose_limits,
-        learning_params,
-        image_processing_params,
-        save_dir_name,
-        device
-    )
+    # final plots (note - not the best model)
+    if not plot_during_training:
+        plot_train = PlotTrain(save_dir, final_plot=True)
+        plot_train.update(
+            train_loss, val_loss, train_acc, val_acc
+        )        
+        plot_error = PlotError(save_dir, final_plot=True)
+        plot_error.update(
+            val_pred_df, val_targ_df, val_err_df, label_names
+        )
 
 
 if __name__ == "__main__":
@@ -377,25 +303,24 @@ if __name__ == "__main__":
         for model_type in models:
 
             # set save dir
-            save_dir_name = os.path.join(model_path, model_type, task)
+            save_dir = os.path.join(model_path, model_type, task)
 
             # check save dir exists
-            check_dir(save_dir_name)
-            os.makedirs(save_dir_name, exist_ok=True)
+            check_dir(save_dir)
+            os.makedirs(save_dir, exist_ok=True)
 
             # setup parameters            
-            model_params = setup_model(model_type, save_dir_name)
-            learning_params, image_processing_params, augmentation_params = setup_learning(save_dir_name)
+            model_params = setup_model(model_type, save_dir)
+            learning_params, image_processing_params, augmentation_params = setup_learning(save_dir)
             out_dim, label_names = setup_task(task)            
 
+            # create the model
             seed_everything(learning_params['seed'])
 
-            # create the model
-            model = create_model(
+            model = setup_network(
                 image_processing_params['dims'],
                 out_dim,
                 model_params,
-                saved_model_dir=None,
                 device=device
             )
 
@@ -406,6 +331,6 @@ if __name__ == "__main__":
                 learning_params,
                 image_processing_params,
                 augmentation_params,
-                save_dir_name,
-                device
+                save_dir,
+                device=device        
             )

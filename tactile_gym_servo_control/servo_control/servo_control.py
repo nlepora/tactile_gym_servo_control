@@ -15,7 +15,7 @@ from tactile_gym.utils.general_utils import load_json_obj
 
 from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
 from tactile_gym_servo_control.learning.utils_learning import import_task
-from tactile_gym_servo_control.learning.networks import create_model
+from learning.setup_network import create_model
 
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
@@ -128,13 +128,13 @@ if __name__ == '__main__':
     for task in tasks:
 
         # set save dir
-        save_dir_name = os.path.join(model_path, task)
+        save_dir = os.path.join(model_path, task)
 
         # load params
-        model_params = load_json_obj(os.path.join(save_dir_name, 'model_params'))
-        learning_params = load_json_obj(os.path.join(save_dir_name, 'learning_params'))
-        image_processing_params = load_json_obj(os.path.join(save_dir_name, 'image_processing_params'))
-        pose_limits_dict = load_json_obj(os.path.join(save_dir_name, 'pose_limits'))
+        model_params = load_json_obj(os.path.join(save_dir, 'model_params'))
+        learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
+        image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
+        pose_limits_dict = load_json_obj(os.path.join(save_dir, 'pose_limits'))
  
         # get limits and labels used during training
         out_dim, label_names = import_task(task)
@@ -153,7 +153,7 @@ if __name__ == '__main__':
                 image_processing_params['dims'],
                 out_dim,
                 model_params,
-                saved_model_dir=save_dir_name,
+                saved_model_dir=save_dir,
                 device=device
             )
             trained_model.eval()

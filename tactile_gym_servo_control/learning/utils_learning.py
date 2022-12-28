@@ -21,33 +21,6 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
 
 
-def import_task(task_name):
-    """
-    Returns task specific details.
-    """
-
-    if task_name == 'surface_3d':
-        out_dim = 5
-        label_names = ['z', 'Rx', 'Ry']
-
-    elif task_name == 'edge_2d':
-        out_dim = 3
-        label_names = ['y', 'Rz']
-
-    elif task_name == 'edge_3d':
-        out_dim = 4
-        label_names = ['y', 'z', 'Rz']
-
-    elif task_name == 'edge_5d':
-        out_dim = 8
-        label_names = ['y', 'z', 'Rx', 'Ry', 'Rz']
-
-    else:
-        raise ValueError('Incorrect task_name specified: {}'.format(task_name))
-
-    return out_dim, label_names
-
-
 def get_pose_limits(data_dirs, save_dir_name):
     """
      Get limits for poses of data collected, used to encode/decode pose for prediction

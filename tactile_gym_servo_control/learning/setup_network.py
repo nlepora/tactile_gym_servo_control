@@ -6,7 +6,10 @@ from pytorch_model_summary import summary
 from vit_pytorch.vit import ViT
 
 
-def create_model(in_dim, out_dim, model_params, saved_model_dir=None, device='cpu'):
+def setup_network(in_dim, out_dim, model_params,
+    saved_model_dir=None, 
+    device='cpu'
+):
 
     if model_params['model_type'] == 'simple_cnn':
         model = CNN(
