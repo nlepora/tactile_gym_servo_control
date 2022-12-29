@@ -5,6 +5,7 @@ import time
 import numpy as np
 import pkgutil
 
+from tactile_gym_servo_control.robot_interface.robot_embodiment import POSE_UNITS
 from tactile_gym_servo_control.robot_interface.robot_embodiment import RobotEmbodiment
 from tactile_gym.assets import add_assets_path
 
@@ -74,10 +75,7 @@ def main(
     stimulus_orn = p.getQuaternionFromEuler([0, 0, np.pi / 2])
 
     stimulus_id = pb.loadURDF(
-        os.path.join(
-            stimuli_path,
-            "square/square.urdf"
-        ),
+        os.path.join(stimuli_path, "square/square.urdf"),
         stimulus_pos,
         stimulus_orn,
         useFixedBase=True,
@@ -111,7 +109,7 @@ def main(
     )
 
     # move to the workframe
-    embodiment.move_linear([0, 0, 0], [0, 0, 0])
+    embodiment.move_linear([0, 0, 0, 0, 0, 0])
     embodiment.process_sensor()
 
     # move in different directions
@@ -144,120 +142,120 @@ def test_edge_pos(embodiment, quick_mode=False):
     embodiment.get_tactile_observation()
     print("move near edge")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move left
-    embodiment.move_linear([0.05, 0, 0.095], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0.05, 0, 0.095, 0, 0, 0] / POSE_UNITS)
     embodiment.get_tactile_observation()
     print("move left edge")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move far
-    embodiment.move_linear([0, 0.05, 0.095], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0.05, 0.095, 0, 0, 0] / POSE_UNITS)
     embodiment.get_tactile_observation()
     print("move far edge")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move right
-    embodiment.move_linear([-0.05, 0, 0.095], [0, 0, 0], quick_mode)
+    embodiment.move_linear([-0.05, 0, 0.095, 0, 0, 0] / POSE_UNITS)
     embodiment.get_tactile_observation()
     print("move right edge")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
 
 def test_movement(embodiment, quick_mode=False):
     # move x
-    embodiment.move_linear([0.05, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0.05, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move +x")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
-    embodiment.move_linear([-0.05, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([-0.05, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move -x")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move y
-    embodiment.move_linear([0, +0.05, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, +0.05, 0, 0, 0, 0] / POSE_UNITS)
     print("move +y")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
-    embodiment.move_linear([0, -0.05, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, -0.05, 0, 0, 0, 0] / POSE_UNITS)
     print("move -y")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move z
-    embodiment.move_linear([0, 0, 0.05], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0.05, 0, 0, 0] / POSE_UNITS)
     print("move +z")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
-    embodiment.move_linear([0, 0, -0.05], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, -0.05, 0, 0, 0] / POSE_UNITS)
     print("move -z")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move roll
-    embodiment.move_linear([0, 0, 0], [0.785, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0.785, 0, 0] / POSE_UNITS)
     print("move +roll")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [-0.785, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, -0.785, 0, 0] / POSE_UNITS)
     print("move -roll")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move pitch
-    embodiment.move_linear([0, 0, 0], [0, +0.785, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, +0.785, 0] / POSE_UNITS)
     print("move +pitch")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, -0.785, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, -0.785, 0] / POSE_UNITS)
     print("move -pitch")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 
     # move yaw
-    embodiment.move_linear([0, 0, 0], [0, 0, +0.785], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, +0.785] / POSE_UNITS)
     print("move +yaw")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, -0.785], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, -0.785] / POSE_UNITS)
     print("move -yaw")
     time.sleep(1)
-    embodiment.move_linear([0, 0, 0], [0, 0, 0], quick_mode)
+    embodiment.move_linear([0, 0, 0, 0, 0, 0] / POSE_UNITS)
     print("move center")
     time.sleep(1)
 

@@ -5,7 +5,7 @@ from tactile_gym_servo_control.robot_interface.setup_pybullet_env import setup_p
 stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
 
 
-def setup_embodiment_and_env(
+def setup_embodiment_env(
     stim_name="square",
     stim_pose=[600, 0, 12.5, 0, 0, 0],
     workframe=[600, 0, 52.5, -180, 0, 90],

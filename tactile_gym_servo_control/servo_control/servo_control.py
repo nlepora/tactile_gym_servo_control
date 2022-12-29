@@ -13,7 +13,7 @@ import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import setup_embodiment_and_env
+from tactile_gym_servo_control.robot_interface.setup_embodiment_env import setup_embodiment_env
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         # perform the servo control
         for init_pose, stim_name in zip(init_poses, stim_names):
 
-            embodiment = setup_embodiment_and_env(
+            embodiment = setup_embodiment_env(
                 stim_name,
                 quick_mode=True
             )

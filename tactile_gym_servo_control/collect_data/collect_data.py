@@ -11,7 +11,7 @@ import argparse
 import numpy as np
 import cv2
 
-from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import setup_embodiment_and_env
+from tactile_gym_servo_control.robot_interface.setup_embodiment_env import setup_embodiment_env
 from tactile_gym_servo_control.collect_data.setup_collect_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
         target_df, image_dir, env_params = setup_collect_data[task]()
 
-        embodiment = setup_embodiment_and_env(
+        embodiment = setup_embodiment_env(
             **env_params
         )
 
