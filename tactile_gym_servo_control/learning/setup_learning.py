@@ -8,13 +8,13 @@ def setup_learning(save_dir):
     # Parameters
     learning_params = {
         'seed': 42,
-        'batch_size': 8,#128
+        'batch_size': 128,
         'epochs': 50,#250
         'lr': 1e-4,
         'lr_factor': 0.5,
         'lr_patience': 10,
         'shuffle': True,
-        'n_cpu': 8
+        'n_cpu': 1
     }
 
     image_processing_params = {

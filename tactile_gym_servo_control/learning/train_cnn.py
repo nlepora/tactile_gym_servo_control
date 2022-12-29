@@ -1,5 +1,5 @@
 """
-python train_cnn.py -t surface_3d -m simple_cnn nature_cnn
+python train_cnn.py -t surface_3d
 python train_cnn.py -t edge_2d
 python train_cnn.py -t edge_3d
 python train_cnn.py -t edge_5d

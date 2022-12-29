@@ -1,9 +1,9 @@
 """
-python collect_train_and_val_sets.py -t surface_3d
-python collect_train_and_val_sets.py -t edge_2d
-python collect_train_and_val_sets.py -t edge_3d
-python collect_train_and_val_sets.py -t edge_5d
-python collect_train_and_val_sets.py -t surface_3d edge_2d edge_3d edge_5d
+python collect_train_and_val_data.py -t surface_3d
+python collect_train_and_val_data.py -t edge_2d
+python collect_train_and_val_data.py -t edge_3d
+python collect_train_and_val_data.py -t edge_5d
+python collect_train_and_val_data.py -t surface_3d edge_2d edge_3d edge_5d
 """
 
 import argparse
