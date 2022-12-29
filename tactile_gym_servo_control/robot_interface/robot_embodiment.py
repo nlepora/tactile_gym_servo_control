@@ -11,6 +11,7 @@ POSE_UNITS = np.array([1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180])
 def euler2quat(pose_e):
     """Converts an euler rotation pose to a quaternion rotation pose.
     """
+    pose_e *= POSE_UNITS
     pose_e = np.array(pose_e, dtype=np.float64).ravel()
     assert pose_e.size == 6, "Invalid euler pose"
     rot_q = pb.getQuaternionFromEuler(pose_e[3:])
@@ -25,6 +26,7 @@ def quat2euler(pose_q):
     assert pose_q.size == 7, "Invalid quaternion pose"
     rot_e_rad = pb.getEulerFromQuaternion(pose_q[3:])
     pose_e = np.concatenate((pose_q[:3], rot_e_rad))
+    pose_e /= POSE_UNITS
     return pose_e
 
 
@@ -34,7 +36,6 @@ def transform(pose_a, frame_b_a):
     Transforms a pose in reference frame A to a pose in reference frame
     B (B is expressed relative to reference frame A).
     """
-
     inv_frame_b_a_pos, inv_frame_b_a_rot = pb.invertTransform(
         frame_b_a[:3], frame_b_a[3:],
     )
@@ -112,9 +113,9 @@ class RobotEmbodiment(Robot):
         if self._pb.isConnected():
             self._pb.disconnect()
 
-    def move_linear(self, target_pose):
-        target_pose *= POSE_UNITS
-        targ_pos, targ_rpy = target_pose[:3], target_pose[3:]
+    def move_linear(self, targ_pose):
+        targ_pose *= POSE_UNITS
+        targ_pos, targ_rpy = targ_pose[:3], targ_pose[3:]
         self.arm.tcp_direct_workframe_move(targ_pos, targ_rpy)
 
         # slow but more realistic moves
@@ -148,8 +149,10 @@ class RobotEmbodiment(Robot):
                 _,
                 _,
         ) = self.arm.get_current_TCP_pos_vel_workframe()
+        cur_TCP_pose = [*cur_TCP_pos, *cur_TCP_rpy]
+        cur_TCP_pose /= POSE_UNITS
 
-        return np.array([*cur_TCP_pos, *cur_TCP_rpy])
+        return np.array(cur_TCP_pose)
 
     def process_sensor(self):
         """
@@ -202,7 +205,6 @@ class RobotEmbodiment(Robot):
 
         # get the current tactile images and reformat to match rgb array
         tactile_array = self.get_tactile_observation()
-
         tactile_array = cv2.cvtColor(tactile_array, cv2.COLOR_GRAY2RGB)
 
         # resize tactile to match rgb if rendering in higher res

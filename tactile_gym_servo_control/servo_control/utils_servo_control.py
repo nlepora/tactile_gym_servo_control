@@ -5,8 +5,6 @@ from torch.autograd import Variable
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-
-from tactile_gym_servo_control.robot_interface.robot_embodiment import POSE_UNITS
 from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.robot_interface.robot_embodiment import quat2euler, euler2quat, transform, inv_transform
@@ -68,8 +66,6 @@ def get_prediction(
         predictions_arr[POSE_LABEL_NAMES.index(label_name)] = predicted_val
         print(label_name, predicted_val, end=" ")
 
-    predictions_arr *= POSE_UNITS
-
     return predictions_arr
 
 
@@ -78,11 +74,8 @@ def compute_target_pose(pred_pose, ref_pose, p_gains, tcp_pose):
     Compute workframe pose for maintaining reference pose from predicted pose
     """
 
-    # convert to pybullet units
-    ref_pose_pyb = np.array(ref_pose) * POSE_UNITS
-
     # calculate deltas between reference and predicted pose
-    ref_pose_q = euler2quat(ref_pose_pyb)
+    ref_pose_q = euler2quat(ref_pose)
     pred_pose_q = euler2quat(pred_pose)
     pose_deltas = quat2euler(transform(ref_pose_q, pred_pose_q))
 
@@ -93,8 +86,6 @@ def compute_target_pose(pred_pose, ref_pose, p_gains, tcp_pose):
     control_signal_q = euler2quat(control_signal)
     tcp_pose_q = euler2quat(tcp_pose)
     target_pose = quat2euler(inv_transform(control_signal_q, tcp_pose_q))
-
-    target_pose /= POSE_UNITS
 
     return target_pose
 
