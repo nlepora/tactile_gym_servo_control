@@ -169,6 +169,6 @@ if __name__ == '__main__':
                 ref_pose=ref_pose,
                 ep_len=ep_len,
                 init_pose=init_pose,
-                record_vid=True,
+                record_vid=False,
                 device=device
             )

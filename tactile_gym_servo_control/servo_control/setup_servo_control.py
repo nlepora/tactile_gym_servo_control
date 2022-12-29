@@ -8,7 +8,7 @@ def setup_surface_3d_servo_control():
     }
 
     stim_names = list(setup_servo_control.keys())
-    ep_len = 200
+    ep_len = 100
     init_poses = list(setup_servo_control.values())
     ref_pose = [1, 0, 3, 0, 0, 0] 
     p_gains = [1, 1, 0.5, 0.5, 0.5, 1]
@@ -41,7 +41,7 @@ def setup_edge_3d_servo_control():
     }
 
     stim_names = list(setup_servo_control.keys())
-    ep_len = 500
+    ep_len = 400
     init_poses = list(setup_servo_control.values())
     ref_pose = [1, 0, 3, 0, 0, 0] 
     p_gains = [1, 0.5, 0.5, 0, 0, 0.5]
@@ -56,7 +56,7 @@ def setup_edge_5d_servo_control():
     }
 
     stim_names = list(setup_servo_control.keys())
-    ep_len = 500
+    ep_len = 400
     init_poses = list(setup_servo_control.values())
     ref_pose = [1, 0, 4, 0, 0, 0] 
     p_gains = [1, 0.5, 0.5, 0.5, 0.5, 0.5]
