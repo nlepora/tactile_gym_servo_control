@@ -46,7 +46,7 @@ POS_TOL = 0.25  # mm
 ROT_TOL = 1.0  # deg
 
 
-def train_cnn(
+def train(
     task,
     model,
     label_names,

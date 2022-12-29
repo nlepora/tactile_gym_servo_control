@@ -33,7 +33,7 @@ POS_TOL = 0.25  # mm
 ROT_TOL = 1.0  # deg
 
 
-def test_cnn(
+def test(
     task,
     model,
     label_names,
