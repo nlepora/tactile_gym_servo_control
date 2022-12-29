@@ -19,26 +19,23 @@ from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
-from tactile_gym_servo_control.servo_control.utils_servo_control import get_prediction
-from tactile_gym_servo_control.servo_control.utils_servo_control import compute_target_pose
+from tactile_gym_servo_control.servo_control.utils_servo_control import Model
+from tactile_gym_servo_control.robot_interface.robot_embodiment import transform, inv_transform
 
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
 def run_servo_control(
-            embodiment,
-            trained_model,
-            image_processing_params,
-            p_gains=np.zeros(6),
-            label_names=[],
-            pose_limits=[],
-            ref_pose=np.zeros(6),
-            ep_len=400,
-            init_pose=np.zeros(6),
+            embodiment, model,
+            ep_len=100,
+            ref_pose=[0, 0, 0, 0, 0, 0],
+            p_gains=[0, 0, 0, 0, 0, 0],
+            i_gains=[0, 0, 0, 0, 0, 0],
+            i_clip=[-np.inf, np.inf],
+            init_pose=[0, 0, 0, 0, 0, 0],
             record_vid=False,
-            show_gui=True,
-            device='cpu'
+            show_gui=True
         ):
 
     if show_gui:
@@ -51,6 +48,8 @@ def run_servo_control(
     embodiment.move_linear(init_pose)
 
     # iterate through servo control
+    int_delta = [0, 0, 0, 0, 0, 0]
+
     for _ in range(ep_len):
 
         # get current tactile observation
@@ -60,24 +59,24 @@ def run_servo_control(
         tcp_pose = embodiment.get_tcp_pose()
 
         # predict pose from observation
-        pred_pose = get_prediction(
-            trained_model,
-            tactile_image,
-            image_processing_params,
-            label_names,
-            pose_limits,
-            device
-        )
+        pred_pose = model.predict(tactile_image)
 
-        # compute new pose to move to
-        target_pose = compute_target_pose(
-            pred_pose, ref_pose, p_gains, tcp_pose
-        )
+        # find deviation of prediction from reference
+        delta = transform(ref_pose, pred_pose)
+
+        # apply pid control to reduce delta
+        int_delta += delta
+        int_delta = np.clip(int_delta, *i_clip)
+
+        output = p_gains * delta  + i_gains * int_delta 
+        
+        # new pose combines output pose with tcp_pose 
+        pose = inv_transform(output, tcp_pose)
 
         # move to new pose
-        embodiment.move_linear(target_pose)
+        embodiment.move_linear(pose)
 
-        # draw TCP frame
+        # display TCP frame
         embodiment.arm.draw_TCP(lifetime=10.0)
 
         # show gui
@@ -112,7 +111,7 @@ if __name__ == '__main__':
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['surface_3d']
+        default=['edge_3d']
     )
     parser.add_argument(
         '-d', '--device',
@@ -132,7 +131,7 @@ if __name__ == '__main__':
         save_dir = os.path.join(model_path, task)
 
         # load params
-        model_params = load_json_obj(os.path.join(save_dir, 'model_params'))
+        network_params = load_json_obj(os.path.join(save_dir, 'model_params'))
         learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
         image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
         pose_limits_dict = load_json_obj(os.path.join(save_dir, 'pose_limits'))
@@ -141,37 +140,43 @@ if __name__ == '__main__':
         out_dim, label_names = setup_task(task)
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
-        # setup the task
-        stim_names, ep_len, init_poses, ref_pose, p_gains = setup_servo_control[task]()
+        # setup servo control for the task
+        stim_names, init_poses, ep_len, \
+            ref_pose, p_gains, i_gains, i_clip = setup_servo_control[task]()
 
         # perform the servo control
-        for j, stim_name in enumerate(stim_names):
+        for init_pose, stim_name in zip(init_poses, stim_names):
 
             embodiment = setup_embodiment_and_env(
                 stim_name,
                 quick_mode=True
             )
-            init_pose = init_poses[j]
             
-            trained_model = setup_network(
+            network = setup_network(
                 image_processing_params['dims'],
                 out_dim,
-                model_params,
+                network_params,
                 saved_model_dir=save_dir,
                 device=device
             )
-            trained_model.eval()
+            network.eval()
+
+            model = Model(
+                network,
+                image_processing_params,
+                label_names=label_names,
+                pose_limits=pose_limits,
+                device=device
+            )
 
             run_servo_control(
                 embodiment,
-                trained_model,
-                image_processing_params,
-                p_gains=p_gains,
-                label_names=label_names,
-                pose_limits=pose_limits,
+                model,
+                ep_len,
                 ref_pose=ref_pose,
-                ep_len=ep_len,
+                p_gains=p_gains,
+                i_gains=i_gains,
+                i_clip=i_clip,
                 init_pose=init_pose,
-                record_vid=False,
-                device=device
+                record_vid=False
             )

@@ -6,46 +6,46 @@ from pytorch_model_summary import summary
 from vit_pytorch.vit import ViT
 
 
-def setup_network(in_dim, out_dim, model_params,
+def setup_network(in_dim, out_dim, network_params,
     saved_model_dir=None, 
     device='cpu'
 ):
 
-    if model_params['model_type'] == 'simple_cnn':
+    if network_params['model_type'] == 'simple_cnn':
         model = CNN(
             in_dim=in_dim,
             in_channels=1,
             out_dim=out_dim,
-            **model_params['model_kwargs']
+            **network_params['model_kwargs']
         ).to(device)
         model.apply(weights_init_normal)
 
-    elif model_params['model_type'] == 'nature_cnn':
+    elif network_params['model_type'] == 'nature_cnn':
         model = NatureCNN(
             in_dim=in_dim,
             in_channels=1,
             out_dim=out_dim,
-            **model_params['model_kwargs']
+            **network_params['model_kwargs']
         ).to(device)
         model.apply(weights_init_normal)
 
-    elif model_params['model_type'] == 'resnet':
+    elif network_params['model_type'] == 'resnet':
         model = ResNet(
             ResidualBlock,
             out_dim=out_dim,
-            **model_params['model_kwargs'],
+            **network_params['model_kwargs'],
         ).to(device)
 
-    elif model_params['model_type'] == 'vit':
+    elif network_params['model_type'] == 'vit':
         model = ViT(
             image_size=in_dim[0],
             channels=1,
             num_classes=out_dim,
             pool='mean',
-            **model_params['model_kwargs']
+            **network_params['model_kwargs']
         ).to(device)
     else:
-        raise ValueError('Incorrect model_type specified:  %s' % (model_params['model_type'],))
+        raise ValueError('Incorrect model_type specified:  %s' % (network_params['model_type'],))
 
     if saved_model_dir is not None:
         model.load_state_dict(torch.load(os.path.join(

@@ -33,7 +33,7 @@ POS_TOL = 0.25  # mm
 ROT_TOL = 1.0  # deg
 
 
-def test(
+def test_model(
     task,
     model,
     label_names,
@@ -151,7 +151,7 @@ if __name__ == "__main__":
             save_dir = os.path.join(model_path, model_type, task)
 
             # setup parameters            
-            model_params = load_json_obj(os.path.join(save_dir, 'model_params'))
+            network_params = load_json_obj(os.path.join(save_dir, 'model_params'))
             learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
             image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
             out_dim, label_names = setup_task(task)
@@ -161,18 +161,18 @@ if __name__ == "__main__":
             pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
 
             # create the model
-            model = setup_network(
+            network = setup_network(
                 image_processing_params['dims'],
                 out_dim,
-                model_params,
+                network_params,
                 saved_model_dir=save_dir,
                 device=device
             )
-            model.eval()
+            network.eval()
 
-            test_cnn(
+            test_model(
                 task,
-                model,
+                network,
                 label_names,
                 pose_limits,
                 learning_params,

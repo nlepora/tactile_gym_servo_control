@@ -46,7 +46,7 @@ POS_TOL = 0.25  # mm
 ROT_TOL = 1.0  # deg
 
 
-def train(
+def train_model(
     task,
     model,
     label_names,
@@ -284,7 +284,7 @@ if __name__ == "__main__":
         '-m', '--models',
         nargs='+',
         help="Choose model from ['simple_cnn', 'nature_cnn', 'resnet', 'vit'].",
-        default=['simple_cnn']
+        default=['nature_cnn']
     )
     parser.add_argument(
         '-d', '--device',
@@ -310,23 +310,23 @@ if __name__ == "__main__":
             os.makedirs(save_dir, exist_ok=True)
 
             # setup parameters            
-            model_params = setup_model(model_type, save_dir)
+            network_params = setup_model(model_type, save_dir)
             learning_params, image_processing_params, augmentation_params = setup_learning(save_dir)
             out_dim, label_names = setup_task(task)            
 
             # create the model
             seed_everything(learning_params['seed'])
 
-            model = setup_network(
+            network = setup_network(
                 image_processing_params['dims'],
                 out_dim,
-                model_params,
+                network_params,
                 device=device
             )
 
-            train_cnn(
+            train_model(
                 task,
-                model,
+                network,
                 label_names,
                 learning_params,
                 image_processing_params,
