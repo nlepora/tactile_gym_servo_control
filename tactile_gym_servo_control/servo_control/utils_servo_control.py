@@ -6,10 +6,10 @@ from torch.autograd import Variable
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
-from tactile_gym_servo_control.utils.load_embodiment_and_env import POSE_UNITS
+from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import POSE_UNITS
 from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
-from tactile_gym_servo_control.cri_wrapper.cri_embodiment import quat2euler, euler2quat, transform, inv_transform
+from tactile_gym_servo_control.robot_interface.robot_embodiment import quat2euler, euler2quat, transform, inv_transform
 from tactile_gym_servo_control.utils.image_transforms import process_image
 
 

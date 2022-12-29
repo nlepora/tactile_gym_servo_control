@@ -11,8 +11,8 @@ import argparse
 import numpy as np
 import cv2
 
-from tactile_gym_servo_control.utils.load_embodiment_and_env import POSE_UNITS
-from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
+from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import POSE_UNITS
+from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import setup_embodiment_and_env
 from tactile_gym_servo_control.collect_data.setup_collect_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
@@ -27,7 +27,7 @@ def collect_data(
     hover = [0, 0, 7.5, 0, 0, 0] * POSE_UNITS
 
     # move to workframe origin
-    embodiment.move([0, 0, 0, 0, 0, 0])
+    embodiment.move_linear([0, 0, 0, 0, 0, 0])
 
     # ==== data collection loop ====
     for _, row in target_df.iterrows():
@@ -49,13 +49,13 @@ def collect_data(
         pose += obj_pose
 
         # move to above new pose (avoid changing pose in contact with object)
-        embodiment.move(pose - move - hover)
+        embodiment.move_linear(pose - move - hover)
  
         # move down to offset position
-        embodiment.move(pose - move)
+        embodiment.move_linear(pose - move)
 
         # move to target positon inducing shear effects
-        embodiment.move(pose)
+        embodiment.move_linear(pose)
 
         # process frames
         img = embodiment.process_sensor()
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
         target_df, image_dir, env_params = setup_collect_data[task]()
 
-        embodiment = load_embodiment_and_env(
+        embodiment = setup_embodiment_and_env(
             **env_params
         )
 

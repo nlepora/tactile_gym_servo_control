@@ -1,14 +1,14 @@
 import os
 import numpy as np
 
-from tactile_gym_servo_control.utils.pybullet_utils import setup_pybullet_env
+from tactile_gym_servo_control.robot_interface.setup_pybullet_env import setup_pybullet_env
 
 POSE_UNITS = np.array([1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180])
 
 stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
 
 
-def load_embodiment_and_env(
+def setup_embodiment_and_env(
     stim_name="square",
     stim_pose=[600, 0, 12.5, 0, 0, 0],
     workframe=[600, 0, 52.5, -180, 0, 90],
@@ -30,15 +30,15 @@ def load_embodiment_and_env(
     }
 
     # setup stimulus in worldframe
-    stim_pos = stim_pose[:3] * POSE_UNITS[:3]
-    stim_rpy = stim_pose[3:] * POSE_UNITS[3:]
+    stim_pose *= POSE_UNITS
+    stim_pos, stim_rpy = stim_pose[:3], stim_pose[3:] 
     stim_path = os.path.join(
         stimuli_path, stim_name, stim_name + ".urdf"
     )
 
     # set the base frame of the robot (relative to world frame)
-    workframe_pos = workframe[:3] * POSE_UNITS[:3]
-    workframe_rpy = workframe[3:] * POSE_UNITS[3:]
+    workframe *= POSE_UNITS
+    workframe_pos, workframe_rpy = workframe[:3], workframe[3:] 
 
     # setup robot data collection env
     embodiment, _ = setup_pybullet_env(
@@ -48,14 +48,8 @@ def load_embodiment_and_env(
         workframe_pos, workframe_rpy,
         show_gui,
         show_tactile,
+        quick_mode
     )
-
-    def move_linear(pose):
-        pos = pose[:3]
-        rpy = pose[3:]
-        embodiment.move_linear(pos, rpy, quick_mode=quick_mode)
-
-    embodiment.move = move_linear
 
     return embodiment
 

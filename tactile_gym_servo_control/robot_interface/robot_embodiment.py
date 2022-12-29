@@ -58,7 +58,7 @@ def inv_transform(pose_b, frame_b_a):
     return np.concatenate((pos_a, rot_a))
 
 
-class CRIEmbodiment(Robot):
+class RobotEmbodiment(Robot):
     def __init__(
         self,
         pb,
@@ -71,9 +71,11 @@ class CRIEmbodiment(Robot):
         cam_params={},
         show_gui=True,
         show_tactile=True,
+        quick_mode=False
     ):
 
         self.cam_params = cam_params
+        self.quick_mode = quick_mode
 
         # initial joint positions used when reset
         rest_poses = rest_poses_dict[arm_type][t_s_params["name"]][t_s_params["type"]]
@@ -87,7 +89,7 @@ class CRIEmbodiment(Robot):
         TCP_lims[4, 0], TCP_lims[4, 1] = -np.inf, +np.inf  # pitch lims
         TCP_lims[5, 0], TCP_lims[5, 1] = -np.inf, +np.inf  # yaw lims
 
-        super(CRIEmbodiment, self).__init__(
+        super(RobotEmbodiment, self).__init__(
             pb,
             rest_poses,
             workframe_pos,
@@ -108,11 +110,12 @@ class CRIEmbodiment(Robot):
         if self._pb.isConnected():
             self._pb.disconnect()
 
-    def move_linear(self, targ_pos, targ_rpy, quick_mode=True):
+    def move_linear(self, target_pose):
+        targ_pos, targ_rpy = target_pose[:3], target_pose[3:]
         self.arm.tcp_direct_workframe_move(targ_pos, targ_rpy)
 
         # slow but more realistic moves
-        if not quick_mode:
+        if not self.quick_mode:
             self.blocking_move(
                 max_steps=10000,
                 constant_vel=0.00025,

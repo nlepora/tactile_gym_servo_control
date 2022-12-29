@@ -1,4 +1,4 @@
-from tactile_gym_servo_control.utils.load_embodiment_and_env import POSE_UNITS
+from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import POSE_UNITS
 
 
 def setup_surface_3d_servo_control():

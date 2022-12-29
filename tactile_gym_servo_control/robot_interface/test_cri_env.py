@@ -5,7 +5,7 @@ import time
 import numpy as np
 import pkgutil
 
-from tactile_gym_servo_control.cri_wrapper.cri_embodiment import CRIEmbodiment
+from tactile_gym_servo_control.robot_interface.robot_embodiment import RobotEmbodiment
 from tactile_gym.assets import add_assets_path
 
 stimuli_path = os.path.join(os.path.dirname(__file__), "../stimuli")
@@ -98,7 +98,7 @@ def main(
     workframe_pos = [0.65, 0.0, 0.15]  # relative to world frame
     workframe_rpy = [-np.pi, 0.0, np.pi / 2]  # relative to world frame
 
-    embodiment = CRIEmbodiment(
+    embodiment = RobotEmbodiment(
         pb,
         workframe_pos=workframe_pos,
         workframe_rpy=workframe_rpy,

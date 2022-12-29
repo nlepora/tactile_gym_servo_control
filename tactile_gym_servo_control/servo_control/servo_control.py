@@ -13,7 +13,7 @@ import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.utils.load_embodiment_and_env import load_embodiment_and_env
+from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import setup_embodiment_and_env
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
@@ -48,7 +48,7 @@ def run_servo_control(
         render_frames = []
 
     # move to initial pose
-    embodiment.move(init_pose)
+    embodiment.move_linear(init_pose)
 
     # iterate through servo control
     for _ in range(ep_len):
@@ -75,7 +75,7 @@ def run_servo_control(
         )
 
         # move to new pose
-        embodiment.move(target_pose)
+        embodiment.move_linear(target_pose)
 
         # draw TCP frame
         embodiment.arm.draw_TCP(lifetime=10.0)
@@ -147,7 +147,10 @@ if __name__ == '__main__':
         # perform the servo control
         for j, stim_name in enumerate(stim_names):
 
-            embodiment = load_embodiment_and_env(stim_name)
+            embodiment = setup_embodiment_and_env(
+                stim_name,
+                quick_mode=True
+            )
             init_pose = init_poses[j]
             
             trained_model = setup_network(
