@@ -5,6 +5,8 @@ import cv2
 from tactile_gym.robots.arms.robot import Robot
 from tactile_gym.rl_envs.example_envs.example_arm_env.rest_poses import rest_poses_dict
 
+POSE_UNITS = np.array([1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180])
+
 
 def euler2quat(pose_e):
     """Converts an euler rotation pose to a quaternion rotation pose.
@@ -111,6 +113,7 @@ class RobotEmbodiment(Robot):
             self._pb.disconnect()
 
     def move_linear(self, target_pose):
+        target_pose *= POSE_UNITS
         targ_pos, targ_rpy = target_pose[:3], target_pose[3:]
         self.arm.tcp_direct_workframe_move(targ_pos, targ_rpy)
 

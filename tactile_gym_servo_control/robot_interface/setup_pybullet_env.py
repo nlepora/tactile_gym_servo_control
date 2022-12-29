@@ -1,8 +1,8 @@
 import pybullet as p
 import pybullet_utils.bullet_client as bc
-
 import pkgutil
 
+from tactile_gym_servo_control.robot_interface.robot_embodiment import POSE_UNITS
 from tactile_gym_servo_control.robot_interface.robot_embodiment import RobotEmbodiment
 from tactile_gym.assets import add_assets_path
 
@@ -10,10 +10,8 @@ from tactile_gym.assets import add_assets_path
 def setup_pybullet_env(
     stim_path,
     tactip_params,
-    stimulus_pos,
-    stimulus_rpy,
-    workframe_pos,
-    workframe_rpy,
+    stim_pose,
+    workframe,
     show_gui,
     show_tactile,
     quick_mode=False
@@ -80,11 +78,17 @@ def setup_pybullet_env(
             cam_params['pos']
         )
 
+    # set the workrame of the robot (relative to world frame)
+    workframe *= POSE_UNITS
+    workframe_pos, workframe_rpy = workframe[:3], workframe[3:] 
+
     # add stimulus
+    stim_pose *= POSE_UNITS
+    stim_pos, stim_rpy = stim_pose[:3], stim_pose[3:] 
     stimulus = p.loadURDF(
         stim_path,
-        stimulus_pos,
-        p.getQuaternionFromEuler(stimulus_rpy),
+        stim_pos,
+        p.getQuaternionFromEuler(stim_rpy),
         useFixedBase=True,
     )
 

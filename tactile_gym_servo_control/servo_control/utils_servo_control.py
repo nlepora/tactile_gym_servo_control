@@ -6,7 +6,7 @@ from torch.autograd import Variable
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
-from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import POSE_UNITS
+from tactile_gym_servo_control.robot_interface.robot_embodiment import POSE_UNITS
 from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.robot_interface.robot_embodiment import quat2euler, euler2quat, transform, inv_transform
@@ -93,6 +93,8 @@ def compute_target_pose(pred_pose, ref_pose, p_gains, tcp_pose):
     control_signal_q = euler2quat(control_signal)
     tcp_pose_q = euler2quat(tcp_pose)
     target_pose = quat2euler(inv_transform(control_signal_q, tcp_pose_q))
+
+    target_pose /= POSE_UNITS
 
     return target_pose
 

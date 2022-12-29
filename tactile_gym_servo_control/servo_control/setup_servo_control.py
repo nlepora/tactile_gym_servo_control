@@ -1,10 +1,7 @@
-from tactile_gym_servo_control.robot_interface.setup_embodiment_and_env import POSE_UNITS
-
-
 def setup_surface_3d_servo_control():
 
     setup_servo_control = {
-        "saddle": [-40, 0, -10, 0, 0, 0] * POSE_UNITS, 
+        "saddle": [-40, 0, -10, 0, 0, 0], 
     }
 
     stim_names = list(setup_servo_control.keys())
@@ -19,10 +16,10 @@ def setup_surface_3d_servo_control():
 def setup_edge_2d_servo_control():
 
     setup_servo_control = {
-        "square": [0, -50, 4, 0, 0, 0] * POSE_UNITS,
-        "circle": [0, -50, 4, 0, 0, 0] * POSE_UNITS,
-        "clover": [0, -50, 4, 0, 0, 0] * POSE_UNITS,
-        "foil":   [0, -40, 4, 0, 0, 0] * POSE_UNITS,
+        "square": [0, -50, 4, 0, 0, 0],
+        "circle": [0, -50, 4, 0, 0, 0],
+        "clover": [0, -50, 4, 0, 0, 0],
+        "foil":   [0, -40, 4, 0, 0, 0],
     }
 
     stim_names = list(setup_servo_control.keys())
@@ -37,7 +34,7 @@ def setup_edge_2d_servo_control():
 def setup_edge_3d_servo_control():
 
     setup_servo_control = {
-        "saddle": [-70, 0, -20, 0, 0, -90] * POSE_UNITS, 
+        "saddle": [-70, 0, -20, 0, 0, -90], 
     }
 
     stim_names = list(setup_servo_control.keys())
@@ -52,7 +49,7 @@ def setup_edge_3d_servo_control():
 def setup_edge_5d_servo_control():
 
     setup_servo_control = {
-        "saddle": [-70, 0, -20, 0, 0, -90] * POSE_UNITS, 
+        "saddle": [-70, 0, -20, 0, 0, -90], 
     }
 
     stim_names = list(setup_servo_control.keys())

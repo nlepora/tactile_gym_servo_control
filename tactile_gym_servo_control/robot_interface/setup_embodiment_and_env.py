@@ -1,9 +1,6 @@
 import os
-import numpy as np
 
 from tactile_gym_servo_control.robot_interface.setup_pybullet_env import setup_pybullet_env
-
-POSE_UNITS = np.array([1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180])
 
 stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
 
@@ -30,22 +27,16 @@ def setup_embodiment_and_env(
     }
 
     # setup stimulus in worldframe
-    stim_pose *= POSE_UNITS
-    stim_pos, stim_rpy = stim_pose[:3], stim_pose[3:] 
     stim_path = os.path.join(
         stimuli_path, stim_name, stim_name + ".urdf"
     )
-
-    # set the base frame of the robot (relative to world frame)
-    workframe *= POSE_UNITS
-    workframe_pos, workframe_rpy = workframe[:3], workframe[3:] 
 
     # setup robot data collection env
     embodiment, _ = setup_pybullet_env(
         stim_path,
         tactip_params,
-        stim_pos, stim_rpy,
-        workframe_pos, workframe_rpy,
+        stim_pose,
+        workframe,
         show_gui,
         show_tactile,
         quick_mode
