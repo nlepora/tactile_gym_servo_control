@@ -1,9 +1,9 @@
 """
-python train_cnn.py -t surface_3d
-python train_cnn.py -t edge_2d
-python train_cnn.py -t edge_3d
-python train_cnn.py -t edge_5d
-python train_cnn.py -t surface_3d edge_2d edge_3d edge_5d
+python train_model.py -t surface_3d
+python train_model.py -t edge_2d
+python train_model.py -t edge_3d
+python train_model.py -t edge_5d
+python train_model.py -t surface_3d edge_2d edge_3d edge_5d
 """
 
 import os
@@ -284,7 +284,7 @@ if __name__ == "__main__":
         '-m', '--models',
         nargs='+',
         help="Choose model from ['simple_cnn', 'nature_cnn', 'resnet', 'vit'].",
-        default=['nature_cnn']
+        default=['simple_cnn']
     )
     parser.add_argument(
         '-d', '--device',
