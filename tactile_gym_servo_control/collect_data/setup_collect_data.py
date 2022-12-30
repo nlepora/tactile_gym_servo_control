@@ -48,15 +48,15 @@ def setup_edge_3d_collect_data(
     shuffle_data=False,
 ):
     env_params = {
-        'workframe': [288, 0, -100, 0, 0, -90],
+        'workframe': [285, 0, -93, 0, 0, -90],
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]
     }
 
     pose_limits = {
-        'pose_llims': [0, -4, 2, 0, 0, -180],
-        'pose_ulims': [0,  4, 5.5, 0, 0,  180],
+        'pose_llims': [0, -4, 0.5, 0, 0, -180],
+        'pose_ulims': [0,  4, 5, 0, 0,  180],
         'obj_poses':[[0, 0, 0, 0, 0, 0]]
     }
 

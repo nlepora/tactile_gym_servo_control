@@ -20,7 +20,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['edge_2d', 'edge_3d'].",
-        default=['edge_2d']
+        default=['edge_3d']
     )
 
     # parse arguments
