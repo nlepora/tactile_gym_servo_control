@@ -28,8 +28,8 @@ def add_gui(embodiment, init_ref_pose):
 class Model:
     def __init__(self,
         model, image_processing_params, 
-        label_names=[], 
-        pose_limits=[],
+        label_names, 
+        pose_limits,
         device='cpu'
     ):
         self.model = model

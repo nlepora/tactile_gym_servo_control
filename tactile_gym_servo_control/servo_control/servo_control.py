@@ -64,11 +64,11 @@ def run_servo_control(
         # find deviation of prediction from reference
         delta = transform(ref_pose, pred_pose)
 
-        # apply pid control to reduce delta
+        # apply pi(d) control to reduce delta
         int_delta += delta
         int_delta = np.clip(int_delta, *i_clip)
 
-        output = p_gains * delta  + i_gains * int_delta 
+        output = p_gains * delta  +  i_gains * int_delta 
         
         # new pose combines output pose with tcp_pose 
         pose = inv_transform(output, tcp_pose)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['edge_3d']
+        default=['surface_3d']
     )
     parser.add_argument(
         '-d', '--device',
@@ -164,8 +164,8 @@ if __name__ == '__main__':
             model = Model(
                 network,
                 image_processing_params,
-                label_names=label_names,
-                pose_limits=pose_limits,
+                label_names,
+                pose_limits,
                 device=device
             )
 
