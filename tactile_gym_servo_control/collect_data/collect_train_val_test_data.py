@@ -19,8 +19,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '-t', '--tasks',
         nargs='+',
-        help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['surface_3d']
+        help="Choose task from ['edge_2d', 'edge_3d'].",
+        default=['edge_2d']
     )
 
     # parse arguments
@@ -28,9 +28,8 @@ if __name__ == "__main__":
     tasks = args.tasks
 
     collection_params = {
-        'train': 5000,
-        'val': 2000,
-        'test': 2000
+        'train': 2000,
+        'val': 1000
     }
 
     for task in tasks:
@@ -43,8 +42,6 @@ if __name__ == "__main__":
             )
 
             embodiment = setup_embodiment_env(
-                show_tactile=False,
-                quick_mode=True,
                 **env_params
             )
 

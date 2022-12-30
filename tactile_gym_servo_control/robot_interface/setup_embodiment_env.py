@@ -1,46 +1,64 @@
-import os
+from cri.robot import SyncRobot
+from cri.controller import Mg400Controller as Controller
+# from cri.controller import DummyController as Controller
+from vsp.video_stream import CvImageOutputFileSeq, CvVideoDisplay, CvPreprocVideoCamera   
+from vsp.processor import CameraStreamProcessor, AsyncProcessor
 
-from tactile_gym_servo_control.robot_interface.setup_pybullet_env import setup_pybullet_env
 
-stimuli_path = os.path.join(os.path.dirname(__file__), '../stimuli')
+def make_sensor(
+    size=[128, 128], 
+    crop=None, 
+    exposure=-7, 
+    source=0, 
+    threshold=None
+):  
+    camera = CvPreprocVideoCamera(
+        size, crop, threshold, exposure=exposure, source=source
+    )
+    
+    for _ in range(5): camera.read() # Hack - camera transient   
+    
+    return AsyncProcessor(CameraStreamProcessor(
+            camera=camera,
+            display=CvVideoDisplay(name='sensor'),
+            writer=CvImageOutputFileSeq())
+    )
 
 
 def setup_embodiment_env(
-    stim_name="square",
-    stim_pose=[600, 0, 12.5, 0, 0, 0],
-    workframe=[600, 0, 52.5, -180, 0, 90],
-    show_gui=True, 
-    show_tactile=True,
-    quick_mode=False
+    workframe=[288, 0, -100, 0, 0, -90],
+    linear_speed=10, 
+    angular_speed=10,
+    tcp_pose=[0, 0, 0, 0, 0, 0]
 ):
 
-    assert stim_name in ["square", "foil", "clover", "circle",
-                         "saddle"], "Invalid Stimulus"
-
     tactip_params = {
-        "name": "tactip",
-        "type": "standard",
-        "core": "no_core",
-        "dynamics": {},
-        "image_size": [128, 128],
-        "turn_off_border": False,
+        "size": [256, 256],
+        "crop": [320-128-2, 240-128+20, 320+128-2, 240+128+20],
+        "exposure": -7,
+        "source": 1,
+        "threshold": [61, -5],
     }
 
-    # setup stimulus in worldframe
-    stim_path = os.path.join(
-        stimuli_path, stim_name, stim_name + ".urdf"
-    )
+    # setup the robot
+    embodiment = SyncRobot(Controller())
 
-    # setup robot data collection env
-    embodiment, _ = setup_pybullet_env(
-        stim_path,
-        tactip_params,
-        stim_pose,
-        workframe,
-        show_gui,
-        show_tactile,
-        quick_mode
-    )
+    embodiment.coord_frame = workframe
+    embodiment.linear_speed = linear_speed
+    embodiment.angular_speed = angular_speed
+    embodiment.tcp = tcp_pose
+
+    embodiment.coord_frame = workframe
+
+    # setup the tactip
+    sensor = make_sensor(**tactip_params)
+
+    def sensor_process(outfile):
+        sensor.process(
+            num_frames=1, start_frame=1, outfile=outfile
+        )
+
+    embodiment.sensor_process = sensor_process
 
     return embodiment
 

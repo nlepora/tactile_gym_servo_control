@@ -9,7 +9,6 @@ python collect_data.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 import numpy as np
-import cv2
 
 from tactile_gym_servo_control.robot_interface.setup_embodiment_env import setup_embodiment_env
 from tactile_gym_servo_control.collect_data.setup_collect_data import setup_collect_data
@@ -25,15 +24,15 @@ def collect_data(
 
     hover = [0, 0, 7.5, 0, 0, 0]
 
-    # move to workframe origin
-    embodiment.move_linear([0, 0, 0, 0, 0, 0])
+    # start 30mm above workframe origin
+    embodiment.move_linear([0, 0, 30, 0, 0, 0])
 
     # ==== data collection loop ====
     for _, row in target_df.iterrows():
         i_obj = int(row.loc["obj_id"])
         i_pose = int(row.loc["pose_id"])
-        pose = row.loc["pose_1":"pose_6"].values.astype(np.float32)
-        move = row.loc["move_1":"move_6"].values.astype(np.float32)
+        pose = row.loc["pose_1":"pose_6"].values
+        move = row.loc["move_1":"move_6"].values
         obj_pose = row.loc["obj_pose"]
         sensor_image = row.loc["sensor_image"]
 
@@ -44,7 +43,7 @@ def collect_data(
         pose += obj_pose
 
         # move to above new pose (avoid changing pose in contact with object)
-        embodiment.move_linear(pose - move - hover)
+        embodiment.move_linear(pose - move + hover)
  
         # move down to offset position
         embodiment.move_linear(pose - move)
@@ -52,13 +51,15 @@ def collect_data(
         # move to target positon inducing shear effects
         embodiment.move_linear(pose)
 
-        # process frames
-        img = embodiment.process_sensor()
-
-        # save image
+        # process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)
-        cv2.imwrite(image_outfile, img)
+        embodiment.sensor_process(outfile=image_outfile)
 
+        # move to target positon inducing shear effects
+        embodiment.move_linear(pose + hover)
+
+    # finish 30mm above workframe origin
+    embodiment.move_linear([0, 0, 30, 0, 0, 0])
     embodiment.close()
 
 
@@ -68,8 +69,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '-t', '--tasks',
         nargs='+',
-        help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['surface_3d']
+        help="Choose task from ['edge_2d', 'edge_3d'].",
+        default=['edge_2d']
     )
 
     # parse arguments
