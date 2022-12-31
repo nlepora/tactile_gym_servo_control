@@ -10,8 +10,8 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
+from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
