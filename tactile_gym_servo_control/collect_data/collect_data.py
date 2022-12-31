@@ -10,8 +10,8 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.robot_interface.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.collect_data.setup_collect_data import setup_collect_data
+from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
@@ -79,10 +79,12 @@ if __name__ == "__main__":
     
     for task in tasks:
 
-        target_df, image_dir, env_params = setup_collect_data[task]()
+        target_df, image_dir, env_params, tactip_params = \
+            setup_collect_data[task]()
 
         embodiment = setup_embodiment_env(
-            **env_params
+            **env_params, 
+            tactip_params = tactip_params,  
         )
 
         collect_data(

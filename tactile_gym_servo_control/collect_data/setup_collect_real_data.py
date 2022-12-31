@@ -5,7 +5,23 @@ from tactile_gym.utils.general_utils import save_json_obj
 from tactile_gym_servo_control.collect_data.utils_collect_data import make_target_df_rand
 from tactile_gym_servo_control.collect_data.utils_collect_data import create_data_dir
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+
+
+def setup_tactip(
+    collect_dir
+):
+    tactip_params = {
+        "size": [256, 256],
+        "crop": [320-128-2, 240-128+20, 320+128-2, 240+128+20],
+        "exposure": -7,
+        "source": 0,
+        "threshold": [61, -5],
+        }
+
+    save_json_obj(tactip_params, os.path.join(collect_dir, 'tactip_params'))
+
+    return tactip_params
 
 
 def setup_edge_2d_collect_data(
@@ -36,10 +52,12 @@ def setup_edge_2d_collect_data(
 
     image_dir = create_data_dir(collect_dir, target_df)
 
+    tactip_params = setup_tactip(collect_dir)
+
     save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params
+    return target_df, image_dir, env_params, tactip_params
 
 
 def setup_edge_3d_collect_data(
@@ -70,10 +88,12 @@ def setup_edge_3d_collect_data(
 
     image_dir = create_data_dir(collect_dir, target_df)
 
+    tactip_params = setup_tactip(collect_dir)
+
     save_json_obj(pose_limits, os.path.join(collect_dir, 'pose_limits'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params
+    return target_df, image_dir, env_params, tactip_params
 
 
 setup_collect_data = {

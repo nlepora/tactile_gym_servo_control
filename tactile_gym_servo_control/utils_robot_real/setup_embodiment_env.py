@@ -1,6 +1,6 @@
 from cri.robot import SyncRobot
-from cri.controller import Mg400Controller as Controller
-# from cri.controller import DummyController as Controller
+# from cri.controller import Mg400Controller as Controller
+from cri.controller import DummyController as Controller
 from vsp.video_stream import CvImageOutputFileSeq, CvVideoDisplay, CvPreprocVideoCamera   
 from vsp.processor import CameraStreamProcessor, AsyncProcessor
 
@@ -26,19 +26,12 @@ def make_sensor(
 
 
 def setup_embodiment_env(
+    tactip_params={},
     workframe=[288, 0, -100, 0, 0, -90],
     linear_speed=10, 
     angular_speed=10,
-    tcp_pose=[0, 0, 0, 0, 0, 0]
+    tcp_pose=[0, 0, 0, 0, 0, 0],
 ):
-
-    tactip_params = {
-        "size": [256, 256],
-        "crop": [320-128-2, 240-128+20, 320+128-2, 240+128+20],
-        "exposure": -7,
-        "source": 1,
-        "threshold": [61, -5],
-    }
 
     # setup the robot
     embodiment = SyncRobot(Controller())
