@@ -13,16 +13,17 @@ import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.robot_interface.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
-from tactile_gym_servo_control.robot_interface.robot_embodiment import transform, inv_transform
+from tactile_gym_servo_control.utils_robot_sim.robot_embodiment import transform, inv_transform
 
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models/simple_cnn")
+data_path = os.path.join(os.path.dirname(__file__), "../../example_data/sim")
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
@@ -129,13 +130,15 @@ if __name__ == '__main__':
 
         # set save dir
         save_dir = os.path.join(model_path, task)
+        data_dir = os.path.join(data_path, task)
 
         # load params
         network_params = load_json_obj(os.path.join(save_dir, 'model_params'))
         learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
         image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
         pose_limits_dict = load_json_obj(os.path.join(save_dir, 'pose_limits'))
- 
+        tactip_params = load_json_obj(os.path.join(data_dir, 'train', 'tactip_params'))
+
         # get limits and labels used during training
         out_dim, label_names = setup_task(task)
         pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
@@ -148,6 +151,7 @@ if __name__ == '__main__':
         for init_pose, stim_name in zip(init_poses, stim_names):
 
             embodiment = setup_embodiment_env(
+                tactip_params,
                 stim_name,
                 quick_mode=True
             )

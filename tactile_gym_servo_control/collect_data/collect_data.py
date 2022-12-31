@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
         embodiment = setup_embodiment_env(
             **env_params, 
-            tactip_params = tactip_params,  
+            tactip_params = tactip_params, #quick_mode=True 
         )
 
         collect_data(

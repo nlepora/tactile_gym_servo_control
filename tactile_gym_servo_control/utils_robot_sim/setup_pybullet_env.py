@@ -92,6 +92,8 @@ def setup_pybullet_env(
         useFixedBase=True,
     )
 
+    print('tactip_params ',tactip_params)
+
     # create the robot and sensor embodiment
     embodiment = RobotEmbodiment(
         pb,

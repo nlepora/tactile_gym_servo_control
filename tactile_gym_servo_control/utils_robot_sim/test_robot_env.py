@@ -5,11 +5,11 @@ import time
 import numpy as np
 import pkgutil
 
-from tactile_gym_servo_control.robot_interface.robot_embodiment import POSE_UNITS
-from tactile_gym_servo_control.robot_interface.robot_embodiment import RobotEmbodiment
+from tactile_gym_servo_control.utils_robot_sim.robot_embodiment import POSE_UNITS
+from tactile_gym_servo_control.utils_robot_sim.robot_embodiment import RobotEmbodiment
 from tactile_gym.assets import add_assets_path
 
-stimuli_path = os.path.join(os.path.dirname(__file__), "../stimuli")
+stimuli_path = os.path.join(os.path.dirname(__file__), "stimuli")
 
 
 def main(
@@ -110,7 +110,7 @@ def main(
 
     # move to the workframe
     embodiment.move_linear([0, 0, 0, 0, 0, 0])
-    embodiment.process_sensor()
+    embodiment.get_tactile_observation()
 
     # move in different directions
     test_movement(embodiment)
