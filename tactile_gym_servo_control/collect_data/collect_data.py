@@ -69,7 +69,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '-t', '--tasks',
         nargs='+',
-        help="Choose task from ['edge_2d', 'edge_3d'].",
+        help="Choose task from [surface_3d edge_2d edge_3d edge_5d].",
         default=['edge_2d']
     )
 
