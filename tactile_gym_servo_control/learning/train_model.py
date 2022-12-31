@@ -38,8 +38,8 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_learning import setup_learning
 from tactile_gym_servo_control.learning.setup_learning import setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/sim')
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
