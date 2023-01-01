@@ -31,6 +31,7 @@ def setup_embodiment_env(
     linear_speed=10, 
     angular_speed=10,
     tcp_pose=[0, 0, 0, 0, 0, 0],
+    hover=[0, 0, -7.5, 0, 0, 0]
 ):
 
     # setup the robot
@@ -52,6 +53,8 @@ def setup_embodiment_env(
         )
 
     embodiment.sensor_process = sensor_process
+
+    embodiment.hover = hover
 
     return embodiment
 

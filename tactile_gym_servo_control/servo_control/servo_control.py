@@ -136,8 +136,8 @@ if __name__ == '__main__':
         network_params = load_json_obj(os.path.join(save_dir, 'model_params'))
         learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
         image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
+        tactip_params = load_json_obj(os.path.join(save_dir, 'tactip_params'))
         pose_limits_dict = load_json_obj(os.path.join(save_dir, 'pose_limits'))
-        tactip_params = load_json_obj(os.path.join(data_dir, 'train', 'tactip_params'))
 
         # get limits and labels used during training
         out_dim, label_names = setup_task(task)

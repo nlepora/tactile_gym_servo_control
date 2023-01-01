@@ -59,22 +59,14 @@ def create_data_dir(
     target_df
 ):
 
-    # experiment metadata
+    # set image dir and target file
     image_dir = os.path.join(collect_dir, "images")
     target_file = os.path.join(collect_dir, "targets.csv")
 
     # check save dir exists
     check_dir(collect_dir)
-
-    # create dirs
     os.makedirs(collect_dir, exist_ok=True)
     os.makedirs(image_dir, exist_ok=True)
-
-    # save directory names and paths
-    file_paths = locals().copy()
-    del file_paths["target_df"] # not a path
-    with open(os.path.join(collect_dir, "file_paths.json"), 'w') as f:
-        json.dump(file_paths, f)
 
     # save target csv
     target_df.to_csv(target_file, index=False)

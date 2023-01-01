@@ -10,6 +10,7 @@ import os
 import argparse
 import time
 import pickle
+import shutil
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -308,6 +309,9 @@ if __name__ == "__main__":
             # check save dir exists
             check_dir(save_dir)
             os.makedirs(save_dir, exist_ok=True)
+
+            # keep record of tactip params
+            shutil.copy(os.path.join(data_path, task, 'train', 'tactip_params.json'), save_dir)
 
             # setup parameters            
             network_params = setup_model(model_type, save_dir)

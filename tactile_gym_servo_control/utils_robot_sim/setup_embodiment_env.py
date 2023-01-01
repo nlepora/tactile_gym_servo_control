@@ -11,6 +11,7 @@ def setup_embodiment_env(
     stim_name="square",
     stim_pose=[600, 0, 12.5, 0, 0, 0],
     workframe=[600, 0, 52.5, -180, 0, 90],
+    hover=[0, 0, -7.5, 0, 0, 0],
     show_gui=True, 
     show_tactile=True,
     quick_mode=False
@@ -40,7 +41,8 @@ def setup_embodiment_env(
         cv2.imwrite(outfile, img)
 
     embodiment.sensor_process = sensor_process
-    embodiment.get_tactile_observation()
+
+    embodiment.hover = hover
 
     return embodiment
 

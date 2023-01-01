@@ -15,17 +15,17 @@ from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+
 
 def collect_data(
     embodiment,
     target_df,
     image_dir
 ):
-
-    hover = [0, 0, 7.5, 0, 0, 0]
-
-    # start 30mm above workframe origin
-    embodiment.move_linear([0, 0, 30, 0, 0, 0])
+    # start above workframe origin
+    hover = embodiment.hover
+    embodiment.move_linear(hover)
 
     # ==== data collection loop ====
     for _, row in target_df.iterrows():
@@ -58,8 +58,8 @@ def collect_data(
         # move to target positon inducing shear effects
         embodiment.move_linear(pose + hover)
 
-    # finish 30mm above workframe origin
-    embodiment.move_linear([0, 0, 30, 0, 0, 0])
+    # finish above workframe origin
+    embodiment.move_linear(hover)
     embodiment.close()
 
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from [surface_3d edge_2d edge_3d edge_5d].",
-        default=['edge_2d']
+        default=['surface_3d']
     )
 
     # parse arguments
@@ -79,8 +79,14 @@ if __name__ == "__main__":
     
     for task in tasks:
 
+        collect_dir = os.path.join(
+                data_path, task, 'data'
+            )
+
         target_df, image_dir, env_params, tactip_params = \
-            setup_collect_data[task]()
+            setup_collect_data[task](
+                collect_dir
+            )
 
         embodiment = setup_embodiment_env(
             **env_params, 
