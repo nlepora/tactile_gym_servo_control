@@ -45,7 +45,11 @@ def run_servo_control(
     if record_vid:
         render_frames = []
 
-    # move to initial pose
+    hover = np.array(embodiment.hover)
+
+    # move to initial pose from above workframe
+    embodiment.move_linear(hover)
+    embodiment.move_linear(init_pose + hover)
     embodiment.move_linear(init_pose)
 
     # iterate through servo control
@@ -94,6 +98,10 @@ def run_servo_control(
         keys = embodiment._pb.getKeyboardEvents()
         if ord('q') in keys and embodiment._pb.KEY_WAS_TRIGGERED:
             exit()
+
+    # move to above workframe
+    embodiment.move_linear(pose + hover)
+    embodiment.move_linear(hover)
 
     embodiment.close()
 
@@ -153,7 +161,7 @@ if __name__ == '__main__':
             embodiment = setup_embodiment_env(
                 tactip_params,
                 stim_name,
-                quick_mode=True
+                quick_mode=False
             )
             
             network = setup_network(
