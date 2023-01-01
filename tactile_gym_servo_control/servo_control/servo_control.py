@@ -20,7 +20,7 @@ from tactile_gym_servo_control.learning.setup_network import setup_network
 from tactile_gym_servo_control.servo_control.setup_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
-from tactile_gym_servo_control.utils_robot_sim.robot_embodiment import transform, inv_transform
+from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
 data_path = os.path.join(os.path.dirname(__file__), "../../example_data/sim")
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
@@ -63,7 +63,7 @@ def run_servo_control(
         pred_pose = model.predict(tactile_image)
 
         # find deviation of prediction from reference
-        delta = transform(ref_pose, pred_pose)
+        delta = transform_pose(ref_pose, pred_pose)
 
         # apply pi(d) control to reduce delta
         int_delta += delta
@@ -72,7 +72,7 @@ def run_servo_control(
         output = p_gains * delta  +  i_gains * int_delta 
         
         # new pose combines output pose with tcp_pose 
-        pose = inv_transform(output, tcp_pose)
+        pose = inv_transform_pose(output, tcp_pose)
 
         # move to new pose
         embodiment.move_linear(pose)
