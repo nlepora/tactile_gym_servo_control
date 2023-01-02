@@ -30,7 +30,7 @@ def get_pose_limits(data_dirs, save_dir):
     """
     pose_llims, pose_ulims = [], []
     for data_dir in data_dirs:
-        pose_limits_dict = load_json_obj(os.path.join(data_dir,  'pose_limits'))
+        pose_limits_dict = load_json_obj(os.path.join(data_dir,  'pose_params'))
         pose_llims.append(pose_limits_dict['pose_llims'])
         pose_ulims.append(pose_limits_dict['pose_ulims'])
 
@@ -43,7 +43,7 @@ def get_pose_limits(data_dirs, save_dir):
         'pose_ulims': list(pose_ulims*1.0),
     }
 
-    save_json_obj(pose_limits, os.path.join(save_dir, 'pose_limits'))
+    save_json_obj(pose_limits, os.path.join(save_dir, 'pose_params'))
 
     return pose_llims, pose_ulims
 
