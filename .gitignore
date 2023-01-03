@@ -6,8 +6,8 @@
 *.pyc
 __pycache__/
 tactile_gym_servo_control.egg-info/
-#example_data/
-#example_models/
+example_data/
+example_models/
 
 # Node artifact files
 node_modules/
