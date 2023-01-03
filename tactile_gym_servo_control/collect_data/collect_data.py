@@ -10,12 +10,12 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
+from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
 
 
 def collect_data(
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from [surface_3d edge_2d edge_3d edge_5d].",
-        default=['surface_3d']
+        default=['edge_2d']
     )
 
     # parse arguments

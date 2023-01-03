@@ -30,9 +30,9 @@ def get_pose_limits(data_dirs, save_dir):
     """
     pose_llims, pose_ulims = [], []
     for data_dir in data_dirs:
-        pose_limits_dict = load_json_obj(os.path.join(data_dir,  'pose_params'))
-        pose_llims.append(pose_limits_dict['pose_llims'])
-        pose_ulims.append(pose_limits_dict['pose_ulims'])
+        pose_params = load_json_obj(os.path.join(data_dir, 'pose_params'))
+        pose_llims.append(pose_params['pose_llims'])
+        pose_ulims.append(pose_params['pose_ulims'])
 
     pose_llims = np.min(pose_llims, axis=0)
     pose_ulims = np.max(pose_ulims, axis=0)
@@ -48,7 +48,7 @@ def get_pose_limits(data_dirs, save_dir):
     return pose_llims, pose_ulims
 
 
-def encode_pose(labels_dict, target_label_names, limits, device='cpu'):
+def encode_pose(labels_dict, target_label_names, pose_limits, device='cpu'):
     """
     Process raw pose data to NN friendly label for prediction.
 
@@ -56,11 +56,11 @@ def encode_pose(labels_dict, target_label_names, limits, device='cpu'):
     To   -> [norm(x), norm(y), norm(z), cos(Rx), sin(Rx), cos(Ry), sin(Ry), cos(Rz), sin(Rz)]
     """
 
-    # create tensors for pose limts
-    pose_llims = torch.from_numpy(np.array(limits[0])).float().to(device)
-    pose_ulims = torch.from_numpy(np.array(limits[1])).float().to(device)
+    # create tensors for pose limits
+    pose_llims = torch.from_numpy(np.array(pose_limits[0])).float().to(device)
+    pose_ulims = torch.from_numpy(np.array(pose_limits[1])).float().to(device)
 
-    # encode pose to preictable label
+    # encode pose to predictable label
     encoded_pose = []
     for label_name in target_label_names:
 
@@ -86,7 +86,7 @@ def encode_pose(labels_dict, target_label_names, limits, device='cpu'):
     return labels
 
 
-def decode_pose(outputs, target_label_names, limits):
+def decode_pose(outputs, target_label_names, pose_limits):
     """
     Process NN predictions to raw pose data, always decodes to cpu.
 
@@ -95,8 +95,8 @@ def decode_pose(outputs, target_label_names, limits):
     """
 
     # create tensors for pose limts
-    pose_llims = torch.from_numpy(np.array(limits[0])).float().cpu()
-    pose_ulims = torch.from_numpy(np.array(limits[1])).float().cpu()
+    pose_llims = torch.from_numpy(np.array(pose_limits[0])).float().cpu()
+    pose_ulims = torch.from_numpy(np.array(pose_limits[1])).float().cpu()
     single_element_labels = target_label_names.count("x") + target_label_names.count("y") + target_label_names.count("z")
 
     # decode preictable label to pose

@@ -36,9 +36,11 @@ def setup_embodiment_env(
         quick_mode
     )
 
-    def sensor_process(outfile):
+    def sensor_process(outfile=None):
         img = embodiment.get_tactile_observation()
-        cv2.imwrite(outfile, img)
+        if outfile is not None:
+            cv2.imwrite(outfile, img)
+        return img
 
     embodiment.sensor_process = sensor_process
 

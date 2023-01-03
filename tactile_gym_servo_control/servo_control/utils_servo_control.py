@@ -27,15 +27,14 @@ def add_gui(embodiment, init_ref_pose):
 
 class Model:
     def __init__(self,
-        model, image_processing_params, 
+        model, image_processing_params, pose_params, 
         label_names, 
-        pose_limits,
         device='cpu'
     ):
         self.model = model
         self.image_processing_params = image_processing_params
         self.label_names = label_names 
-        self.pose_limits = pose_limits
+        self.pose_limits = [pose_params['pose_llims'], pose_params['pose_ulims']]
         self.device = device
 
     def predict(self, 

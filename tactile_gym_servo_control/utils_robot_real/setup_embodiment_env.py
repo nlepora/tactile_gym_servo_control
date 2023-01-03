@@ -1,6 +1,8 @@
+import numpy as np
+
 from cri.robot import SyncRobot
-# from cri.controller import Mg400Controller as Controller
-from cri.controller import DummyController as Controller
+from cri.controller import Mg400Controller as Controller
+# from cri.controller import DummyController as Controller
 from vsp.video_stream import CvImageOutputFileSeq, CvVideoDisplay, CvPreprocVideoCamera   
 from vsp.processor import CameraStreamProcessor, AsyncProcessor
 
@@ -47,10 +49,11 @@ def setup_embodiment_env(
     # setup the tactip
     sensor = make_sensor(**tactip_params)
 
-    def sensor_process(outfile):
-        sensor.process(
+    def sensor_process(outfile=None):
+        img = sensor.process(
             num_frames=1, start_frame=1, outfile=outfile
         )
+        return img[0,:,:,0]
 
     embodiment.sensor_process = sensor_process
 
