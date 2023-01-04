@@ -9,7 +9,7 @@ from tactile_gym.assets import add_assets_path
 
 def setup_pybullet_env(
     stim_path,
-    tactip_params,
+    sensor_params,
     stim_pose,
     workframe,
     show_gui,
@@ -97,9 +97,9 @@ def setup_pybullet_env(
         pb,
         workframe_pos=workframe_pos,
         workframe_rpy=workframe_rpy,
-        image_size=tactip_params["image_size"],
+        image_size=sensor_params["image_size"],
         arm_type="ur5",
-        t_s_params=tactip_params,
+        t_s_params=sensor_params,
         cam_params=cam_params,
         show_gui=show_gui,
         show_tactile=show_tactile,

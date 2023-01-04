@@ -10,7 +10,7 @@ from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.utils.image_transforms import process_image
 
 
-def add_gui(embodiment, init_ref_pose):
+def add_slider(embodiment, init_ref_pose):
 
     # add user controllable ref pose to GUI
     ref_llims = [-2.0, -2.0, 2.0, -15.0, -15.0, -180.0]
@@ -22,7 +22,7 @@ def add_gui(embodiment, init_ref_pose):
         ref_pose_ids.append(embodiment._pb.addUserDebugParameter(label_name, 
                             ref_llims[i], ref_ulims[i], init_ref_pose[i]))
 
-    return  ref_pose_ids
+    return ref_pose_ids
 
 
 class Model:

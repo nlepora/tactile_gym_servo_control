@@ -1,40 +1,11 @@
 import cv2
 import numpy as np
 
+from tactile_gym_servo_control.utils.image_transforms import Sensor, process_image
+
 from cri.robot import SyncRobot
 from cri.controller import Mg400Controller as Controller
 # from cri.controller import DummyController as Controller
-
-
-class Sensor:
-    def __init__(self,
-        size=[128, 128], 
-        crop=None, 
-        exposure=-7, 
-        source=0, 
-        threshold=None
-    ):  
-        self.size, self.crop, self.threshold = size, crop, threshold
-        self.cam = cv2.VideoCapture(source)
-        self.cam.set(cv2.CAP_PROP_EXPOSURE, exposure)
-        for _ in range(5): self.cam.read() # Hack - camera transient 
-    def process(self):
-        _, img = self.cam.read()
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        if self.crop is not None:
-            x0, y0, x1, y1 = self.crop
-            img = img[y0:y1, x0:x1]
-        if self.threshold is not None:
-            img = cv2.medianBlur(img, 5)
-            img = cv2.adaptiveThreshold(img, 255, 
-                cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 
-                *self.threshold
-            )
-        if self.size is not None:
-            img = cv2.resize(img, 
-                self.size, interpolation=cv2.INTER_AREA
-            )
-        return img
 
 
 def setup_embodiment_env(
@@ -53,20 +24,20 @@ def setup_embodiment_env(
     embodiment.linear_speed = linear_speed
     embodiment.angular_speed = angular_speed
     embodiment.tcp = tcp_pose
+    embodiment.hover = np.array(hover)
     embodiment.name = 'real'
 
     # setup the tactip
     sensor = Sensor(**sensor_params)
 
     def sensor_process(outfile=None):
-        img = sensor.process()
+        img = sensor.load()
+        img = process_image(img, **sensor_params)
         if outfile is not None:
             cv2.imwrite(outfile, img)
         return img
 
     embodiment.sensor_process = sensor_process
-
-    embodiment.hover = np.array(hover)
 
     return embodiment
 

@@ -31,7 +31,7 @@ def setup_edge_2d_servo_control():
         'workframe': [650, 0, 52.5 - 3, -180, 0, 90]
     },
     {
-        'stim_name': 'clove', 
+        'stim_name': 'clover', 
         'stim_pose': [600, 0, 12.5, 0, 0, 0],
         'workframe': [650, 0, 52.5 - 3, -180, 0, 90]
     },

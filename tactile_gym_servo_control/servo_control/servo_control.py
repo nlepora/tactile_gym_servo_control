@@ -18,7 +18,7 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
-from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
+from tactile_gym_servo_control.servo_control.utils_servo_control import add_slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
@@ -37,7 +37,7 @@ def run_servo_control(
         ):
 
     if embodiment.name=='sim':
-        ref_pose_ids = add_gui(embodiment, ref_pose)
+        ref_pose_ids = add_slider(embodiment, ref_pose)
         
     if record_vid:
         render_frames = []
@@ -94,7 +94,6 @@ def run_servo_control(
 
     # move to above final pose
     embodiment.move_linear(pose + hover)
-
     embodiment.close()
 
     if record_vid:

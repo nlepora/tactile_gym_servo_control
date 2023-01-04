@@ -12,11 +12,11 @@ def setup_sensor(
     collect_dir
 ):
     sensor_params = {
-        "size": [256, 256],
-        "crop": [320-128-2, 240-128+20, 320+128-2, 240+128+20],
-        "exposure": -7,
         "source": 0,
-        "threshold": [61, -5]
+        "exposure": -7,
+        "gray": True,
+        "bbox": [320-128-2, 240-128+20, 320+128-2, 240+128+20],
+        "thresh": True
         }
 
     save_json_obj(sensor_params, os.path.join(collect_dir, 'sensor_params'))
