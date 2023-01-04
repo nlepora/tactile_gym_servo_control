@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
             embodiment = setup_embodiment_env(
                 **env_params,
-                sensor_params = sensor_params, # quick_mode=False
+                sensor_params=sensor_params, # quick_mode=False
             )
             
             network = setup_network(
