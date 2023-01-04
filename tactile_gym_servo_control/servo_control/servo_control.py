@@ -13,16 +13,16 @@ import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
-from tactile_gym_servo_control.servo_control.setup_real_servo_control import setup_servo_control
+from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import add_gui
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models/real/simple_cnn")
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
@@ -34,7 +34,7 @@ def run_servo_control(
             i_gains=[0, 0, 0, 0, 0, 0],
             i_clip=[-np.inf, np.inf],
             record_vid=False,
-            sim=False
+            sim=True
         ):
 
     if sim:
@@ -48,7 +48,7 @@ def run_servo_control(
     int_delta = [0, 0, 0, 0, 0, 0]
 
     # move to initial pose from above workframe
-    hover = np.array(embodiment.hover)
+    hover = embodiment.hover
     embodiment.move_linear(pose + hover)
     embodiment.move_linear(pose)
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         network_params = load_json_obj(os.path.join(save_dir, 'model_params'))
         learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
         image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
-        tactip_params = load_json_obj(os.path.join(save_dir, 'tactip_params'))
+        sensor_params = load_json_obj(os.path.join(save_dir, 'sensor_params'))
         pose_params = load_json_obj(os.path.join(save_dir, 'pose_params'))
 
         # get labels used during training
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
             embodiment = setup_embodiment_env(
                 **env_params,
-                tactip_params = tactip_params, # quick_mode=False
+                sensor_params = sensor_params, # quick_mode=False
             )
             
             network = setup_network(

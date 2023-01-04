@@ -100,12 +100,6 @@ class RobotEmbodiment(Robot):
 
         return np.array(cur_TCP_pose)
 
-    # def process_sensor(self):
-    #     """
-    #     Rename to be more like real CRI envs
-    #     """
-    #     return self.get_tactile_observation()
-
     def get_visual_observation(self):
         """
         Returns the rgb image from an environment camera.

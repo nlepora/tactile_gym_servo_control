@@ -1,8 +1,9 @@
 import cv2
+import numpy as np
 
 from cri.robot import SyncRobot
-# from cri.controller import Mg400Controller as Controller
-from cri.controller import DummyController as Controller
+from cri.controller import Mg400Controller as Controller
+# from cri.controller import DummyController as Controller
 
 
 class Sensor:
@@ -37,7 +38,7 @@ class Sensor:
 
 
 def setup_embodiment_env(
-    tactip_params={},
+    sensor_params={},
     workframe=[288, 0, -100, 0, 0, -90],
     linear_speed=10, 
     angular_speed=10,
@@ -56,7 +57,7 @@ def setup_embodiment_env(
     embodiment.coord_frame = workframe
 
     # setup the tactip
-    sensor = Sensor(**tactip_params)
+    sensor = Sensor(**sensor_params)
 
     def sensor_process(outfile=None):
         img = sensor.process()
@@ -66,7 +67,7 @@ def setup_embodiment_env(
 
     embodiment.sensor_process = sensor_process
 
-    embodiment.hover = hover
+    embodiment.hover = np.array(hover)
 
     return embodiment
 

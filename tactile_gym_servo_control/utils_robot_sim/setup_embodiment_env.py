@@ -1,5 +1,6 @@
 import os
 import cv2
+import numpy as np
 
 from tactile_gym_servo_control.utils_robot_sim.setup_pybullet_env import setup_pybullet_env
 
@@ -7,7 +8,7 @@ stimuli_path = os.path.join(os.path.dirname(__file__), 'stimuli')
 
 
 def setup_embodiment_env(
-    tactip_params = {},
+    sensor_params = {},
     stim_name="square",
     stim_pose=[600, 0, 12.5, 0, 0, 0],
     workframe=[600, 0, 52.5, -180, 0, 90],
@@ -28,7 +29,7 @@ def setup_embodiment_env(
     # setup robot data collection env
     embodiment, _ = setup_pybullet_env(
         stim_path,
-        tactip_params,
+        sensor_params,
         stim_pose,
         workframe,
         show_gui,
@@ -44,7 +45,7 @@ def setup_embodiment_env(
 
     embodiment.sensor_process = sensor_process
 
-    embodiment.hover = hover
+    embodiment.hover = np.array(hover)
 
     return embodiment
 

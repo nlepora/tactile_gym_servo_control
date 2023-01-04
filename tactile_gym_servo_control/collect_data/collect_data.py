@@ -10,12 +10,12 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
+from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
 
 
 def collect_data(
@@ -83,14 +83,14 @@ if __name__ == "__main__":
                 data_path, task, 'data'
             )
 
-        target_df, image_dir, env_params, tactip_params = \
+        target_df, image_dir, env_params, sensor_params = \
             setup_collect_data[task](
                 collect_dir
             )
 
         embodiment = setup_embodiment_env(
             **env_params, 
-            tactip_params = tactip_params, #quick_mode=True 
+            sensor_params = sensor_params, #quick_mode=True 
         )
 
         collect_data(

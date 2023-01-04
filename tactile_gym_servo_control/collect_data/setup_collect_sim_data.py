@@ -6,10 +6,10 @@ from tactile_gym_servo_control.collect_data.utils_collect_data import make_targe
 from tactile_gym_servo_control.collect_data.utils_collect_data import create_data_dir
 
 
-def setup_tactip(
+def setup_sensor(
     collect_dir
 ):
-    tactip_params = {
+    sensor_params = {
         "name": "tactip",
         "type": "standard",
         "core": "no_core",
@@ -18,9 +18,9 @@ def setup_tactip(
         "turn_off_border": False,
     }
 
-    save_json_obj(tactip_params, os.path.join(collect_dir, 'tactip_params'))
+    save_json_obj(sensor_params, os.path.join(collect_dir, 'sensor_params'))
 
-    return tactip_params
+    return sensor_params
 
 
 def setup_surface_3d_collect_data(
@@ -46,12 +46,12 @@ def setup_surface_3d_collect_data(
 
     image_dir = create_data_dir(collect_dir, target_df)
 
-    tactip_params = setup_tactip(collect_dir)
+    sensor_params = setup_sensor(collect_dir)
 
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, tactip_params
+    return target_df, image_dir, env_params, sensor_params
 
 
 def setup_edge_2d_collect_data(
@@ -77,12 +77,12 @@ def setup_edge_2d_collect_data(
 
     image_dir = create_data_dir(collect_dir, target_df)
 
-    tactip_params = setup_tactip(collect_dir)
+    sensor_params = setup_sensor(collect_dir)
 
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, tactip_params
+    return target_df, image_dir, env_params, sensor_params
 
 
 def setup_edge_3d_collect_data(
@@ -108,12 +108,12 @@ def setup_edge_3d_collect_data(
 
     image_dir = create_data_dir(collect_dir, target_df)
 
-    tactip_params = setup_tactip(collect_dir)
+    sensor_params = setup_sensor(collect_dir)
 
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, tactip_params
+    return target_df, image_dir, env_params, sensor_params
 
 
 def setup_edge_5d_collect_data(
@@ -139,12 +139,12 @@ def setup_edge_5d_collect_data(
 
     image_dir = create_data_dir(collect_dir, target_df)
 
-    tactip_params = setup_tactip(collect_dir)
+    sensor_params = setup_sensor(collect_dir)
 
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, tactip_params
+    return target_df, image_dir, env_params, sensor_params
 
 
 setup_collect_data = {
