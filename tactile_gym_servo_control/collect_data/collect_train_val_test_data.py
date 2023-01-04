@@ -31,9 +31,9 @@ if __name__ == "__main__":
     tasks = args.tasks
 
     collection_params = {
-        'train': 2000,
-        'val': 1000,
-        # 'test': 2000
+        'train': 5000,
+        'val': 2000,
+        'test': 2000
     }
 
     for task in tasks:
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         for collect_dir_name, num_samples in collection_params.items():
 
             collect_dir = os.path.join(
-                data_path, task+'_test', collect_dir_name
+                data_path, task, collect_dir_name
             )
 
             target_df, image_dir, env_params, sensor_params = \
