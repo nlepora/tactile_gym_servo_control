@@ -46,6 +46,7 @@ def setup_embodiment_env(
     embodiment.sensor_process = sensor_process
 
     embodiment.hover = np.array(hover)
+    embodiment.name = 'sim'
 
     return embodiment
 

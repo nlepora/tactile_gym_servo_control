@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import pandas as pd
-import json
 
 from tactile_gym.utils.general_utils import check_dir
 

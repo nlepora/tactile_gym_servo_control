@@ -303,10 +303,11 @@ if __name__ == "__main__":
     for task in tasks:
         for model_type in models:
 
-            # set save dir
-            save_dir = os.path.join(model_path, model_type, task)
+            # task specific parameters
+            out_dim, label_names = setup_task(task)        
 
-            # check save dir exists
+            # setup save dir
+            save_dir = os.path.join(model_path, model_type, task)
             check_dir(save_dir)
             os.makedirs(save_dir, exist_ok=True)
 
@@ -316,7 +317,6 @@ if __name__ == "__main__":
             # setup parameters            
             network_params = setup_model(model_type, save_dir)
             learning_params, image_processing_params, augmentation_params = setup_learning(save_dir)
-            out_dim, label_names = setup_task(task)            
 
             # create the model
             seed_everything(learning_params['seed'])

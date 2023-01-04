@@ -53,8 +53,7 @@ def setup_embodiment_env(
     embodiment.linear_speed = linear_speed
     embodiment.angular_speed = angular_speed
     embodiment.tcp = tcp_pose
-
-    embodiment.coord_frame = workframe
+    embodiment.name = 'real'
 
     # setup the tactip
     sensor = Sensor(**sensor_params)

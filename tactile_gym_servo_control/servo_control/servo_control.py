@@ -33,11 +33,10 @@ def run_servo_control(
             p_gains=[0, 0, 0, 0, 0, 0],
             i_gains=[0, 0, 0, 0, 0, 0],
             i_clip=[-np.inf, np.inf],
-            record_vid=False,
-            sim=True
+            record_vid=False
         ):
 
-    if sim:
+    if embodiment.name=='sim':
         ref_pose_ids = add_gui(embodiment, ref_pose)
         
     if record_vid:
@@ -59,7 +58,7 @@ def run_servo_control(
         tactile_image = embodiment.sensor_process()
 
         # get current TCP pose
-        if sim:
+        if embodiment.name=='sim':
             tcp_pose = embodiment.get_tcp_pose()
         else:
             tcp_pose = pose
@@ -83,7 +82,7 @@ def run_servo_control(
         embodiment.move_linear(pose)
 
         # show gui and tcp
-        if sim:
+        if embodiment.name=='sim':
             embodiment.arm.draw_TCP(lifetime=10.0)
             for j in range(len(ref_pose)):
                 ref_pose[j] = embodiment._pb.readUserDebugParameter(ref_pose_ids[j]) 
@@ -129,21 +128,19 @@ if __name__ == '__main__':
 
     for task in tasks:
 
+        # setup servo control for the task
+        out_dim, label_names = setup_task(task)
+        env_params_list, control_params = setup_servo_control[task]()
+
         # set save dir
-        save_dir = os.path.join(model_path, task)
+        model_dir = os.path.join(model_path, task)
 
         # load params
-        network_params = load_json_obj(os.path.join(save_dir, 'model_params'))
-        learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
-        image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
-        sensor_params = load_json_obj(os.path.join(save_dir, 'sensor_params'))
-        pose_params = load_json_obj(os.path.join(save_dir, 'pose_params'))
-
-        # get labels used during training
-        out_dim, label_names = setup_task(task)
-
-        # setup servo control for the task
-        env_params_list, control_params = setup_servo_control[task]()
+        network_params = load_json_obj(os.path.join(model_dir, 'model_params'))
+        learning_params = load_json_obj(os.path.join(model_dir, 'learning_params'))
+        image_processing_params = load_json_obj(os.path.join(model_dir, 'image_processing_params'))
+        sensor_params = load_json_obj(os.path.join(model_dir, 'sensor_params'))
+        pose_params = load_json_obj(os.path.join(model_dir, 'pose_params'))
 
         # perform the servo control
         for env_params in env_params_list:
@@ -157,7 +154,7 @@ if __name__ == '__main__':
                 image_processing_params['dims'],
                 out_dim,
                 network_params,
-                saved_model_dir=save_dir,
+                saved_model_dir=model_dir,
                 device=device
             )
             network.eval()
