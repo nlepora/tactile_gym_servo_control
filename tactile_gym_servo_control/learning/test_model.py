@@ -157,8 +157,8 @@ if __name__ == "__main__":
             out_dim, label_names = setup_task(task)
 
             # get the pose limits used for encoding/decoding pose/predictions
-            pose_limits_dict = load_json_obj(os.path.join(save_dir, 'pose_limits'))
-            pose_limits = [pose_limits_dict['pose_llims'], pose_limits_dict['pose_ulims']]
+            pose_params = load_json_obj(os.path.join(save_dir, 'pose_params'))
+            pose_limits = [pose_params['pose_llims'], pose_params['pose_ulims']]
 
             # create the model
             network = setup_network(

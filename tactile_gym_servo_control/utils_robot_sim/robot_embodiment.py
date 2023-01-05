@@ -63,6 +63,7 @@ class RobotEmbodiment(Robot):
         targ_pose *= POSE_UNITS
         targ_pos, targ_rpy = targ_pose[:3], targ_pose[3:]
         self.arm.tcp_direct_workframe_move(targ_pos, targ_rpy)
+        targ_pose /= POSE_UNITS
 
         # slow but more realistic moves
         if not self.quick_mode:

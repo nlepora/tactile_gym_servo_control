@@ -18,7 +18,7 @@ def setup_learning(save_dir):
     }
 
     image_processing_params = {
-        'dims': (128, 128),
+        'dims': (160, 160),
         'bbox': None,
         'thresh': False,
         'stdiz': False,
@@ -91,7 +91,7 @@ def setup_task(task_name):
 
     elif task_name == 'edge_2d':
         out_dim = 3
-        label_names = ['y', 'Rz']
+        label_names = ['x', 'Rz']
 
     elif task_name == 'edge_3d':
         out_dim = 4

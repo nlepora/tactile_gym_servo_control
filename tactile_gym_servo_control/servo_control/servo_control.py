@@ -18,11 +18,13 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
-from tactile_gym_servo_control.servo_control.utils_servo_control import add_slider
+from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
+np.set_printoptions(precision=1, suppress=True)
+
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
@@ -36,11 +38,11 @@ def run_servo_control(
             record_vid=False
         ):
 
-    if embodiment.name=='sim':
-        ref_pose_ids = add_slider(embodiment, ref_pose)
-        
     if record_vid:
         render_frames = []
+
+    if embodiment.show_gui:
+        slider = Slider(embodiment.slider, ref_pose)
 
     # initialise pose and integral term
     pose = [0, 0, 0, 0, 0, 0]
@@ -52,13 +54,13 @@ def run_servo_control(
     embodiment.move_linear(pose)
 
     # iterate through servo control
-    for _ in range(ep_len):
+    for i in range(ep_len):
 
         # get current tactile observation
         tactile_image = embodiment.sensor_process()
 
         # get current TCP pose
-        if embodiment.name=='sim':
+        if embodiment.sim:
             tcp_pose = embodiment.get_tcp_pose()
         else:
             tcp_pose = pose
@@ -81,16 +83,21 @@ def run_servo_control(
         # move to new pose
         embodiment.move_linear(pose)
 
-        # show gui and tcp
-        if embodiment.name=='sim':
+        # slider control
+        if embodiment.show_gui:
+            ref_pose = slider.slide(ref_pose)
+           
+        # show tcp if sim
+        if embodiment.show_gui and embodiment.sim:
             embodiment.arm.draw_TCP(lifetime=10.0)
-            for j in range(len(ref_pose)):
-                ref_pose[j] = embodiment._pb.readUserDebugParameter(ref_pose_ids[j]) 
-
+        
         # render frames
         if record_vid:
             render_img = embodiment.render()
             render_frames.append(render_img)
+
+        # report
+        print(f'\nstep {i+1}: pose: {pose}', end='')
 
     # move to above final pose
     embodiment.move_linear(pose + hover)
@@ -148,7 +155,7 @@ if __name__ == '__main__':
                 **env_params,
                 sensor_params=sensor_params, # quick_mode=False
             )
-            
+
             network = setup_network(
                 image_processing_params['dims'],
                 out_dim,

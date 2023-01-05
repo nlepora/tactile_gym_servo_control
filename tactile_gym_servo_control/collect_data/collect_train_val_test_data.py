@@ -51,7 +51,8 @@ if __name__ == "__main__":
 
             embodiment = setup_embodiment_env(
                 **env_params, 
-                sensor_params = sensor_params#, quick_mode=True 
+                sensor_params = sensor_params,
+                show_gui=False#, quick_mode=True 
             )
 
             collect_data(

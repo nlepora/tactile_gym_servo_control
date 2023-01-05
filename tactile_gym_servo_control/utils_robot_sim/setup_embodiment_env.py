@@ -18,16 +18,12 @@ def setup_embodiment_env(
     quick_mode=False
 ):
 
-    assert stim_name in ["square", "foil", "clover", "circle",
-                         "saddle"], "Invalid Stimulus"
-
-    # setup stimulus in worldframe
     stim_path = os.path.join(
         stimuli_path, stim_name, stim_name + ".urdf"
     )
 
     # setup robot data collection env
-    embodiment, _ = setup_pybullet_env(
+    embodiment = setup_pybullet_env(
         stim_path,
         sensor_params,
         stim_pose,
@@ -37,6 +33,10 @@ def setup_embodiment_env(
         quick_mode
     )
 
+    embodiment.hover = np.array(hover)
+    embodiment.show_gui = show_gui
+    embodiment.sim = True
+
     def sensor_process(outfile=None):
         img = embodiment.get_tactile_observation()
         if outfile is not None:
@@ -45,8 +45,7 @@ def setup_embodiment_env(
 
     embodiment.sensor_process = sensor_process
 
-    embodiment.hover = np.array(hover)
-    embodiment.name = 'sim'
+    embodiment.slider = embodiment
 
     return embodiment
 

@@ -10,19 +10,29 @@ from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.utils.image_transforms import process_image
 
 
-def add_slider(embodiment, init_ref_pose):
+class Slider:
+    def __init__(self,
+        embodiment, init_ref_pose,
+        ref_llims=[-5, -5, 0, -15, -15, -180],
+        ref_ulims=[ 5,  5, 5,  15,  15,  180]
+    ):    
+        self.embodiment = embodiment
+        self.ref_pose_ids = []
+        for label_name in POSE_LABEL_NAMES:
+            i = POSE_LABEL_NAMES.index(label_name)
+            self.ref_pose_ids.append(
+                embodiment._pb.addUserDebugParameter(
+                    label_name, ref_llims[i], ref_ulims[i], init_ref_pose[i]
+                )
+            )
 
-    # add user controllable ref pose to GUI
-    ref_llims = [-2.0, -2.0, 2.0, -15.0, -15.0, -180.0]
-    ref_ulims = [ 2.0,  2.0, 5.0,  15.0,  15.0,  180.0]
+    def slide(self, ref_pose):
+        for j in range(len(ref_pose)):
+            ref_pose[j] = self.embodiment._pb.readUserDebugParameter(
+                self.ref_pose_ids[j]
+            ) 
 
-    ref_pose_ids = []
-    for label_name in POSE_LABEL_NAMES:
-        i = POSE_LABEL_NAMES.index(label_name)
-        ref_pose_ids.append(embodiment._pb.addUserDebugParameter(label_name, 
-                            ref_llims[i], ref_ulims[i], init_ref_pose[i]))
-
-    return ref_pose_ids
+        return ref_pose
 
 
 class Model:
@@ -40,7 +50,6 @@ class Model:
     def predict(self, 
         tactile_image
     ):
-        
         processed_image = process_image(
             tactile_image,
             gray=False,
@@ -60,7 +69,7 @@ class Model:
         # decode the prediction
         predictions_dict = decode_pose(raw_predictions, self.label_names, self.pose_limits)
 
-        print("\n Predictions: ", end="")
+        print("\nPredictions: ", end="")
         predictions_arr = np.zeros(6)
         for label_name in self.label_names:
             predicted_val = predictions_dict[label_name].detach().cpu().numpy() 

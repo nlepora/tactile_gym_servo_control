@@ -14,8 +14,8 @@ from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup
 from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
+np.set_printoptions(precision=1, suppress=True)
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
 
 
 def collect_data(
@@ -31,13 +31,13 @@ def collect_data(
     for _, row in target_df.iterrows():
         i_obj = int(row.loc["obj_id"])
         i_pose = int(row.loc["pose_id"])
-        pose = row.loc["pose_1":"pose_6"].values
-        move = row.loc["move_1":"move_6"].values
+        pose = row.loc["pose_1":"pose_6"].values.astype(np.float32)
+        move = row.loc["move_1":"move_6"].values.astype(np.float32)
         obj_pose = row.loc["obj_pose"]
         sensor_image = row.loc["sensor_image"]
 
-        with np.printoptions(precision=2, suppress=True):
-            print(f"Collecting data for object {i_obj}, pose {i_pose}: ...")
+        # report
+        print(f"Collecting data for object {i_obj}, pose {i_pose}: pose{pose}, move{move}")
 
         # pose is relative to object
         pose += obj_pose
@@ -87,7 +87,8 @@ if __name__ == "__main__":
 
         embodiment = setup_embodiment_env(
             **env_params, 
-            sensor_params=sensor_params, #quick_mode=True 
+            sensor_params=sensor_params,
+            show_gui=False, #quick_mode=True 
         )
 
         collect_data(

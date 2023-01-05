@@ -106,4 +106,4 @@ def setup_pybullet_env(
         quick_mode=quick_mode
     )
 
-    return embodiment, stimulus
+    return embodiment

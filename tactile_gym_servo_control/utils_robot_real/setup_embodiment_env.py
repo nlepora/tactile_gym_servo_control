@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from tactile_gym_servo_control.utils.image_transforms import Sensor, process_image
+from tactile_gym_servo_control.utils_robot_real.setup_pybullet_env import setup_pybullet_env
 
 from cri.robot import SyncRobot
 from cri.controller import Mg400Controller as Controller
@@ -14,7 +15,8 @@ def setup_embodiment_env(
     linear_speed=10, 
     angular_speed=10,
     tcp_pose=[0, 0, 0, 0, 0, 0],
-    hover=[0, 0, 7.5, 0, 0, 0] # positive for dobot
+    hover=[0, 0, 7.5, 0, 0, 0], # positive for dobot
+    show_gui=True
 ):
 
     # setup the robot
@@ -25,7 +27,7 @@ def setup_embodiment_env(
     embodiment.angular_speed = angular_speed
     embodiment.tcp = tcp_pose
     embodiment.hover = np.array(hover)
-    embodiment.name = 'real'
+    embodiment.sim = False
 
     # setup the tactip
     sensor = Sensor(**sensor_params)
@@ -38,6 +40,9 @@ def setup_embodiment_env(
         return img
 
     embodiment.sensor_process = sensor_process
+
+    embodiment.slider = setup_pybullet_env(show_gui)
+    embodiment.show_gui = show_gui
 
     return embodiment
 
