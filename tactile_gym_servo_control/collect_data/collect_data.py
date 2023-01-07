@@ -44,13 +44,13 @@ def collect_data(
         pose += obj_pose
 
         # move to above new pose (avoid changing pose in contact with object)
-        embodiment.move_linear(pose - move + hover)
+        embodiment.move_linear(np.array(pose) - np.array(move) + np.array(hover))
  
         # move down to offset position
-        embodiment.move_linear(pose - move)
+        embodiment.move_linear(np.array(pose) - np.array(move))
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(pose)
+        embodiment.move_linear(np.array(pose))
 
         # process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)

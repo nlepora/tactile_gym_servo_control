@@ -140,21 +140,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
     tasks = args.tasks
     models = args.models
-
     device = args.device
+    version = ''
 
     # test the trained networks
     for model_type in models:
         for task in tasks:
 
+            # task specific parameters
+            out_dim, label_names = setup_task(task)
+
             # set save dir
+            task += version
             save_dir = os.path.join(model_path, model_type, task)
 
             # setup parameters            
             network_params = load_json_obj(os.path.join(save_dir, 'model_params'))
             learning_params = load_json_obj(os.path.join(save_dir, 'learning_params'))
             image_processing_params = load_json_obj(os.path.join(save_dir, 'image_processing_params'))
-            out_dim, label_names = setup_task(task)
 
             # get the pose limits used for encoding/decoding pose/predictions
             pose_params = load_json_obj(os.path.join(save_dir, 'pose_params'))
