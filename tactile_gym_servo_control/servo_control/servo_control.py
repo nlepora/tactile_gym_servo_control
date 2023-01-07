@@ -20,11 +20,11 @@ from tactile_gym_servo_control.learning.setup_network import setup_network
 from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
+from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 np.set_printoptions(precision=1, suppress=True)
-
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
@@ -43,6 +43,8 @@ def run_servo_control(
 
     if embodiment.show_gui:
         slider = Slider(embodiment.slider, ref_pose)
+
+    plotContour = PlotContour(embodiment.workframe, embodiment.stim_name)
 
     # initialise pose and integral term
     pose = [0, 0, 0, 0, 0, 0]
@@ -98,6 +100,7 @@ def run_servo_control(
 
         # report
         print(f'\nstep {i+1}: pose: {pose}', end='')
+        plotContour.update(pose)
 
     # move to above final pose
     embodiment.move_linear(pose + hover)
@@ -118,7 +121,7 @@ if __name__ == '__main__':
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['edge_2d']
+        default=['surface_3d']
     )
     parser.add_argument(
         '-d', '--device',

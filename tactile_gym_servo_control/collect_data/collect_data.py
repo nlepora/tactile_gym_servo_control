@@ -16,6 +16,7 @@ from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 np.set_printoptions(precision=1, suppress=True)
 
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
 
 
 def collect_data(
