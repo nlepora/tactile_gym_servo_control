@@ -131,6 +131,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     tasks = args.tasks
     device = args.device
+    version = ''
 
     for task in tasks:
 
@@ -139,6 +140,7 @@ if __name__ == '__main__':
         env_params_list, control_params = setup_servo_control[task]()
 
         # set save dir
+        task += version
         model_dir = os.path.join(model_path, task)
 
         # load params

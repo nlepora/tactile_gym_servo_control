@@ -299,6 +299,7 @@ if __name__ == "__main__":
     tasks = args.tasks
     models = args.models
     device = args.device
+    version = '_2k'
 
     for task in tasks:
         for model_type in models:
@@ -307,6 +308,7 @@ if __name__ == "__main__":
             out_dim, label_names = setup_task(task)        
 
             # setup save dir
+            task += version
             save_dir = os.path.join(model_path, model_type, task)
             check_dir(save_dir)
             os.makedirs(save_dir, exist_ok=True)
