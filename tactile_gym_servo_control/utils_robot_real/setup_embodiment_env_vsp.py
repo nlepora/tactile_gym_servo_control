@@ -1,7 +1,5 @@
-import cv2
 import numpy as np
 
-from tactile_gym_servo_control.utils.image_transforms import Sensor, process_image
 from tactile_gym_servo_control.utils_robot_real.setup_pybullet_env import setup_pybullet_env
 from vsp.video_stream import CvImageOutputFileSeq, CvVideoDisplay, CvPreprocVideoCamera   
 from vsp.processor import CameraStreamProcessor, AsyncProcessor
@@ -41,17 +39,7 @@ def setup_embodiment_env(
     show_gui=True
 ):
 
-    # setup the robot
-    embodiment = SyncRobot(Controller())
-
-    embodiment.coord_frame = workframe
-    embodiment.linear_speed = linear_speed
-    embodiment.angular_speed = angular_speed
-    embodiment.tcp = tcp_pose
-    embodiment.hover = np.array(hover)
-    embodiment.sim = False
-
-    # setup the tactip
+    # setup the tactile sensor
     sensor = make_sensor(**sensor_params)
 
     def sensor_process(outfile=None):
@@ -60,10 +48,20 @@ def setup_embodiment_env(
         )
         return img[0,:,:,0]
 
+    # setup the robot
+    embodiment = SyncRobot(Controller())
     embodiment.sensor_process = sensor_process
+    embodiment.slider = setup_pybullet_env(show_gui)
+    embodiment.sim = False
 
-    # embodiment.slider = setup_pybullet_env(show_gui)
-    # embodiment.show_gui = show_gui
+    embodiment.coord_frame = workframe
+    embodiment.linear_speed = linear_speed
+    embodiment.angular_speed = angular_speed
+    embodiment.tcp = tcp_pose
+
+    embodiment.hover = np.array(hover)
+    embodiment.show_gui = show_gui
+    embodiment.workframe = workframe
 
     return embodiment
 

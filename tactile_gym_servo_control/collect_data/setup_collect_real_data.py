@@ -31,15 +31,15 @@ def setup_edge_2d(
     shuffle_data=True,
 ):
     env_params = {
-        'workframe': [285, 0, -93, 0, 0, 0],
+        'workframe': [285, 0, -93, 0, 0, 180],
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]
     }
 
     pose_params = {
-        'pose_llims': [-5, 0, -1, 0, 0, -45],
-        'pose_ulims': [ 5, 0,  1, 0, 0,  45],
+        'pose_llims': [-5, 0, -1, 0, 0, -180],
+        'pose_ulims': [ 5, 0,  1, 0, 0,  180],
         'move_llims': [-5, -5,  0, 0, 0,  -5],
         'move_ulims': [ 5,  5,  0, 0, 0,   5],
         'obj_poses': [[0, 0, 0, 0, 0, 0]]

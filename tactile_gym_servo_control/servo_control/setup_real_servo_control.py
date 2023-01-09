@@ -9,8 +9,8 @@ def setup_edge_2d_servo_control():
     }]
 
     control_params = {
-        'ep_len': 350,
-        'ref_pose': [0, 1, 0, 0, 0, 30],
+        'ep_len': 100,
+        'ref_pose': [0, 3, 0, 0, 0, 0],
         'p_gains': [0.5, 1, 0, 0, 0, 0.5],
         'i_gains': [0.3, 0, 0, 0, 0, 0.1],
         'i_clip': [[-5, 0, 0, 0, 0, -45], [-5, 0, 0, 0, 0, 45]]

@@ -48,7 +48,7 @@ def run_servo_control(
     if embodiment.show_gui:
         slider = Slider(embodiment.slider, ref_pose)
 
-    plotContour = PlotContour(embodiment.workframe, embodiment.stim_name)
+    plotContour = PlotContour(embodiment.workframe)#, embodiment.stim_name)
 
     # initialise pose and integral term
     pose = [0, 0, 0, 0, 0, 0]

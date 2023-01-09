@@ -9,7 +9,7 @@ python collect_train_val_test_data.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 
-from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env_vsp import setup_embodiment_env
+from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env import setup_embodiment_env
 from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
 from tactile_gym_servo_control.collect_data.collect_data import collect_data
 
@@ -29,11 +29,11 @@ if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
-    version = '_5k'
+    version = ''
 
     collection_params = {
         'train': 5000,
-        # 'val': 1000,
+        'val': 2000,
         # 'test': 2000
     }
 
