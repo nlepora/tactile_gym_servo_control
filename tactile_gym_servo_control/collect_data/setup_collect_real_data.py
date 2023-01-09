@@ -15,7 +15,7 @@ def setup_sensor(
         'source': 0,
         'exposure': -7,
         'gray': True,
-        'bbox': [320-160, 240-160+25, 320+160, 240+160+25],
+        'bbox': [320-128, 240-128+25, 320+128, 240+128+25],
         'thresh': True,
         'circle_mask_radius': 150
         }
@@ -28,7 +28,7 @@ def setup_sensor(
 def setup_edge_2d(
     collect_dir,
     num_samples=10,
-    shuffle_data=False,
+    shuffle_data=True,
 ):
     env_params = {
         'workframe': [285, 0, -93, 0, 0, 0],
@@ -38,10 +38,10 @@ def setup_edge_2d(
     }
 
     pose_params = {
-        'pose_llims': [-5, 0, 1, 0, 0, -45],
-        'pose_ulims': [ 5, 0, 2, 0, 0,  45],
-        'move_llims': [-5, -5, 0, 0, 0, -5],
-        'move_ulims': [ 5,  5, 0, 0, 0,  5],
+        'pose_llims': [-5, 0, -1, 0, 0, -45],
+        'pose_ulims': [ 5, 0,  1, 0, 0,  45],
+        'move_llims': [-5, -5,  0, 0, 0,  -5],
+        'move_ulims': [ 5,  5,  0, 0, 0,   5],
         'obj_poses': [[0, 0, 0, 0, 0, 0]]
     }
 
@@ -62,7 +62,7 @@ def setup_edge_2d(
 def setup_edge_3d(
     collect_dir,
     num_samples=10,
-    shuffle_data=False,
+    shuffle_data=True,
 ):
     env_params = {
         'workframe': [285, 0, -93, 0, 0, 180],

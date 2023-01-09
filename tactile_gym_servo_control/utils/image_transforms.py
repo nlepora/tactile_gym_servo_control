@@ -143,7 +143,7 @@ def augment_image(
 
 def threshold_image(image):
     image = cv2.adaptiveThreshold(
-        image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, -30)
+        image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 61, -5)#11, -30)
     return image
 
 

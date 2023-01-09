@@ -10,12 +10,13 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
+from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env_vsp import setup_embodiment_env
+from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 np.set_printoptions(precision=1, suppress=True)
 
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
 
 
 def collect_data(
@@ -54,6 +55,9 @@ def collect_data(
         # process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)
         embodiment.sensor_process(outfile=image_outfile)
+
+        # move to target positon inducing shear effects
+        embodiment.move_linear(np.array(pose) + np.array(hover))
 
     # finish above workframe origin
     embodiment.move_linear(hover)

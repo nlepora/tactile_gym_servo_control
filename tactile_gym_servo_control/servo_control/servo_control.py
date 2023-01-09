@@ -13,18 +13,21 @@ import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+# from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env_vsp import setup_embodiment_env
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
-from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
+# from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
+from tactile_gym_servo_control.servo_control.setup_real_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 np.set_printoptions(precision=1, suppress=True)
 
+# model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/real/resnet")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
@@ -131,7 +134,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     tasks = args.tasks
     device = args.device
-    version = ''
+    version = '_5k_90deg'
 
     for task in tasks:
 

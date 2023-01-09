@@ -10,6 +10,7 @@ import os
 import argparse
 import time
 import pickle
+
 import shutil
 import numpy as np
 import pandas as pd
@@ -39,8 +40,8 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_learning import setup_learning
 from tactile_gym_servo_control.learning.setup_learning import setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models/sim')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real')
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -66,7 +67,7 @@ def train_model(
     pose_limits = get_pose_limits(train_data_dirs, save_dir)
 
     validation_data_dirs = [
-        os.path.join(data_path, task, 'val')
+        os.path.join(data_path, task, 'train')
     ]
 
     # set generators and loaders
@@ -299,7 +300,7 @@ if __name__ == "__main__":
     tasks = args.tasks
     models = args.models
     device = args.device
-    version = '_2k'
+    version = '_5k'
 
     for task in tasks:
         for model_type in models:

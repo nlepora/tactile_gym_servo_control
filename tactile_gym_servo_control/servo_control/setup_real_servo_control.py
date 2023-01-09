@@ -2,7 +2,7 @@ def setup_edge_2d_servo_control():
 
     env_params_list = [
     {
-        'workframe': [285, 0, -93+1.5, 0, 0, 180], # square, circle
+        'workframe': [285, 0, -93, 0, 0, 0], # square, circle
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]    

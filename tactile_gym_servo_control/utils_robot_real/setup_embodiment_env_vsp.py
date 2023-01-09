@@ -3,10 +3,32 @@ import numpy as np
 
 from tactile_gym_servo_control.utils.image_transforms import Sensor, process_image
 from tactile_gym_servo_control.utils_robot_real.setup_pybullet_env import setup_pybullet_env
+from vsp.video_stream import CvImageOutputFileSeq, CvVideoDisplay, CvPreprocVideoCamera   
+from vsp.processor import CameraStreamProcessor, AsyncProcessor
 
 from cri.robot import SyncRobot
 from cri.controller import Mg400Controller as Controller
 # from cri.controller import DummyController as Controller
+
+def make_sensor(
+    size=[256, 256], 
+    bbox=None, 
+    exposure=-7, 
+    source=0, 
+    thresh=True,
+    **kwargs
+):  
+    camera = CvPreprocVideoCamera(
+        size, crop=bbox, threshold=[61, -5], exposure=exposure, source=source
+    )
+    
+    for _ in range(5): camera.read() # Hack - camera transient   
+    
+    return AsyncProcessor(CameraStreamProcessor(
+            camera=camera,
+            display=CvVideoDisplay(name='sensor'),
+            writer=CvImageOutputFileSeq())
+    )
 
 
 def setup_embodiment_env(
@@ -15,7 +37,7 @@ def setup_embodiment_env(
     linear_speed=10, 
     angular_speed=10,
     tcp_pose=[0, 0, 0, 0, 0, 0],
-    hover=[0, 0, 7.5, 0, 0, 0], # positive for dobot
+    hover=[0, 0, 10, 0, 0, 0], # positive for dobot
     show_gui=True
 ):
 
@@ -30,20 +52,18 @@ def setup_embodiment_env(
     embodiment.sim = False
 
     # setup the tactip
-    sensor = Sensor(**sensor_params)
+    sensor = make_sensor(**sensor_params)
 
     def sensor_process(outfile=None):
-        sensor.load() # throw one away - buffering issue
-        img = sensor.load()
-        img = process_image(img, **sensor_params)
-        if outfile is not None:
-            cv2.imwrite(outfile, img)
-        return img
+        img = sensor.process(
+            num_frames=1, start_frame=1, outfile=outfile
+        )
+        return img[0,:,:,0]
 
     embodiment.sensor_process = sensor_process
 
-    embodiment.slider = setup_pybullet_env(show_gui)
-    embodiment.show_gui = show_gui
+    # embodiment.slider = setup_pybullet_env(show_gui)
+    # embodiment.show_gui = show_gui
 
     return embodiment
 
