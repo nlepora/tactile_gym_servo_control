@@ -22,6 +22,7 @@ from tactile_gym_servo_control.learning.setup_network import setup_network
 from tactile_gym_servo_control.servo_control.setup_real_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
+from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
 np.set_printoptions(precision=1, suppress=True)
@@ -46,6 +47,8 @@ def run_servo_control(
 
     if embodiment.show_gui:
         slider = Slider(embodiment.slider, ref_pose)
+
+    plotContour = PlotContour(embodiment.workframe, embodiment.stim_name)
 
     # initialise pose and integral term
     pose = [0, 0, 0, 0, 0, 0]
@@ -101,6 +104,7 @@ def run_servo_control(
 
         # report
         print(f'\nstep {i+1}: pose: {pose}', end='')
+        plotContour.update(pose)
 
     # move to above final pose
     embodiment.move_linear(pose + hover)

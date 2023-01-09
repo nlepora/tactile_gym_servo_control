@@ -22,7 +22,7 @@ def setup_embodiment_env(
         stimuli_path, stim_name, stim_name + ".urdf"
     )
 
-    # setup robot data collection env
+    # setup the robot
     embodiment = setup_pybullet_env(
         stim_path,
         sensor_params,
@@ -33,10 +33,7 @@ def setup_embodiment_env(
         quick_mode
     )
 
-    embodiment.hover = np.array(hover)
-    embodiment.show_gui = show_gui
-    embodiment.sim = True
-
+    # setup the tactile sensor
     def sensor_process(outfile=None):
         img = embodiment.get_tactile_observation()
         if outfile is not None:
@@ -44,8 +41,13 @@ def setup_embodiment_env(
         return img
 
     embodiment.sensor_process = sensor_process
-
     embodiment.slider = embodiment
+    embodiment.sim = True
+
+    embodiment.hover = np.array(hover)
+    embodiment.show_gui = show_gui
+    embodiment.workframe = workframe
+    embodiment.stim_name = stim_name
 
     return embodiment
 

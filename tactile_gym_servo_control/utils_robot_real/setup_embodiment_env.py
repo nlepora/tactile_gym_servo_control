@@ -19,17 +19,7 @@ def setup_embodiment_env(
     show_gui=True
 ):
 
-    # setup the robot
-    embodiment = SyncRobot(Controller())
-
-    embodiment.coord_frame = workframe
-    embodiment.linear_speed = linear_speed
-    embodiment.angular_speed = angular_speed
-    embodiment.tcp = tcp_pose
-    embodiment.hover = np.array(hover)
-    embodiment.sim = False
-
-    # setup the tactip
+    # setup the tactile sensor
     sensor = Sensor(**sensor_params)
 
     def sensor_process(outfile=None):
@@ -40,10 +30,20 @@ def setup_embodiment_env(
             cv2.imwrite(outfile, img)
         return img
 
+    # setup the robot
+    embodiment = SyncRobot(Controller())
     embodiment.sensor_process = sensor_process
-
     embodiment.slider = setup_pybullet_env(show_gui)
+    embodiment.sim = False
+
+    embodiment.coord_frame = workframe
+    embodiment.linear_speed = linear_speed
+    embodiment.angular_speed = angular_speed
+    embodiment.tcp = tcp_pose
+    
+    embodiment.hover = np.array(hover)
     embodiment.show_gui = show_gui
+    embodiment.workframe = workframe
 
     return embodiment
 
