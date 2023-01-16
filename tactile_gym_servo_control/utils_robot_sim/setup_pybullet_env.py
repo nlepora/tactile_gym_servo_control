@@ -8,10 +8,11 @@ from tactile_gym.assets import add_assets_path
 
 
 def setup_pybullet_env(
-    stim_path,
-    sensor_params,
-    stim_pose,
     workframe,
+    stim_path,
+    stim_pose,
+    stim_scale,
+    sensor_params,
     show_gui,
     show_tactile,
     quick_mode=False
@@ -55,6 +56,17 @@ def setup_pybullet_env(
         [0.0, 0.0, 0.0, 1.0],
     )
 
+    # add stimulus
+    stim_pose *= POSE_UNITS
+    stim_pos, stim_rpy = stim_pose[:3], stim_pose[3:] 
+    p.loadURDF(
+        stim_path,
+        stim_pos,
+        p.getQuaternionFromEuler(stim_rpy),
+        useFixedBase=True,
+        globalScaling=stim_scale
+    )
+
     # set debug camera position
     cam_params = {
         'image_size': [512, 512],
@@ -64,7 +76,7 @@ def setup_pybullet_env(
         'pos': [0.6, 0.0, 0.0525],
         'fov': 75.0,
         'near_val': 0.1,
-        'far_val': 100.0,
+        'far_val': 100.0
     }
 
     if show_gui:
@@ -81,16 +93,6 @@ def setup_pybullet_env(
     # set the workrame of the robot (relative to world frame)
     workframe *= POSE_UNITS
     workframe_pos, workframe_rpy = workframe[:3], workframe[3:] 
-
-    # add stimulus
-    stim_pose *= POSE_UNITS
-    stim_pos, stim_rpy = stim_pose[:3], stim_pose[3:] 
-    stimulus = p.loadURDF(
-        stim_path,
-        stim_pos,
-        p.getQuaternionFromEuler(stim_rpy),
-        useFixedBase=True,
-    )
 
     # create the robot and sensor embodiment
     embodiment = RobotEmbodiment(

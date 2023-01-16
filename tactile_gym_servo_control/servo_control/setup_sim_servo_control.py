@@ -1,11 +1,19 @@
 
 def setup_surface_3d_servo_control():
 
-    env_params_list = [{
+    env_params_list = [
+    {
         'stim_name': 'saddle', 
         'stim_pose': [600, 0, 12.5, 0, 0, 0],
         'workframe': [600, -60, 65, -180, 0, 0], 
-    }]
+    },
+    {
+        'stim_name': 'bowl', 
+        'stim_pose': [600, 0, 50, 90, 0, 0],
+        'workframe': [600, -70, 75, -230, 0, 0], 
+        'stim_scale': 0.3
+    }
+    ]
     
     control_params = {
         'ep_len': 75,
@@ -75,11 +83,19 @@ def setup_edge_3d_servo_control():
 
 def setup_edge_5d_servo_control():
 
-    env_params_list = [{
+    env_params_list = [
+    {
         'stim_name': 'saddle', 
         'stim_pose': [600, 0, 12.5, 0, 0, 0],
         'workframe': [600, -65, 70, -180, 0, 0], 
-    }]
+    },
+    {
+        'stim_name': 'bowl', 
+        'stim_pose': [600, 0, 50, 90, 0, 0],
+        'workframe': [600, -70, 75, -230, 0, 0], 
+        'stim_scale': 0.3
+    }
+    ]
 
     control_params = {
         'ep_len': 250,

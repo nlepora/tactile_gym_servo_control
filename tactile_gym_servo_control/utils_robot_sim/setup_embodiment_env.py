@@ -8,10 +8,11 @@ stimuli_path = os.path.join(os.path.dirname(__file__), 'stimuli')
 
 
 def setup_embodiment_env(
-    sensor_params = {},
+    workframe=[600, 0, 52.5, -180, 0, 90],
     stim_name="square",
     stim_pose=[600, 0, 12.5, 0, 0, 0],
-    workframe=[600, 0, 52.5, -180, 0, 90],
+    stim_scale=1,
+    sensor_params = {},
     hover=[0, 0, -7.5, 0, 0, 0],
     show_gui=True, 
     show_tactile=True,
@@ -24,10 +25,11 @@ def setup_embodiment_env(
 
     # setup the robot
     embodiment = setup_pybullet_env(
-        stim_path,
-        sensor_params,
-        stim_pose,
         workframe,
+        stim_path,
+        stim_pose,
+        stim_scale,
+        sensor_params,
         show_gui,
         show_tactile,
         quick_mode
