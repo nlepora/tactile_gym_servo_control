@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib
+matplotlib.use("TkAgg") # change backend to stop plt stealing focus
 import matplotlib.pylab as plt
 
 from cri.robot import quat2euler, euler2quat, inv_transform
@@ -38,6 +39,7 @@ class PlotContour2D:
         self.v = [0, 0, 0, 0, 0, 0]
 
         move_figure(self._fig, *position)
+        self._fig.show()
 
     def update(self, v):
         self.v = np.vstack([self.v, v])
@@ -53,8 +55,8 @@ class PlotContour2D:
         self._ax.plot(rv[-2:,0], rv[-2:,1], '-r') 
         self._ax.plot(rv[-2:,0]+[d[0],-d[0]], rv[-2:,1]+[d[1],-d[1]], '-b', linewidth=0.5) 
 
+        self._fig.canvas.flush_events()   # update the plot
         plt.pause(0.0001)
-        self._fig.show()
 
 
 class PlotContour3D:
@@ -83,7 +85,7 @@ class PlotContour3D:
         self.v = [0, 0, 0, 0, 0, 0]
 
         move_figure(self._fig, *position)
-
+        self._fig.show()
 
     def update(self, v):
         self.v = np.vstack([self.v, v])
@@ -104,8 +106,8 @@ class PlotContour3D:
             self.inv*self.v[-2:,0]+[w[0],0], -self.v[-2:,1]-[w[1],0], -self.v[-2:,2]-[w[2],0], 
             '-g', linewidth=0.5) 
 
+        self._fig.canvas.flush_events()   # update the plot
         plt.pause(0.0001)
-        self._fig.show()
 
 
 if __name__ == '__main__':

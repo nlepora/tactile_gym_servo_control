@@ -56,7 +56,7 @@ def train_model(
     image_processing_params,
     augmentation_params,
     save_dir,
-    plot_during_training=True,  # slows training noticably
+    plot_during_training=False,  # slows training noticably
     device='cpu'
 ):
 
@@ -300,7 +300,7 @@ if __name__ == "__main__":
     tasks = args.tasks
     models = args.models
     device = args.device
-    version = '_5k'
+    version = ''
 
     for task in tasks:
         for model_type in models:

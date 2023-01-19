@@ -9,6 +9,36 @@ from tactile_gym_servo_control.learning.utils_learning import decode_pose
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.utils.image_transforms import process_image
 
+LEFT, RIGHT, FORE, BACK, SHIFT, CTRL, QUIT \
+    = 65295, 65296, 65297, 65298, 65306, 65307, ord('Q')
+
+
+def keyboard(embodiment,  
+    delta_init = [0.0, 0, 0, 0, 0, 0]
+):
+    delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
+
+    keys = embodiment._pb.getKeyboardEvents()
+    if embodiment._pb.KEY_WAS_TRIGGERED:
+        if CTRL in keys:
+            if FORE in keys:  delta -= [0, 0, 0, 0, 1, 0]
+            if BACK in keys:  delta += [0, 0, 0, 0, 1, 0]
+            if RIGHT in keys: delta -= [0, 0, 0, 1, 0, 0]
+            if LEFT in keys:  delta += [0, 0, 0, 1, 0, 0]
+        elif SHIFT in keys:
+            if FORE in keys:  delta -= [0, 0, 1, 0, 0, 0]
+            if BACK in keys:  delta += [0, 0, 1, 0, 0, 0]
+            if RIGHT in keys: delta -= [0, 0, 0, 0, 0, 2.5]
+            if LEFT in keys:  delta += [0, 0, 0, 0, 0, 2.5]
+        else:
+            if FORE in keys:  delta -= [1, 0, 0, 0, 0, 0]
+            if BACK in keys:  delta += [1, 0, 0, 0, 0, 0]
+            if RIGHT in keys: delta -= [0, 1, 0, 0, 0, 0]
+            if LEFT in keys:  delta += [0, 1, 0, 0, 0, 0]
+        if QUIT in keys:  delta = None
+
+    return np.array(delta)
+
 
 class Slider:
     def __init__(self,
