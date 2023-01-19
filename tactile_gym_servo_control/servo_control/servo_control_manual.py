@@ -14,7 +14,6 @@ import imageio
 from tactile_gym.utils.general_utils import load_json_obj
 
 from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.learning.setup_learning import setup_task
 
 from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
@@ -28,8 +27,8 @@ model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/s
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
 
-def run_servo_control(
-            embodiment, #model,
+def run_manual_servo_control(
+            embodiment,
             ep_len=10000,
             ref_pose=[0, 0, 0, 0, 0, 0],
             p_gains=[0, 0, 0, 0, 0, 0],
@@ -120,7 +119,13 @@ if __name__ == '__main__':
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['edge_5d']
+        default=['surface_3d']
+    )
+    parser.add_argument(
+        '-s', '--stimuli',
+        nargs='+',
+        help="Choose stimulus from ['circle', 'square', 'clover', 'foil', 'saddle', 'bowl'].",
+        default=['bowl']
     )
     parser.add_argument(
         '-d', '--device',
@@ -132,15 +137,13 @@ if __name__ == '__main__':
     # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
+    stimuli = args.stimuli
     device = args.device
     version = ''
 
     for task in tasks:
 
-        # setup servo control for the task
-        env_params_list, control_params = setup_servo_control[task]()
-
-        # set save dir
+        # set saved model dir
         task += version
         model_dir = os.path.join(model_path, task)
 
@@ -148,14 +151,16 @@ if __name__ == '__main__':
         sensor_params = load_json_obj(os.path.join(model_dir, 'sensor_params'))
 
         # perform the servo control
-        for env_params in env_params_list:
+        for stimulus in stimuli:
+
+            env_params, control_params = setup_servo_control[task](stimulus)
 
             embodiment = setup_embodiment_env(
                 **env_params,
                 sensor_params=sensor_params, quick_mode=True
             )
 
-            run_servo_control(
+            run_manual_servo_control(
                 embodiment,
                 **control_params
             )

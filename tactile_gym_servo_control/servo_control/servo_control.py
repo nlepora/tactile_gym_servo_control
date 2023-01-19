@@ -125,6 +125,12 @@ if __name__ == '__main__':
         default=['surface_3d']
     )
     parser.add_argument(
+        '-s', '--stimuli',
+        nargs='+',
+        help="Choose stimulus from ['circle', 'square', 'clover', 'foil', 'saddle', 'bowl'].",
+        default=['saddle']
+    )
+    parser.add_argument(
         '-d', '--device',
         type=str,
         help="Choose device from ['cpu', 'cuda'].",
@@ -134,28 +140,28 @@ if __name__ == '__main__':
     # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
+    stimuli = args.stimuli
     device = args.device
     version = ''
 
     for task in tasks:
 
-        # setup servo control for the task
-        out_dim, label_names = setup_task(task)
-        env_params_list, control_params = setup_servo_control[task]()
-
-        # set save dir
+        # set saved model dir
         task += version
         model_dir = os.path.join(model_path, task)
 
-        # load params
+        # load model and sensor params
         network_params = load_json_obj(os.path.join(model_dir, 'model_params'))
         learning_params = load_json_obj(os.path.join(model_dir, 'learning_params'))
         image_processing_params = load_json_obj(os.path.join(model_dir, 'image_processing_params'))
         sensor_params = load_json_obj(os.path.join(model_dir, 'sensor_params'))
         pose_params = load_json_obj(os.path.join(model_dir, 'pose_params'))
+        out_dim, label_names = setup_task(task)
 
         # perform the servo control
-        for env_params in env_params_list:
+        for stimulus in stimuli:
+
+            env_params, control_params = setup_servo_control[task](stimulus)
 
             embodiment = setup_embodiment_env(
                 **env_params,

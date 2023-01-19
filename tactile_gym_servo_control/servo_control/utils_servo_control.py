@@ -40,6 +40,33 @@ def keyboard(embodiment,
     return np.array(delta)
 
 
+def spacemouse(embodiment,  
+    delta_init = [0.0, 0, 0, 0, 0, 0]
+):
+    delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
+
+    keys = embodiment._pb.getKeyboardEvents()
+    if embodiment._pb.KEY_WAS_TRIGGERED:
+        if CTRL in keys:
+            if FORE in keys:  delta -= [0, 0, 0, 0, 1, 0]
+            if BACK in keys:  delta += [0, 0, 0, 0, 1, 0]
+            if RIGHT in keys: delta -= [0, 0, 0, 1, 0, 0]
+            if LEFT in keys:  delta += [0, 0, 0, 1, 0, 0]
+        elif SHIFT in keys:
+            if FORE in keys:  delta -= [0, 0, 1, 0, 0, 0]
+            if BACK in keys:  delta += [0, 0, 1, 0, 0, 0]
+            if RIGHT in keys: delta -= [0, 0, 0, 0, 0, 2.5]
+            if LEFT in keys:  delta += [0, 0, 0, 0, 0, 2.5]
+        else:
+            if FORE in keys:  delta -= [1, 0, 0, 0, 0, 0]
+            if BACK in keys:  delta += [1, 0, 0, 0, 0, 0]
+            if RIGHT in keys: delta -= [0, 1, 0, 0, 0, 0]
+            if LEFT in keys:  delta += [0, 1, 0, 0, 0, 0]
+        if QUIT in keys:  delta = None
+
+    return np.array(delta)
+
+
 class Slider:
     def __init__(self,
         embodiment, init_ref_pose,
