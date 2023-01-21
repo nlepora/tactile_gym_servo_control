@@ -17,7 +17,7 @@ from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup
 
 from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
-from tactile_gym_servo_control.servo_control.utils_servo_control import keyboard
+from tactile_gym_servo_control.servo_control.utils_servo_control import ManualControl
 from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
@@ -34,6 +34,7 @@ def run_manual_servo_control(
             p_gains=[0, 0, 0, 0, 0, 0],
             i_gains=[0, 0, 0, 0, 0, 0],
             i_clip=[-np.inf, np.inf],
+            i_leak=1,
             record_vid=False
         ):
 
@@ -43,6 +44,7 @@ def run_manual_servo_control(
     if embodiment.show_gui:
         slider = Slider(embodiment.slider, ref_pose)
 
+    manual = ManualControl(embodiment)
     plotContour = PlotContour(embodiment.workframe)#, embodiment.stim_name)
 
     # initialise pose and integral term
@@ -66,13 +68,13 @@ def run_manual_servo_control(
         else:
             tcp_pose = pose
 
-        # control robot with key press
-        delta = keyboard(embodiment)
+        # manually control robot
+        delta = manual.spacemouse()
         if delta is None: 
             break # quit
 
         # apply pi(d) control to reduce delta
-        int_delta = delta + 0.9 * np.array(int_delta)
+        int_delta = i_leak * np.array(int_delta) + delta
         int_delta = np.clip(int_delta, *i_clip)
 
         output = p_gains * delta  +  i_gains * int_delta 
@@ -125,7 +127,7 @@ if __name__ == '__main__':
         '-s', '--stimuli',
         nargs='+',
         help="Choose stimulus from ['circle', 'square', 'clover', 'foil', 'saddle', 'bowl'].",
-        default=['bowl']
+        default=['saddle']
     )
     parser.add_argument(
         '-d', '--device',
@@ -144,8 +146,7 @@ if __name__ == '__main__':
     for task in tasks:
 
         # set saved model dir
-        task += version
-        model_dir = os.path.join(model_path, task)
+        model_dir = os.path.join(model_path, task+version)
 
         # load params
         sensor_params = load_json_obj(os.path.join(model_dir, 'sensor_params'))

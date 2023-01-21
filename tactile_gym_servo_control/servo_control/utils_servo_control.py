@@ -2,6 +2,7 @@ import os
 import numpy as np
 import torch
 from torch.autograd import Variable
+import pyspacemouse
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
@@ -13,13 +14,20 @@ LEFT, RIGHT, FORE, BACK, SHIFT, CTRL, QUIT \
     = 65295, 65296, 65297, 65298, 65306, 65307, ord('Q')
 
 
-def keyboard(embodiment,  
-    delta_init = [0.0, 0, 0, 0, 0, 0]
-):
-    delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
+class ManualControl:
+    def __init__(self, embodiment):    
+        self.embodiment = embodiment
+        try:
+            pyspacemouse.open()
+        except:
+            print('no spacemouse')
 
-    keys = embodiment._pb.getKeyboardEvents()
-    if embodiment._pb.KEY_WAS_TRIGGERED:
+    def keyboard(self,
+        delta_init = [0.0, 0, 0, 0, 0, 0]
+    ):
+        delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
+
+        keys = self.embodiment._pb.getKeyboardEvents()
         if CTRL in keys:
             if FORE in keys:  delta -= [0, 0, 0, 0, 1, 0]
             if BACK in keys:  delta += [0, 0, 0, 0, 1, 0]
@@ -37,34 +45,18 @@ def keyboard(embodiment,
             if LEFT in keys:  delta += [0, 1, 0, 0, 0, 0]
         if QUIT in keys:  delta = None
 
-    return np.array(delta)
+        return np.array(delta)
 
+    def spacemouse(self,
+        delta_init = [0.0, 0, 0, 0, 0, 0]
+    ):
+        delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
 
-def spacemouse(embodiment,  
-    delta_init = [0.0, 0, 0, 0, 0, 0]
-):
-    delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
+        state = pyspacemouse.read()
+        pose_state = np.array([state[i] for i in [2, 1, 3, 4, 5, 6]])
+        delta += -2.0 * pose_state
 
-    keys = embodiment._pb.getKeyboardEvents()
-    if embodiment._pb.KEY_WAS_TRIGGERED:
-        if CTRL in keys:
-            if FORE in keys:  delta -= [0, 0, 0, 0, 1, 0]
-            if BACK in keys:  delta += [0, 0, 0, 0, 1, 0]
-            if RIGHT in keys: delta -= [0, 0, 0, 1, 0, 0]
-            if LEFT in keys:  delta += [0, 0, 0, 1, 0, 0]
-        elif SHIFT in keys:
-            if FORE in keys:  delta -= [0, 0, 1, 0, 0, 0]
-            if BACK in keys:  delta += [0, 0, 1, 0, 0, 0]
-            if RIGHT in keys: delta -= [0, 0, 0, 0, 0, 2.5]
-            if LEFT in keys:  delta += [0, 0, 0, 0, 0, 2.5]
-        else:
-            if FORE in keys:  delta -= [1, 0, 0, 0, 0, 0]
-            if BACK in keys:  delta += [1, 0, 0, 0, 0, 0]
-            if RIGHT in keys: delta -= [0, 1, 0, 0, 0, 0]
-            if LEFT in keys:  delta += [0, 1, 0, 0, 0, 0]
-        if QUIT in keys:  delta = None
-
-    return np.array(delta)
+        return np.array(delta)
 
 
 class Slider:
@@ -134,3 +126,5 @@ class Model:
             print(label_name, predicted_val, end=" ")
 
         return predictions_arr
+
+

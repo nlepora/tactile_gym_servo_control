@@ -128,7 +128,7 @@ if __name__ == '__main__':
         '-s', '--stimuli',
         nargs='+',
         help="Choose stimulus from ['circle', 'square', 'clover', 'foil', 'saddle', 'bowl'].",
-        default=['saddle']
+        default=['bowl']
     )
     parser.add_argument(
         '-d', '--device',
@@ -147,8 +147,7 @@ if __name__ == '__main__':
     for task in tasks:
 
         # set saved model dir
-        task += version
-        model_dir = os.path.join(model_path, task)
+        model_dir = os.path.join(model_path, task+version)
 
         # load model and sensor params
         network_params = load_json_obj(os.path.join(model_dir, 'model_params'))

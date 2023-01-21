@@ -46,11 +46,11 @@ def setup_pybullet_env(
         globalCFM=0.0001,
     )
 
-    pb.loadURDF(
+    plane_id = pb.loadURDF(
         add_assets_path("shared_assets/environment_objects/plane/plane.urdf"),
         [0, 0, -0.625],
     )
-    pb.loadURDF(
+    table_id = pb.loadURDF(
         add_assets_path("shared_assets/environment_objects/table/table.urdf"),
         [0.50, 0.00, -0.625],
         [0.0, 0.0, 0.0, 1.0],
@@ -59,13 +59,18 @@ def setup_pybullet_env(
     # add stimulus
     stim_pose *= POSE_UNITS
     stim_pos, stim_rpy = stim_pose[:3], stim_pose[3:] 
-    p.loadURDF(
+    stim_id = p.loadURDF(
         stim_path,
         stim_pos,
         p.getQuaternionFromEuler(stim_rpy),
         useFixedBase=True,
         globalScaling=stim_scale
     )
+
+    # turn off collisions to speed up simulation; in static environment colisions are not useful
+    pb.setCollisionFilterGroupMask(plane_id, -1, 0, 0)
+    pb.setCollisionFilterGroupMask(table_id, -1, 0, 0)
+    pb.setCollisionFilterGroupMask(stim_id, -1, 0, 0)
 
     # set debug camera position
     cam_params = {
