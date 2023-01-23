@@ -40,8 +40,8 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_learning import setup_learning
 from tactile_gym_servo_control.learning.setup_learning import setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models/sim')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real-dobot/digitac')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real-dobot/digitac')
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -66,14 +66,18 @@ def train_model(
     ]
     pose_limits = get_pose_limits(train_data_dirs, save_dir)
 
-    validation_data_dirs = [
-        os.path.join(data_path, task, 'train')
+    val_data_dirs = [
+        os.path.join(data_path, task, 'val')
     ]
 
     # set generators and loaders
     generator_args = {**image_processing_params, **augmentation_params}
     train_generator = ImageDataGenerator(data_dirs=train_data_dirs, **generator_args)
-    val_generator = ImageDataGenerator(data_dirs=validation_data_dirs, **image_processing_params)
+    try:
+        val_generator = ImageDataGenerator(data_dirs=val_data_dirs, **image_processing_params)
+    except:
+        print('no validation set - using training set')
+        val_generator = ImageDataGenerator(data_dirs=train_data_dirs, **image_processing_params)
 
     train_loader = torch.utils.data.DataLoader(
         train_generator,
