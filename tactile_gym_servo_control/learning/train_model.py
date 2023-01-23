@@ -40,8 +40,8 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_learning import setup_learning
 from tactile_gym_servo_control.learning.setup_learning import setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/sim')
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -280,7 +280,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['edge_2d']
+        default=['surface_3d']
     )
     parser.add_argument(
         '-m', '--models',

@@ -1,1 +1,1 @@
-{"name": "sensor", "type": "standard", "core": "no_core", "dynamics": {}, "image_size": [128, 128], "turn_off_border": false}
+{"name": "tactip", "type": "standard", "core": "no_core", "dynamics": {}, "image_size": [128, 128], "turn_off_border": false}

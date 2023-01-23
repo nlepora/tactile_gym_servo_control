@@ -9,11 +9,11 @@ python collect_train_val_test_data.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 
-from tactile_gym_servo_control.utils_robot_real.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
+from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 from tactile_gym_servo_control.collect_data.collect_data import collect_data
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
 
 
 if __name__ == "__main__":
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from [surface_3d edge_2d edge_3d edge_5d].",
-        default=['edge_2d']
+        default=['edge_5d']
     )
 
     # parse arguments
@@ -53,7 +53,7 @@ if __name__ == "__main__":
             embodiment = setup_embodiment_env(
                 **env_params, 
                 sensor_params = sensor_params,
-                show_gui=False#, quick_mode=True 
+                show_gui=True, quick_mode=True 
             )
 
             collect_data(

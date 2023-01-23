@@ -3,6 +3,37 @@ import os
 from tactile_gym.utils.general_utils import save_json_obj
 
 
+def setup_task(task_name):
+    """
+    Returns task specific details.
+    """
+
+    if task_name == 'surface_3d':
+        out_dim = 5
+        label_names = ['z', 'Rx', 'Ry']
+
+    elif task_name == 'edge_2d':
+        out_dim = 3
+        label_names = ['x', 'Rz']
+
+    elif task_name == 'surface_2d':
+        out_dim = 3
+        label_names = ['y', 'Rz']
+
+    elif task_name == 'edge_3d':
+        out_dim = 4
+        label_names = ['x', 'z', 'Rz']
+
+    elif task_name == 'edge_5d':
+        out_dim = 8
+        label_names = ['x', 'z', 'Rx', 'Ry', 'Rz']
+
+    else:
+        raise ValueError('Incorrect task_name specified: {}'.format(task_name))
+
+    return out_dim, label_names
+
+
 def setup_learning(save_dir):
 
     # Parameters
@@ -78,34 +109,3 @@ def setup_model(model_type, save_dir):
     save_json_obj(model_params, os.path.join(save_dir, 'model_params'))
 
     return model_params
-
-
-def setup_task(task_name):
-    """
-    Returns task specific details.
-    """
-
-    if task_name == 'surface_3d':
-        out_dim = 5
-        label_names = ['z', 'Rx', 'Ry']
-
-    elif task_name == 'edge_2d':
-        out_dim = 3
-        label_names = ['x', 'Rz']
-
-    elif task_name == 'surface_2d':
-        out_dim = 3
-        label_names = ['y', 'Rz']
-
-    elif task_name == 'edge_3d':
-        out_dim = 4
-        label_names = ['y', 'z', 'Rz']
-
-    elif task_name == 'edge_5d':
-        out_dim = 8
-        label_names = ['y', 'z', 'Rx', 'Ry', 'Rz']
-
-    else:
-        raise ValueError('Incorrect task_name specified: {}'.format(task_name))
-
-    return out_dim, label_names

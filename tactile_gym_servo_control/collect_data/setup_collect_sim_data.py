@@ -30,13 +30,13 @@ def setup_surface_3d_collect_data(
 ):
     env_params = {
         'stim_name': 'square',
-        'stim_pose': [600, 0, 12.5,    0, 0,  0],
-        'workframe': [600, 0, 52.5, -180, 0, 90]
+        'stim_pose': [600, 0, 0,    0, 0,  0],
+        'workframe': [600, 0, 40, -180, 0, 90]
     }
     
     pose_params = {
-        'pose_llims': [0, 0, 0.5, -25, -25, 0],
-        'pose_ulims': [0, 0, 5.5,  25,  25, 0],
+        'pose_llims': [0, 0, 0.5, -45/2, -45/2, 0],
+        'pose_ulims': [0, 0, 5.5,  45/2,  45/2, 0],
         'obj_poses': [[0, 0, 0, 0, 0, 0]],
     }
 
@@ -61,8 +61,8 @@ def setup_edge_2d_collect_data(
 ):
     env_params = {
         'stim_name': 'square',
-        'stim_pose': [600, 0, 12.5,    0, 0, 0],
-        'workframe': [650, 0, 52.5, -180, 0, 0]
+        'stim_pose': [600, 0, 0,    0, 0, 0],
+        'workframe': [650, 0, 40, -180, 0, 0]
     }
 
     pose_params = {
@@ -92,13 +92,13 @@ def setup_edge_3d_collect_data(
 ):
     env_params = {
         'stim_name': 'square',
-        'stim_pose': [600, 0, 12.5, 0, 0, 0],
-        'workframe': [650, 0, 52.5, -180, 0, 90]
+        'stim_pose': [600, 0, 0, 0, 0, 0],
+        'workframe': [650, 0, 40, -180, 0, 0]
     }
 
     pose_params = {
-        'pose_llims': [0, -3, 2,  -20, -20, -180],
-        'pose_ulims': [0,  3, 5.5, 20,  20,  180],
+        'pose_llims': [-5, 0, 1.5, -45/2, -45/2, -180],
+        'pose_ulims': [ 5, 0, 5.5,  45/2,  45/2,  180],
         'obj_poses': [[0, 0, 0, 0, 0, 0]]
     }
 
@@ -123,13 +123,13 @@ def setup_edge_5d_collect_data(
 ):
     env_params = {
         'stim_name': 'square',
-        'stim_pose': [600, 0, 12.5, 0, 0, 0],
-        'workframe': [650, 0, 52.5, -180, 0, 90]
+        'stim_pose': [600, 0,  0, 0, 0, 0],
+        'workframe': [650, 0, 40, -180, 0, 0]
     }
 
     pose_params = {
-        'pose_llims': [0, -4,   2, -15, -15, -180],
-        'pose_ulims': [0,  4, 5.5,  15,  15,  180],
+        'pose_llims': [-5, 0, 1.5, -45/2, -45/2, -180],
+        'pose_ulims': [ 5, 0, 5.5,  45/2,  45/2,  180],
         'obj_poses': [[0, 0, 0, 0, 0, 0]]
     }
 
