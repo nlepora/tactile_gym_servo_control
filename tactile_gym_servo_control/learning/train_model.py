@@ -40,8 +40,11 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_learning import setup_learning
 from tactile_gym_servo_control.learning.setup_learning import setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real-dobot/digitac')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real-dobot/digitac')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real-abb')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real-abb')
+
+data_version = ''
+model_version = data_version + '_aug'
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -69,6 +72,9 @@ def train_model(
     val_data_dirs = [
         os.path.join(data_path, task, 'val')
     ]
+
+    # keep record of sensor params
+    shutil.copy(os.path.join(train_data_dirs[0], 'sensor_params.json'), save_dir)
 
     # set generators and loaders
     generator_args = {**image_processing_params, **augmentation_params}
@@ -304,7 +310,6 @@ if __name__ == "__main__":
     tasks = args.tasks
     models = args.models
     device = args.device
-    version = ''
 
     for task in tasks:
         for model_type in models:
@@ -313,13 +318,9 @@ if __name__ == "__main__":
             out_dim, label_names = setup_task(task)        
 
             # setup save dir
-            task += version
-            save_dir = os.path.join(model_path, model_type, task)
+            save_dir = os.path.join(model_path, model_type, task + model_version)
             check_dir(save_dir)
             os.makedirs(save_dir, exist_ok=True)
-
-            # keep record of sensor params
-            shutil.copy(os.path.join(data_path, task, 'train', 'sensor_params.json'), save_dir)
 
             # setup parameters            
             network_params = setup_model(model_type, save_dir)
@@ -336,7 +337,7 @@ if __name__ == "__main__":
             )
 
             train_model(
-                task,
+                task + data_version,
                 network,
                 label_names,
                 learning_params,

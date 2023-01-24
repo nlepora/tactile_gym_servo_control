@@ -14,6 +14,7 @@ from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_
 from tactile_gym_servo_control.collect_data.collect_data import collect_data
 
 data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+data_version = ''
 
 
 if __name__ == "__main__":
@@ -29,8 +30,7 @@ if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
     tasks = args.tasks
-    version = ''
-
+    
     collection_params = {
         'train': 5000,
         'val': 2000,
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         for collect_dir_name, num_samples in collection_params.items():
 
             collect_dir = os.path.join(
-                data_path, task + version, collect_dir_name
+                data_path, task + data_version, collect_dir_name
             )
 
             target_df, image_dir, env_params, sensor_params = \

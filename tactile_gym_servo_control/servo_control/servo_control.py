@@ -28,6 +28,8 @@ np.set_printoptions(precision=1, suppress=True)
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
+model_version = ''
+
 
 def run_servo_control(
             embodiment, model,
@@ -142,12 +144,11 @@ if __name__ == '__main__':
     tasks = args.tasks
     stimuli = args.stimuli
     device = args.device
-    version = ''
 
     for task in tasks:
 
         # set saved model dir
-        model_dir = os.path.join(model_path, task+version)
+        model_dir = os.path.join(model_path, task + model_version)
 
         # load model and sensor params
         network_params = load_json_obj(os.path.join(model_dir, 'model_params'))
