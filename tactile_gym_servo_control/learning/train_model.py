@@ -10,7 +10,6 @@ import os
 import argparse
 import time
 import pickle
-
 import shutil
 import numpy as np
 import pandas as pd
@@ -23,28 +22,20 @@ import torch
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import check_dir
-
 from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
-from tactile_gym_servo_control.learning.utils_learning import get_pose_limits
-from tactile_gym_servo_control.learning.utils_learning import encode_pose
-from tactile_gym_servo_control.learning.utils_learning import decode_pose
-from tactile_gym_servo_control.learning.utils_learning import acc_metric
-from tactile_gym_servo_control.learning.utils_learning import err_metric
+from tactile_gym_servo_control.learning.utils_learning import get_pose_limits, encode_pose, decode_pose
+from tactile_gym_servo_control.learning.utils_learning import acc_metric, err_metric
 from tactile_gym_servo_control.learning.utils_learning import seed_everything
-from tactile_gym_servo_control.learning.utils_plots import PlotError
-from tactile_gym_servo_control.learning.utils_plots import PlotTrain
-
+from tactile_gym_servo_control.learning.utils_plots import PlotError, PlotTrain
 from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
 from tactile_gym_servo_control.learning.setup_network import setup_network
-from tactile_gym_servo_control.learning.setup_learning import setup_task
-from tactile_gym_servo_control.learning.setup_learning import setup_learning
-from tactile_gym_servo_control.learning.setup_learning import setup_model
+from tactile_gym_servo_control.learning.setup_learning import setup_task, setup_learning, setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real-abb')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real-abb')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real')
 
-data_version = ''
-model_version = data_version + '_aug'
+data_version = '_90deg'
+model_version = data_version #+ '_aug'
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -62,16 +53,14 @@ def train_model(
     plot_during_training=False,  # slows training noticably
     device='cpu'
 ):
-
     # data dir - can specify multiple directories combined in generator
     train_data_dirs = [
         os.path.join(data_path, task, 'train')
     ]
-    pose_limits = get_pose_limits(train_data_dirs, save_dir)
-
     val_data_dirs = [
         os.path.join(data_path, task, 'val')
     ]
+    pose_limits = get_pose_limits(train_data_dirs, save_dir)
 
     # keep record of sensor params
     shutil.copy(os.path.join(train_data_dirs[0], 'sensor_params.json'), save_dir)
@@ -79,11 +68,7 @@ def train_model(
     # set generators and loaders
     generator_args = {**image_processing_params, **augmentation_params}
     train_generator = ImageDataGenerator(data_dirs=train_data_dirs, **generator_args)
-    try:
-        val_generator = ImageDataGenerator(data_dirs=val_data_dirs, **image_processing_params)
-    except:
-        print('no validation set - using training set')
-        val_generator = ImageDataGenerator(data_dirs=train_data_dirs, **image_processing_params)
+    val_generator = ImageDataGenerator(data_dirs=val_data_dirs, **image_processing_params)
 
     train_loader = torch.utils.data.DataLoader(
         train_generator,
@@ -290,7 +275,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['surface_3d']
+        default=['edge_2d']
     )
     parser.add_argument(
         '-m', '--models',

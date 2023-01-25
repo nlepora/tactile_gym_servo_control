@@ -45,10 +45,7 @@ class ImageDataGenerator(torch.utils.data.Dataset):
         df_list = []
         for data_dir in data_dirs:
             df = pd.read_csv(os.path.join(data_dir, 'targets.csv'))
-            df['image_dir'] = os.path.join(
-                data_dir,
-                'images'
-            )
+            df['image_dir'] = os.path.join(data_dir, 'images')
             df_list.append(df)
 
         # concat all df
