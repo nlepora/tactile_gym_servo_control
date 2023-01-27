@@ -10,7 +10,7 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
 from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                 collect_dir
             )
 
-        embodiment = setup_embodiment_env(
+        embodiment = setup_embodiment(
             **env_params, 
             sensor_params=sensor_params,
             show_gui=True, #quick_mode=True 

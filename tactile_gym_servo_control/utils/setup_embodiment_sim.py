@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_sim.setup_pybullet_env import setup_pybullet_env
+from cri.sim.utils_robot_sim.setup_pybullet_env import setup_pybullet_env
 
 stimuli_path = os.path.join(os.path.dirname(__file__), 'stimuli')
 

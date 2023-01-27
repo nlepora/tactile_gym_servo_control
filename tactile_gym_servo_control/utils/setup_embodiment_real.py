@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from tactile_gym_servo_control.utils.image_transforms import Sensor, process_image
-from tactile_gym_servo_control.utils_robot_real.setup_pybullet_env import setup_pybullet_env
+from tactile_gym_servo_control.utils.setup_pybullet_env import setup_pybullet_env
 
 from cri.robot import SyncRobot
 from cri.controller import Mg400Controller as Controller
