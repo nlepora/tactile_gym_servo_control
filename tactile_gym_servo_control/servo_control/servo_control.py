@@ -13,11 +13,11 @@ import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
-from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
+from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setup_servo_control
 from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
@@ -163,7 +163,7 @@ if __name__ == '__main__':
 
             env_params, control_params = setup_servo_control[task](stimulus)
 
-            embodiment = setup_embodiment_env(
+            embodiment = setup_embodiment(
                 **env_params,
                 sensor_params=sensor_params, quick_mode=True
             )

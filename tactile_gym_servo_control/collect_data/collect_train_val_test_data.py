@@ -9,7 +9,7 @@ python collect_train_val_test_data.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
 from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 from tactile_gym_servo_control.collect_data.collect_data import collect_data
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
                     collect_dir, num_samples
                 )
 
-            embodiment = setup_embodiment_env(
+            embodiment = setup_embodiment(
                 **env_params, 
                 sensor_params = sensor_params,
                 show_gui=True, quick_mode=True 

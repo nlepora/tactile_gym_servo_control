@@ -1,6 +1,6 @@
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_real.setup_pybullet_env import setup_pybullet_env
+from tactile_gym_servo_control.utils.setup_pybullet_env import setup_pybullet_env
 from vsp.video_stream import CvImageOutputFileSeq, CvVideoDisplay, CvPreprocVideoCamera   
 from vsp.processor import CameraStreamProcessor, AsyncProcessor
 

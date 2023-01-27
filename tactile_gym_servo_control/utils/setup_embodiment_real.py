@@ -9,7 +9,7 @@ from cri.controller import Mg400Controller as Controller
 # from cri.controller import DummyController as Controller
 
 
-def setup_embodiment_env(
+def setup_embodiment(
     sensor_params={},
     workframe=[288, 0, -100, 0, 0, -90],
     linear_speed=10, 

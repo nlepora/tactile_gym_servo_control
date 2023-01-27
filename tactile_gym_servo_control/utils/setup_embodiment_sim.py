@@ -7,7 +7,7 @@ from cri.sim.utils_robot_sim.setup_pybullet_env import setup_pybullet_env
 stimuli_path = os.path.join(os.path.dirname(__file__), 'stimuli')
 
 
-def setup_embodiment_env(
+def setup_embodiment(
     workframe=[600, 0, 52.5, -180, 0, 90],
     stim_name="square",
     stim_pose=[600, 0, 12.5, 0, 0, 0],
