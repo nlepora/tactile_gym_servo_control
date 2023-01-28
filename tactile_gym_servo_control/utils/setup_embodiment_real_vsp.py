@@ -8,7 +8,7 @@ from cri.robot import SyncRobot
 from cri.controller import Mg400Controller as Controller
 # from cri.controller import DummyController as Controller
 
-def make_sensor(
+def Sensor(
     size=[256, 256], 
     bbox=None, 
     exposure=-7, 
@@ -19,9 +19,7 @@ def make_sensor(
     camera = CvPreprocVideoCamera(
         size, crop=bbox, threshold=[61, -5], exposure=exposure, source=source
     )
-    
     for _ in range(5): camera.read() # Hack - camera transient   
-    
     return AsyncProcessor(CameraStreamProcessor(
             camera=camera,
             display=CvVideoDisplay(name='sensor'),
@@ -40,7 +38,7 @@ def setup_embodiment_env(
 ):
 
     # setup the tactile sensor
-    sensor = make_sensor(**sensor_params)
+    sensor = Sensor(**sensor_params)
 
     def sensor_process(outfile=None):
         img = sensor.process(

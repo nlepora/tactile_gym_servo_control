@@ -41,21 +41,6 @@ def load_video_frames(filename):
     return np.array(frames)
 
 
-class Sensor:
-    def __init__(self, 
-        source=0, 
-        exposure=-7, 
-        **kwargs
-    ):  
-        self.cam = cv2.VideoCapture(source)
-        self.cam.set(cv2.CAP_PROP_EXPOSURE, exposure)
-        for _ in range(5): self.cam.read() # Hack - camera transient
-
-    def load(self):
-        _, img = self.cam.read()
-        return img
-
-
 def process_image(
     image,
     gray=True,

@@ -18,7 +18,7 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setup_servo_control
-from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
+# from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
@@ -44,10 +44,10 @@ def run_servo_control(
     if record_vid:
         render_frames = []
 
-    if embodiment.show_gui:
-        slider = Slider(embodiment.slider, ref_pose)
+    # if embodiment.show_gui:
+    #     slider = Slider(embodiment.slider, ref_pose)
 
-    plotContour = PlotContour(embodiment.workframe)#, embodiment.stim_name)
+    plotContour = PlotContour(embodiment.workframe)
 
     # initialise pose and integral term
     pose = [0, 0, 0, 0, 0, 0]
@@ -64,12 +64,6 @@ def run_servo_control(
         # get current tactile observation
         tactile_image = embodiment.sensor_process()
 
-        # get current TCP pose
-        if embodiment.sim:
-            tcp_pose = embodiment.get_tcp_pose()
-        else:
-            tcp_pose = pose
-
         # predict pose from observation
         pred_pose = model.predict(tactile_image)
 
@@ -83,18 +77,19 @@ def run_servo_control(
         output = p_gains * delta  +  i_gains * int_delta 
         
         # new pose combines output pose with tcp_pose 
+        tcp_pose = embodiment.pose # need to test on real
         pose = inv_transform_pose(output, tcp_pose)
 
         # move to new pose
         embodiment.move_linear(pose)
 
         # slider control
-        if embodiment.show_gui:
-            ref_pose = slider.slide(ref_pose)
+        # if embodiment.show_gui:
+        #     ref_pose = slider.slide(ref_pose)
            
         # show tcp if sim
-        if embodiment.show_gui and embodiment.sim:
-            embodiment.arm.draw_TCP(lifetime=10.0)
+        # if embodiment.show_gui and embodiment.sim:
+        #     embodiment.controller._client._sim_env.arm.draw_TCP(lifetime=10.0)
         
         # render frames
         if record_vid:
@@ -164,8 +159,9 @@ if __name__ == '__main__':
             env_params, control_params = setup_servo_control[task](stimulus)
 
             embodiment = setup_embodiment(
-                **env_params,
-                sensor_params=sensor_params, quick_mode=True
+                env_params, 
+                sensor_params, 
+                quick_mode=True
             )
 
             network = setup_network(

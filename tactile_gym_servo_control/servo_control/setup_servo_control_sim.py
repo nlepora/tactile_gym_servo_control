@@ -1,5 +1,3 @@
-import numpy as np
-
 def setup_stim(stimulus, task):
 
     stim_pose = [600, 0, 0, 0, 0, 0]

@@ -51,13 +51,9 @@ if __name__ == "__main__":
                 )
 
             embodiment = setup_embodiment(
-                **env_params, 
-                sensor_params = sensor_params,
-                show_gui=True, quick_mode=True 
+                env_params, sensor_params, show_gui=True, quick_mode=True 
             )
 
             collect_data(
-                embodiment,
-                target_df,
-                image_dir
+                embodiment, target_df, image_dir
             )

@@ -2,54 +2,46 @@ import os
 import cv2
 import numpy as np
 
-from cri.sim.utils_robot_sim.setup_pybullet_env import setup_pybullet_env
+from tactile_gym_servo_control.utils.image_transforms import process_image
+
+from cri.robot import SyncRobot
+from cri.controller import SimController as Controller
 
 stimuli_path = os.path.join(os.path.dirname(__file__), 'stimuli')
 
 
 def setup_embodiment(
-    workframe=[600, 0, 52.5, -180, 0, 90],
-    stim_name="square",
-    stim_pose=[600, 0, 12.5, 0, 0, 0],
-    stim_scale=1,
-    sensor_params = {},
+    env_params={},
+    sensor_params={},
     hover=[0, 0, -7.5, 0, 0, 0],
     show_gui=True, 
     show_tactile=True,
     quick_mode=False
 ):
-
-    stim_path = os.path.join(
-        stimuli_path, stim_name, stim_name + ".urdf"
-    )
+    env_params['stim_path'] = stimuli_path
+    env_params['show_gui'] = show_gui
+    env_params['show_tactile'] = show_tactile
+    env_params['quick_mode'] = quick_mode
 
     # setup the robot
-    embodiment = setup_pybullet_env(
-        workframe,
-        stim_path,
-        stim_pose,
-        stim_scale,
-        sensor_params,
-        show_gui,
-        show_tactile,
-        quick_mode
-    )
+    embodiment = SyncRobot(Controller(sensor_params, env_params))   
+    sensor = embodiment.controller._client._sim_env
 
     # setup the tactile sensor
     def sensor_process(outfile=None):
-        img = embodiment.get_tactile_observation()
+        img = sensor.get_tactile_observation()
+        # img = process_image(img, **sensor_params)
         if outfile is not None:
             cv2.imwrite(outfile, img)
         return img
 
     embodiment.sensor_process = sensor_process
-    embodiment.slider = embodiment
+    # embodiment.slider = embodiment
     embodiment.sim = True
 
     embodiment.hover = np.array(hover)
     embodiment.show_gui = show_gui
-    embodiment.workframe = workframe
-    embodiment.stim_name = stim_name
+    embodiment.workframe = env_params['workframe']
 
     return embodiment
 

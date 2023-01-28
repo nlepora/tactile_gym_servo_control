@@ -44,20 +44,20 @@ def collect_data(
         pose += obj_pose
 
         # move to above new pose (avoid changing pose in contact with object)
-        embodiment.move_linear(np.array(pose) - np.array(move) + np.array(hover))
+        embodiment.move_linear(pose - move + hover)
  
         # move down to offset position
-        embodiment.move_linear(np.array(pose) - np.array(move))
+        embodiment.move_linear(pose - move)
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(np.array(pose))
+        embodiment.move_linear(pose)
 
         # process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)
         embodiment.sensor_process(outfile=image_outfile)
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(np.array(pose) + np.array(hover))
+        embodiment.move_linear(pose + hover)
 
     # finish above workframe origin
     embodiment.move_linear(hover)
@@ -81,8 +81,8 @@ if __name__ == "__main__":
     for task in tasks:
 
         collect_dir = os.path.join(
-                data_path, task, 'data'
-            )
+            data_path, task, 'data'
+        )
 
         target_df, image_dir, env_params, sensor_params = \
             setup_collect_data[task](
@@ -90,13 +90,9 @@ if __name__ == "__main__":
             )
 
         embodiment = setup_embodiment(
-            **env_params, 
-            sensor_params=sensor_params,
-            show_gui=True, #quick_mode=True 
+            env_params, sensor_params, show_gui=True, #quick_mode=True 
         )
 
         collect_data(
-            embodiment,
-            target_df,
-            image_dir
+            embodiment, target_df, image_dir
         )

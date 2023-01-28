@@ -2,7 +2,11 @@ import os
 import numpy as np
 import torch
 from torch.autograd import Variable
-import pyspacemouse
+
+try:
+    import pyspacemouse
+except:
+    print('pyspacemouse not installed')
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 

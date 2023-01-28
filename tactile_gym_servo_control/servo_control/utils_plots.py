@@ -68,10 +68,10 @@ class PlotContour3D:
                 inv=1
                 ):
 
-        if stim_name=='saddle':
-            limits = [[-70,70], [-10,130], [-30,30]]
-        else:
-            limits = [[-110,10], [-60,60], [-30,30]]
+        # if stim_name=='saddle':
+        #     limits = [[-70,70], [-10,130], [-30,30]]
+        # else:
+        limits = [[-110,10], [-60,60], [-30,30]]
 
         self._fig = plt.figure('Contour 3d', figsize=(5, 5))
         self._fig.clear()
