@@ -14,6 +14,7 @@ def setup_embodiment(
     env_params={},
     sensor_params={},
     hover=[0, 0, -7.5, 0, 0, 0],
+    tcp_pose=[0, 0, 0, 0, 0, 0],
     show_gui=True, 
     show_tactile=True,
     quick_mode=False
@@ -30,18 +31,19 @@ def setup_embodiment(
     # setup the tactile sensor
     def sensor_process(outfile=None):
         img = sensor.get_tactile_observation()
-        # img = process_image(img, **sensor_params)
+        img = process_image(img, **sensor_params)
         if outfile is not None:
             cv2.imwrite(outfile, img)
         return img
 
     embodiment.sensor_process = sensor_process
-    # embodiment.slider = embodiment
-    embodiment.sim = True
+
+    # settings
+    embodiment.coord_frame = env_params['workframe']
+    embodiment.tcp = tcp_pose
 
     embodiment.hover = np.array(hover)
     embodiment.show_gui = show_gui
-    embodiment.workframe = env_params['workframe']
 
     return embodiment
 

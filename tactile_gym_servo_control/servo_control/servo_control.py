@@ -18,7 +18,7 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setup_servo_control
-# from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
+from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
@@ -44,10 +44,9 @@ def run_servo_control(
     if record_vid:
         render_frames = []
 
-    # if embodiment.show_gui:
-    #     slider = Slider(embodiment.slider, ref_pose)
-
-    plotContour = PlotContour(embodiment.workframe)
+    # initialize slider and plot
+    slider = Slider(ref_pose)
+    plotContour = PlotContour(embodiment.coord_frame)
 
     # initialise pose and integral term
     pose = [0, 0, 0, 0, 0, 0]
@@ -84,13 +83,8 @@ def run_servo_control(
         embodiment.move_linear(pose)
 
         # slider control
-        # if embodiment.show_gui:
-        #     ref_pose = slider.slide(ref_pose)
-           
-        # show tcp if sim
-        # if embodiment.show_gui and embodiment.sim:
-        #     embodiment.controller._client._sim_env.arm.draw_TCP(lifetime=10.0)
-        
+        ref_pose = slider.read(ref_pose)
+       
         # render frames
         if record_vid:
             render_img = embodiment.render()
@@ -99,6 +93,8 @@ def run_servo_control(
         # report
         print(f'\nstep {i+1}: pose: {pose}', end='')
         plotContour.update(pose)
+        # if embodiment.show_gui and embodiment.sim:
+        #     embodiment.controller._client._sim_env.arm.draw_TCP(lifetime=10.0)
 
     # move to above final pose
     embodiment.move_linear(pose + hover)
@@ -119,13 +115,13 @@ if __name__ == '__main__':
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['surface_3d']
+        default=['edge_2d']
     )
     parser.add_argument(
         '-s', '--stimuli',
         nargs='+',
         help="Choose stimulus from ['circle', 'square', 'clover', 'foil', 'saddle', 'bowl'].",
-        default=['bowl']
+        default=['circle']
     )
     parser.add_argument(
         '-d', '--device',

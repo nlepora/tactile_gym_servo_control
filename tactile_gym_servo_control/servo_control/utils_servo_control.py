@@ -1,4 +1,5 @@
 import os
+import tkinter as tk
 import numpy as np
 import torch
 from torch.autograd import Variable
@@ -65,27 +66,27 @@ class ManualControl:
 
 class Slider:
     def __init__(self,
-        embodiment, init_ref_pose,
-        ref_llims=[-5, -5, 0, -15, -15, -180],
-        ref_ulims=[ 5,  5, 5,  15,  15,  180]
+        init_pose,
+        pose_llims=[-5, -5, 0, -15, -15, -180],
+        pose_ulims=[ 5,  5, 5,  15,  15,  180]
     ):    
-        self.embodiment = embodiment
-        self.ref_pose_ids = []
-        for label_name in POSE_LABEL_NAMES:
-            i = POSE_LABEL_NAMES.index(label_name)
-            self.ref_pose_ids.append(
-                embodiment._pb.addUserDebugParameter(
-                    label_name, ref_llims[i], ref_ulims[i], init_ref_pose[i]
-                )
+        self.pose_ids = []
+        self.tk = tk.Tk()
+        for i, label_name in enumerate(POSE_LABEL_NAMES):
+            self.pose_ids.append(
+                tk.Scale(self.tk, from_=pose_llims[i], to=pose_ulims[i],
+                    label=label_name, length=400, orient=tk.HORIZONTAL, 
+                    tickinterval=(pose_ulims[i]-pose_llims[i])/4, resolution=0.1)
             )
+            self.pose_ids[i].pack()
+            self.pose_ids[i].set(init_pose[i])
 
-    def slide(self, ref_pose):
-        for j in range(len(ref_pose)):
-            ref_pose[j] = self.embodiment._pb.readUserDebugParameter(
-                self.ref_pose_ids[j]
-            ) 
-
-        return ref_pose
+    def read(self, pose):
+        self.tk.update_idletasks()
+        self.tk.update()
+        for i in range(len(pose)):
+            pose[i] = self.pose_ids[i].get()
+        return pose
 
 
 class Model:

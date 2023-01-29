@@ -56,9 +56,11 @@ def process_image(
     '''
     if gray:
         # Convert to gray scale
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # Add channel axis
-        image = image[..., np.newaxis]
+        try:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = image[..., np.newaxis] # Add channel axis
+        except:
+            print('image already grey scale')
 
     if bbox is not None:
         # Crop to specified bounding box
