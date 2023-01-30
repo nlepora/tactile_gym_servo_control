@@ -26,7 +26,7 @@ def run_manual_servo_control(
             p_gains=[0, 0, 0, 0, 0, 0],
             i_gains=[0, 0, 0, 0, 0, 0],
             i_clip=[-np.inf, np.inf],
-            i_leak=1
+            i_leak=0.9
         ):
 
     # initialize slider and plot

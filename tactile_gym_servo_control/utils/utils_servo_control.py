@@ -53,15 +53,15 @@ class ManualControl:
         return np.array(delta)
 
     def spacemouse(self,
-        delta_init = [0.0, 0, 0, 0, 0, 0]
+        delta_init = [0, 0, 0, 0, 0, 0], 
+        gain = 2, 
+        sign = [-1, -1, -1, -1, 1, -1]
     ):
-        delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
-
         state = pyspacemouse.read()
-        pose_state = np.array([state[i] for i in [2, 1, 3, 4, 5, 6]])
-        delta += -2.0 * pose_state
+        pose_state = np.array([state[i]*sign[i-1] for i in [2, 1, 3, 4, 5, 6]])
+        delta = delta_init + gain * pose_state
 
-        return np.array(delta)
+        return delta
 
 
 class Slider:
