@@ -31,7 +31,7 @@ def setup_edge_2d(
     shuffle_data=True,
 ):
     env_params = {
-        'workframe': [285, 0, -93, 0, 0, 180],
+        'work_frame': [285, 0, -93, 0, 0, 180],
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]
@@ -65,7 +65,7 @@ def setup_edge_3d(
     shuffle_data=True,
 ):
     env_params = {
-        'workframe': [285, 0, -93, 0, 0, 180],
+        'work_frame': [285, 0, -93, 0, 0, 180],
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]

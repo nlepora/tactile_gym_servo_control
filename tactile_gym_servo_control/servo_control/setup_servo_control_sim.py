@@ -1,48 +1,48 @@
 def setup_stim(stimulus, task):
 
     stim_pose = [600, 0, 0, 0, 0, 0]
-    workframe = {
+    work_frame = {
         'edge':    [650,   0, 40-3, -180, 0, 0],
         'surface': [610, -55, 40-3, -180, 0, 0],
-        'saddle': [600, -65, 55-3, -180, 0, 0]
+        'saddle':  [600, -65, 55-3, -180, 0, 0]
     }
 
     stim_params_dict = {
         'saddle_surface': {
             'stim_name': 'saddle',
             'stim_pose': stim_pose,
-            'workframe': workframe['saddle'], 
+            'work_frame': work_frame['saddle'], 
         },
         'saddle_edge': {
             'stim_name': 'saddle',
             'stim_pose': stim_pose,
-            'workframe': workframe['saddle'], 
+            'work_frame': work_frame['saddle'], 
         },
         'bowl_surface': {
             'stim_name': 'bowl',
             'stim_pose': [600, 0, 60, 90, 0, 0],
             'stim_scale': 0.3,
-            'workframe': [600, 0, 25, -180, 0, 0], 
+            'work_frame': [600, 0, 25, -180, 0, 0], 
         },
         'square_'+task: {
             'stim_name': 'square', 
             'stim_pose': stim_pose,
-            'workframe': workframe[task]
+            'work_frame': work_frame[task]
         },
         'circle_'+task: {
             'stim_name': 'circle', 
             'stim_pose': stim_pose,
-            'workframe': workframe[task] 
+            'work_frame': work_frame[task] 
         },
         'clover_'+task: {
             'stim_name': 'clover', 
             'stim_pose': stim_pose,
-            'workframe': workframe[task] 
+            'work_frame': work_frame[task] 
         },
         'foil_'+task: {
             'stim_name': 'foil', 
             'stim_pose': stim_pose,
-            'workframe': workframe[task]
+            'workframe': work_frame[task]
         }
     }
 

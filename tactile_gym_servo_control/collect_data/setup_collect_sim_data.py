@@ -31,7 +31,7 @@ def setup_surface_3d_collect_data(
     env_params = {
         'stim_name': 'square',
         'stim_pose': [600, 0, 0,    0, 0,  0],
-        'workframe': [600, 0, 40, -180, 0, 90],
+        'work_frame': [600, 0, 40, -180, 0, 90],
     }
     
     pose_params = {
@@ -93,7 +93,7 @@ def setup_edge_3d_collect_data(
     env_params = {
         'stim_name': 'square',
         'stim_pose': [600, 0, 0, 0, 0, 0],
-        'workframe': [650, 0, 40, -180, 0, 0]
+        'work_frame': [650, 0, 40, -180, 0, 0]
     }
 
     pose_params = {
@@ -124,7 +124,7 @@ def setup_edge_5d_collect_data(
     env_params = {
         'stim_name': 'square',
         'stim_pose': [600, 0,  0, 0, 0, 0],
-        'workframe': [650, 0, 40, -180, 0, 0]
+        'work_frame': [650, 0, 40, -180, 0, 0]
     }
 
     pose_params = {

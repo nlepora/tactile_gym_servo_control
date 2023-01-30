@@ -14,7 +14,7 @@ def setup_embodiment(
     sensor_params={},
     hover=[0, 0, -7.5, 0, 0, 0]
 ):
-    workframe = env_params.get('workframe', [600, 0, 0, 0, 0, 0])
+    work_frame = env_params.get('work_frame', [600, 0, 0, 0, 0, 0])
     tcp_pose = env_params.get('tcp_pose', [0, 0, 0, 0, 0, 0])
     env_params['stim_path'] = stimuli_path
 
@@ -33,7 +33,7 @@ def setup_embodiment(
     embodiment.sensor_process = sensor_process
 
     # settings
-    embodiment.coord_frame = workframe
+    embodiment.coord_frame = work_frame
     embodiment.tcp = tcp_pose
     embodiment.hover = np.array(hover)
 
