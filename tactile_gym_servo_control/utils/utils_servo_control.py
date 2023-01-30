@@ -32,7 +32,7 @@ class ManualControl:
     ):
         delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
 
-        keys = self.embodiment._pb.getKeyboardEvents()
+        keys = self.embodiment.controller._client._sim_env._pb.getKeyboardEvents()
         if CTRL in keys:
             if FORE in keys:  delta -= [0, 0, 0, 0, 1, 0]
             if BACK in keys:  delta += [0, 0, 0, 0, 1, 0]
