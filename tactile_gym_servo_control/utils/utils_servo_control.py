@@ -11,8 +11,8 @@ except:
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-from tactile_gym_servo_control.learning.utils_learning import decode_pose
-from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.utils.utils_learning import decode_pose
+from tactile_gym_servo_control.utils.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.utils.image_transforms import process_image
 
 LEFT, RIGHT, FORE, BACK, SHIFT, CTRL, QUIT \

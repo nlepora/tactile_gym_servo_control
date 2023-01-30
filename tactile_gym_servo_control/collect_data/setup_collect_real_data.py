@@ -1,9 +1,8 @@
 import os
 
 from tactile_gym.utils.general_utils import save_json_obj
-
-from tactile_gym_servo_control.collect_data.utils_collect_data import make_target_df_rand
-from tactile_gym_servo_control.collect_data.utils_collect_data import create_data_dir
+from tactile_gym_servo_control.utils.utils_collect_data import make_target_df_rand
+from tactile_gym_servo_control.utils.utils_collect_data import create_data_dir
 
 data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
 

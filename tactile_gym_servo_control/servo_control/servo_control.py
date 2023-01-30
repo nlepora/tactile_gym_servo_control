@@ -19,9 +19,9 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setup_servo_control
-from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
-from tactile_gym_servo_control.servo_control.utils_servo_control import Model
-from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
+from tactile_gym_servo_control.utils.utils_servo_control import Slider
+from tactile_gym_servo_control.utils.utils_servo_control import Model
+from tactile_gym_servo_control.utils.plots_servo_control import PlotContour3D as PlotContour
 
 np.set_printoptions(precision=1, suppress=True)
 
