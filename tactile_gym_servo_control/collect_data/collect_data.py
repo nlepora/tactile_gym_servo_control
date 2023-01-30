@@ -54,7 +54,7 @@ def collect_data(
 
         # process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)
-        embodiment.sensor_process(image_outfile)
+        embodiment.sensor.process(image_outfile)
 
         # move to target positon inducing shear effects
         embodiment.move_linear(pose + hover)

@@ -16,9 +16,9 @@ from tactile_gym.utils.general_utils import load_json_obj
 from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
 
 from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
-from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
-from tactile_gym_servo_control.servo_control.utils_servo_control import ManualControl
-from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
+from utils.utils_servo_control import Slider
+from utils.utils_servo_control import ManualControl
+from servo_control.plots_servo_control import PlotContour3D as PlotContour
 from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
 np.set_printoptions(precision=1, suppress=True)

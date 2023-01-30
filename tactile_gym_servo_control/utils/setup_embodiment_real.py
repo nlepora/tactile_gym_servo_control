@@ -1,25 +1,8 @@
-import cv2
 import numpy as np
 
 from cri.robot import SyncRobot
 from cri.controller import Mg400Controller as Controller
-from tactile_gym_servo_control.utils.image_transforms import process_image
-
-
-class Sensor:
-    def __init__(self, 
-        source=0, 
-        exposure=-7, 
-        **kwargs
-    ):  
-        self.cam = cv2.VideoCapture(source)
-        self.cam.set(cv2.CAP_PROP_EXPOSURE, exposure)
-        for _ in range(5): self.cam.read() # Hack - camera transient
-
-    def read_image(self):
-        self.cam.read() # Hack - throw one away - buffering issue
-        _, img = self.cam.read()
-        return img
+from tactile_gym_servo_control.utils.sensors import Sensor_real as Sensor
 
 
 def setup_embodiment(
@@ -34,17 +17,7 @@ def setup_embodiment(
 
     # setup the embodiment
     embodiment = SyncRobot(Controller())
-    sensor = Sensor(**sensor_params)
-
-    # setup the tactile sensor
-    def sensor_process(outfile=None):
-        img = sensor.read_image()
-        img = process_image(img, **sensor_params)
-        if outfile is not None:
-            cv2.imwrite(outfile, img)
-        return img
-
-    embodiment.sensor_process = sensor_process
+    embodiment.sensor = Sensor(sensor_params)
 
     # settings
     embodiment.coord_frame = workframe

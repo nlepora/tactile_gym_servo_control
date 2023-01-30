@@ -1,10 +1,9 @@
 import os
-import cv2
 import numpy as np
 
 from cri.robot import SyncRobot
 from cri.controller import SimController as Controller
-from tactile_gym_servo_control.utils.image_transforms import process_image
+from tactile_gym_servo_control.utils.sensors import Sensor_sim as Sensor
 
 stimuli_path = os.path.join(os.path.dirname(__file__), 'stimuli')
 
@@ -20,17 +19,7 @@ def setup_embodiment(
 
     # setup the embodiment
     embodiment = SyncRobot(Controller(sensor_params, env_params))   
-    sensor = embodiment.controller._client._sim_env
-
-    # setup the tactile sensor
-    def sensor_process(outfile=None):
-        img = sensor.get_tactile_observation()
-        img = process_image(img, **sensor_params)
-        if outfile is not None:
-            cv2.imwrite(outfile, img)
-        return img
-
-    embodiment.sensor_process = sensor_process
+    embodiment.sensor = Sensor(embodiment, sensor_params)
 
     # settings
     embodiment.coord_frame = work_frame

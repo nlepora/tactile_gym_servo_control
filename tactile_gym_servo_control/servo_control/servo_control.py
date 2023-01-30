@@ -61,9 +61,9 @@ def run_servo_control(
     for i in range(ep_len):
 
         # get current tactile observation
-        tactile_image = embodiment.sensor_process()
+        tactile_image = embodiment.sensor.process()
 
-        # predict pose from observation
+        # predict pose from observations
         pred_pose = model.predict(tactile_image)
 
         # find deviation of prediction from reference
