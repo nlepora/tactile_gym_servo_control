@@ -54,13 +54,10 @@ def process_image(
 ):
     ''' Process raw image (e.g., before applying to neural network).
     '''
-    if gray:
+    if gray and len(image.shape)==3:
         # Convert to gray scale
-        try:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            image = image[..., np.newaxis] # Add channel axis
-        except:
-            print('image already grey scale')
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = image[..., np.newaxis] # Add channel axis
 
     if bbox is not None:
         # Crop to specified bounding box

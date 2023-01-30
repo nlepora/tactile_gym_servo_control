@@ -12,6 +12,7 @@ import numpy as np
 import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
+from cri.transforms import transform_pose, inv_transform_pose
 
 from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
 from tactile_gym_servo_control.learning.setup_learning import setup_task
@@ -21,7 +22,6 @@ from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setu
 from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
 from tactile_gym_servo_control.servo_control.utils_servo_control import Model
 from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
-from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
 np.set_printoptions(precision=1, suppress=True)
 
@@ -154,10 +154,13 @@ if __name__ == '__main__':
 
             env_params, control_params = setup_servo_control[task](stimulus)
 
+            env_params.update({
+                'show_gui': True, 'show_tactile': True, 'quick_mode': False
+            })
+
             embodiment = setup_embodiment(
                 env_params, 
-                sensor_params, 
-                quick_mode=True
+                sensor_params
             )
 
             network = setup_network(

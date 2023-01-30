@@ -1,12 +1,11 @@
 import numpy as np
 
-from tactile_gym_servo_control.utils.setup_pybullet_env import setup_pybullet_env
 from vsp.video_stream import CvImageOutputFileSeq, CvVideoDisplay, CvPreprocVideoCamera   
 from vsp.processor import CameraStreamProcessor, AsyncProcessor
 
 from cri.robot import SyncRobot
 from cri.controller import Mg400Controller as Controller
-# from cri.controller import DummyController as Controller
+
 
 def Sensor(
     size=[256, 256], 
@@ -37,21 +36,20 @@ def setup_embodiment_env(
     show_gui=True
 ):
 
-    # setup the tactile sensor
+    # setup the embodiment
+    embodiment = SyncRobot(Controller())
     sensor = Sensor(**sensor_params)
 
+    # set up the tactile sensor
     def sensor_process(outfile=None):
         img = sensor.process(
             num_frames=1, start_frame=1, outfile=outfile
         )
         return img[0,:,:,0]
 
-    # setup the robot
-    embodiment = SyncRobot(Controller())
     embodiment.sensor_process = sensor_process
-    embodiment.slider = setup_pybullet_env(show_gui)
-    embodiment.sim = False
 
+    # settings
     embodiment.coord_frame = workframe
     embodiment.linear_speed = linear_speed
     embodiment.angular_speed = angular_speed

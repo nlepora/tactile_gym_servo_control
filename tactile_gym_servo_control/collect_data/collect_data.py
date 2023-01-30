@@ -84,13 +84,17 @@ if __name__ == "__main__":
             data_path, task, 'data'
         )
 
-        target_df, image_dir, env_params, sensor_params = \
+        env_params, sensor_params, target_df, image_dir = \
             setup_collect_data[task](
                 collect_dir
             )
 
+        env_params.update({
+            'show_gui': True, 'quick_mode': False
+        })
+
         embodiment = setup_embodiment(
-            env_params, sensor_params, show_gui=True, #quick_mode=True 
+            env_params, sensor_params
         )
 
         collect_data(

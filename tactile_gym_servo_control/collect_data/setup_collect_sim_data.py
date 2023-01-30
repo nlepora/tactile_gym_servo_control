@@ -31,7 +31,7 @@ def setup_surface_3d_collect_data(
     env_params = {
         'stim_name': 'square',
         'stim_pose': [600, 0, 0,    0, 0,  0],
-        'workframe': [600, 0, 40, -180, 0, 90]
+        'workframe': [600, 0, 40, -180, 0, 90],
     }
     
     pose_params = {
@@ -51,7 +51,7 @@ def setup_surface_3d_collect_data(
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, sensor_params
+    return env_params, sensor_params, target_df, image_dir
 
 
 def setup_edge_2d_collect_data(
@@ -82,7 +82,7 @@ def setup_edge_2d_collect_data(
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, sensor_params
+    return env_params, sensor_params, target_df, image_dir
 
 
 def setup_edge_3d_collect_data(
@@ -113,7 +113,7 @@ def setup_edge_3d_collect_data(
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, sensor_params
+    return env_params, sensor_params, target_df, image_dir
 
 
 def setup_edge_5d_collect_data(
@@ -144,7 +144,7 @@ def setup_edge_5d_collect_data(
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, sensor_params
+    return env_params, sensor_params, target_df, image_dir
 
 
 setup_collect_data = {
