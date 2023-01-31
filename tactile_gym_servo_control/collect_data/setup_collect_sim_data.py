@@ -24,8 +24,7 @@ def setup_sensor(
 
 def setup_surface_3d_collect_data(
     collect_dir,
-    num_samples=10,
-    shuffle_data=False,
+    num_samples=10
 ):
     env_params = {
         'stim_name': 'square',
@@ -40,7 +39,7 @@ def setup_surface_3d_collect_data(
     }
 
     target_df = make_target_df_rand(
-        num_samples, shuffle_data, **pose_params
+        num_samples, **pose_params
     )
 
     image_dir = create_data_dir(collect_dir, target_df)
@@ -55,8 +54,7 @@ def setup_surface_3d_collect_data(
 
 def setup_edge_2d_collect_data(
     collect_dir,
-    num_samples=10,
-    shuffle_data=False,
+    num_samples=10
 ):
     env_params = {
         'stim_name': 'square',
@@ -71,7 +69,7 @@ def setup_edge_2d_collect_data(
     }
 
     target_df = make_target_df_rand(
-        num_samples, shuffle_data, **pose_params
+        num_samples, **pose_params
     )
 
     image_dir = create_data_dir(collect_dir, target_df)
@@ -86,8 +84,7 @@ def setup_edge_2d_collect_data(
 
 def setup_edge_3d_collect_data(
     collect_dir,
-    num_samples=10,
-    shuffle_data=False,
+    num_samples=10
 ):
     env_params = {
         'stim_name': 'square',
@@ -102,7 +99,7 @@ def setup_edge_3d_collect_data(
     }
 
     target_df = make_target_df_rand(
-        num_samples, shuffle_data, **pose_params
+        num_samples, **pose_params
     )
 
     image_dir = create_data_dir(collect_dir, target_df)
@@ -117,8 +114,7 @@ def setup_edge_3d_collect_data(
 
 def setup_edge_5d_collect_data(
     collect_dir,
-    num_samples=10,
-    shuffle_data=False,
+    num_samples=10
 ):
     env_params = {
         'stim_name': 'square',
@@ -133,7 +129,7 @@ def setup_edge_5d_collect_data(
     }
 
     target_df = make_target_df_rand(
-        num_samples, shuffle_data, **pose_params
+        num_samples, **pose_params
     )
 
     image_dir = create_data_dir(collect_dir, target_df)

@@ -28,6 +28,10 @@ def collect_data(
     hover = embodiment.hover
     embodiment.move_linear(hover)
 
+    # collect reference image
+    image_outfile = os.path.join(image_dir, 'image_0.png')
+    embodiment.sensor.process(image_outfile)
+
     # ==== data collection loop ====
     for _, row in target_df.iterrows():
         i_obj = int(row.loc["obj_id"])
@@ -52,7 +56,7 @@ def collect_data(
         # move to target positon inducing shear effects
         embodiment.move_linear(pose)
 
-        # process tactile image
+        # collect and process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)
         embodiment.sensor.process(image_outfile)
 
@@ -86,7 +90,7 @@ if __name__ == "__main__":
 
         env_params, sensor_params, target_df, image_dir = \
             setup_collect_data[task](
-                collect_dir
+                collect_dir, 5000
             )
 
         # env_params.update({

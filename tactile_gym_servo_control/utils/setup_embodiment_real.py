@@ -10,7 +10,7 @@ def setup_embodiment(
     sensor_params={},
     hover=[0, 0, 7.5, 0, 0, 0], # positive for dobot
 ):
-    workframe = env_params.get('workframe', [288, 0, -100, 0, 0, -90])
+    work_frame = env_params.get('work_frame', [288, 0, -93, 0, 0, -90])
     tcp_pose = env_params.get('tcp_pose', [0, 0, 0, 0, 0, 0])
     linear_speed = env_params.get('linear_speed', 10)
     angular_speed = env_params.get('angular_speed', 10)
@@ -20,7 +20,7 @@ def setup_embodiment(
     embodiment.sensor = Sensor(sensor_params)
 
     # settings
-    embodiment.coord_frame = workframe
+    embodiment.coord_frame = work_frame
     embodiment.tcp = tcp_pose
     embodiment.linear_speed = linear_speed
     embodiment.angular_speed = angular_speed
