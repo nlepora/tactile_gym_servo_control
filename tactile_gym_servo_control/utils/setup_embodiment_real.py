@@ -6,8 +6,8 @@ from tactile_gym_servo_control.utils.sensors import Sensor_real as Sensor
 
 
 def setup_embodiment(
-    sensor_params={},
     env_params={},    
+    sensor_params={},
     hover=[0, 0, 7.5, 0, 0, 0], # positive for dobot
 ):
     workframe = env_params.get('workframe', [288, 0, -100, 0, 0, -90])

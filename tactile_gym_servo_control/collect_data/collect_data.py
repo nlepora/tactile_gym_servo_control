@@ -10,13 +10,13 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
-from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
+from tactile_gym_servo_control.utils.setup_embodiment_real import setup_embodiment
+from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 np.set_printoptions(precision=1, suppress=True)
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
 
 
 def collect_data(
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from [surface_3d edge_2d edge_3d edge_5d].",
-        default=['surface_3d']
+        default=['edge_2d']
     )
 
     # parse arguments
@@ -89,9 +89,9 @@ if __name__ == "__main__":
                 collect_dir
             )
 
-        env_params.update({
-            'show_gui': True, 'quick_mode': False
-        })
+        # env_params.update({
+        #     'show_gui': True, 'quick_mode': False
+        # })
 
         embodiment = setup_embodiment(
             env_params, sensor_params
