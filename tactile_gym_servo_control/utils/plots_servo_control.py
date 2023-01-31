@@ -20,8 +20,8 @@ def move_figure(f, x, y):
 
 class PlotContour2D:
     def __init__(self, 
-                poses=[[-60,60], [-10,110]],
                 workframe=[0, 0, 0, 0, 0, 90],
+                # poses=[[-60,60], [-10,110]],
                 position=[0, 400],
                 r=[-1,1], 
                 inv=-1
@@ -31,7 +31,7 @@ class PlotContour2D:
         self._ax = self._fig.add_subplot(111) 
         self._ax.set_aspect('equal', adjustable='box')
         
-        self._ax.plot(poses[0], poses[1], ':w')  
+        # self._ax.plot(poses[0], poses[1], ':w')  
 
         self.r = r[:2]/np.linalg.norm(r[:2])
         self.a, self.i = (workframe[5]-90)*np.pi/180, inv 
@@ -61,23 +61,17 @@ class PlotContour2D:
 
 class PlotContour3D:
     def __init__(self, 
-                workframe=[0, 0, 0, 0, 0, 180],
-                stim_name=None,
-                position=[0, 400],
+                coord_frame=[0, 0, 0, -180, 0, 0],
+                position=[0, 800],
                 r=[-1,1]/np.sqrt(2),
-                inv=1
+                inv=1,
+                limits = [[-110,10], [-60,60], [-30,30]] # [[-70,70], [-10,130], [-30,30]] # saddle
                 ):
-
-        if stim_name=='saddle':
-            limits = [[-70,70], [-10,130], [-30,30]]
-        else:
-            limits = [[-110,10], [-60,60], [-30,30]]
-
         self._fig = plt.figure('Contour 3d', figsize=(5, 5))
         self._fig.clear()
         self._fig.subplots_adjust(left=-0.1, right=1.1, bottom=-0.05, top=1.05)
         self._ax = self._fig.add_subplot(111, projection='3d')
-        self._ax.azim = workframe[5]
+        self._ax.azim = coord_frame[5]
         self._ax.plot(limits[0], limits[1], limits[2], ':w')  
 
         self.r = r 

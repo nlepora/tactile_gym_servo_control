@@ -6,7 +6,7 @@ import seaborn as sns
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.utils.utils_learning import POSE_LABEL_NAMES
 
 sns.set_theme(style="darkgrid")
 model_path = os.path.join(os.path.dirname(__file__), '../../example_models')

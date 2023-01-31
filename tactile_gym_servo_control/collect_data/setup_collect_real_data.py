@@ -1,9 +1,8 @@
 import os
 
 from tactile_gym.utils.general_utils import save_json_obj
-
-from tactile_gym_servo_control.collect_data.utils_collect_data import make_target_df_rand
-from tactile_gym_servo_control.collect_data.utils_collect_data import create_data_dir
+from tactile_gym_servo_control.utils.utils_collect_data import make_target_df_rand
+from tactile_gym_servo_control.utils.utils_collect_data import create_data_dir
 
 data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
 
@@ -12,7 +11,7 @@ def setup_sensor(
     collect_dir
 ):
     sensor_params = {
-        'source': 0,
+        'source': 1,
         'exposure': -7,
         'gray': True,
         'bbox': [320-128, 240-128+25, 320+128, 240+128+25],
@@ -31,7 +30,7 @@ def setup_edge_2d(
     shuffle_data=True,
 ):
     env_params = {
-        'workframe': [285, 0, -93, 0, 0, 180],
+        'work_frame': [285, 0, -93, 0, 0, 180],
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]
@@ -53,10 +52,10 @@ def setup_edge_2d(
 
     sensor_params = setup_sensor(collect_dir)
 
-    save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
+    save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
 
-    return target_df, image_dir, env_params, sensor_params
+    return env_params, sensor_params, target_df, image_dir 
 
 
 def setup_edge_3d(
@@ -65,7 +64,7 @@ def setup_edge_3d(
     shuffle_data=True,
 ):
     env_params = {
-        'workframe': [285, 0, -93, 0, 0, 180],
+        'work_frame': [285, 0, -93, 0, 0, 180],
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]
@@ -90,7 +89,7 @@ def setup_edge_3d(
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return target_df, image_dir, env_params, sensor_params
+    return env_params, sensor_params, target_df, image_dir 
 
 
 setup_collect_data = {

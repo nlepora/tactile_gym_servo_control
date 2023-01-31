@@ -15,11 +15,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import load_json_obj
 
-from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
-from tactile_gym_servo_control.learning.utils_learning import decode_pose
-from tactile_gym_servo_control.learning.utils_learning import acc_metric
-from tactile_gym_servo_control.learning.utils_learning import err_metric
-from tactile_gym_servo_control.learning.utils_plots import PlotError
+from tactile_gym_servo_control.utils.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.utils.utils_learning import decode_pose
+from tactile_gym_servo_control.utils.utils_learning import acc_metric, err_metric
+from tactile_gym_servo_control.utils.plots_learning import PlotError
 
 from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
 from tactile_gym_servo_control.learning.setup_network import setup_network

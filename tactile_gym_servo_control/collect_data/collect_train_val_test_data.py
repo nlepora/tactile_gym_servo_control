@@ -9,7 +9,7 @@ python collect_train_val_test_data.py -t surface_3d edge_2d edge_3d edge_5d
 import os
 import argparse
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
 from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 from tactile_gym_servo_control.collect_data.collect_data import collect_data
 
@@ -45,19 +45,19 @@ if __name__ == "__main__":
                 data_path, task + data_version, collect_dir_name
             )
 
-            target_df, image_dir, env_params, sensor_params = \
+            env_params, sensor_params, target_df, image_dir = \
                 setup_collect_data[task](
                     collect_dir, num_samples
                 )
 
-            embodiment = setup_embodiment_env(
-                **env_params, 
-                sensor_params = sensor_params,
-                show_gui=True, quick_mode=True 
+            env_params.update({
+                'show_gui': True, 'quick_mode': True
+            })
+
+            embodiment = setup_embodiment(
+                env_params, sensor_params
             )
 
             collect_data(
-                embodiment,
-                target_df,
-                image_dir
+                embodiment, target_df, image_dir
             )

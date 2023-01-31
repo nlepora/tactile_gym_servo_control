@@ -1,13 +1,18 @@
 import os
+import tkinter as tk
 import numpy as np
 import torch
 from torch.autograd import Variable
-import pyspacemouse
+
+try:
+    import pyspacemouse
+except:
+    print('pyspacemouse not installed')
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-from tactile_gym_servo_control.learning.utils_learning import decode_pose
-from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.utils.utils_learning import decode_pose
+from tactile_gym_servo_control.utils.utils_learning import POSE_LABEL_NAMES
 from tactile_gym_servo_control.utils.image_transforms import process_image
 
 LEFT, RIGHT, FORE, BACK, SHIFT, CTRL, QUIT \
@@ -27,7 +32,7 @@ class ManualControl:
     ):
         delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
 
-        keys = self.embodiment._pb.getKeyboardEvents()
+        keys = self.embodiment.controller._client._sim_env._pb.getKeyboardEvents()
         if CTRL in keys:
             if FORE in keys:  delta -= [0, 0, 0, 0, 1, 0]
             if BACK in keys:  delta += [0, 0, 0, 0, 1, 0]
@@ -48,40 +53,40 @@ class ManualControl:
         return np.array(delta)
 
     def spacemouse(self,
-        delta_init = [0.0, 0, 0, 0, 0, 0]
+        delta_init = [0, 0, 0, 0, 0, 0], 
+        gain = 2, 
+        sign = [-1, -1, -1, -1, 1, -1]
     ):
-        delta = np.array([0, 0, 0, 0, 0, 0]) + delta_init # stop keeping state
-
         state = pyspacemouse.read()
-        pose_state = np.array([state[i] for i in [2, 1, 3, 4, 5, 6]])
-        delta += -2.0 * pose_state
+        pose_state = np.array([state[i]*sign[i-1] for i in [2, 1, 3, 4, 5, 6]])
+        delta = delta_init + gain * pose_state
 
-        return np.array(delta)
+        return delta
 
 
 class Slider:
     def __init__(self,
-        embodiment, init_ref_pose,
-        ref_llims=[-5, -5, 0, -15, -15, -180],
-        ref_ulims=[ 5,  5, 5,  15,  15,  180]
+        init_pose,
+        pose_llims=[-5, -5, 0, -15, -15, -180],
+        pose_ulims=[ 5,  5, 5,  15,  15,  180]
     ):    
-        self.embodiment = embodiment
-        self.ref_pose_ids = []
-        for label_name in POSE_LABEL_NAMES:
-            i = POSE_LABEL_NAMES.index(label_name)
-            self.ref_pose_ids.append(
-                embodiment._pb.addUserDebugParameter(
-                    label_name, ref_llims[i], ref_ulims[i], init_ref_pose[i]
-                )
+        self.pose_ids = []
+        self.tk = tk.Tk()
+        for i, label_name in enumerate(POSE_LABEL_NAMES):
+            self.pose_ids.append(
+                tk.Scale(self.tk, from_=pose_llims[i], to=pose_ulims[i],
+                    label=label_name, length=400, orient=tk.HORIZONTAL, 
+                    tickinterval=(pose_ulims[i]-pose_llims[i])/4, resolution=0.1)
             )
+            self.pose_ids[i].pack()
+            self.pose_ids[i].set(init_pose[i])
 
-    def slide(self, ref_pose):
-        for j in range(len(ref_pose)):
-            ref_pose[j] = self.embodiment._pb.readUserDebugParameter(
-                self.ref_pose_ids[j]
-            ) 
-
-        return ref_pose
+    def read(self, pose):
+        self.tk.update_idletasks()
+        self.tk.update()
+        for i in range(len(pose)):
+            pose[i] = self.pose_ids[i].get()
+        return pose
 
 
 class Model:

@@ -22,11 +22,11 @@ import torch
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import check_dir
-from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
-from tactile_gym_servo_control.learning.utils_learning import get_pose_limits, encode_pose, decode_pose
-from tactile_gym_servo_control.learning.utils_learning import acc_metric, err_metric
-from tactile_gym_servo_control.learning.utils_learning import seed_everything
-from tactile_gym_servo_control.learning.utils_plots import PlotError, PlotTrain
+from tactile_gym_servo_control.utils.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.utils.utils_learning import get_pose_limits, encode_pose, decode_pose
+from tactile_gym_servo_control.utils.utils_learning import acc_metric, err_metric
+from tactile_gym_servo_control.utils.utils_learning import seed_everything
+from tactile_gym_servo_control.utils.plots_learning import PlotError, PlotTrain
 from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
 from tactile_gym_servo_control.learning.setup_network import setup_network
 from tactile_gym_servo_control.learning.setup_learning import setup_task, setup_learning, setup_model

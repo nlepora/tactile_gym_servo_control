@@ -10,13 +10,13 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
-from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
+from tactile_gym_servo_control.utils.setup_embodiment_real import setup_embodiment
+from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 np.set_printoptions(precision=1, suppress=True)
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
 
 
 def collect_data(
@@ -44,20 +44,20 @@ def collect_data(
         pose += obj_pose
 
         # move to above new pose (avoid changing pose in contact with object)
-        embodiment.move_linear(np.array(pose) - np.array(move) + np.array(hover))
+        embodiment.move_linear(pose - move + hover)
  
         # move down to offset position
-        embodiment.move_linear(np.array(pose) - np.array(move))
+        embodiment.move_linear(pose - move)
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(np.array(pose))
+        embodiment.move_linear(pose)
 
         # process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)
-        embodiment.sensor_process(outfile=image_outfile)
+        embodiment.sensor.process(image_outfile)
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(np.array(pose) + np.array(hover))
+        embodiment.move_linear(pose + hover)
 
     # finish above workframe origin
     embodiment.move_linear(hover)
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from [surface_3d edge_2d edge_3d edge_5d].",
-        default=['surface_3d']
+        default=['edge_2d']
     )
 
     # parse arguments
@@ -81,22 +81,22 @@ if __name__ == "__main__":
     for task in tasks:
 
         collect_dir = os.path.join(
-                data_path, task, 'data'
-            )
+            data_path, task, 'data'
+        )
 
-        target_df, image_dir, env_params, sensor_params = \
+        env_params, sensor_params, target_df, image_dir = \
             setup_collect_data[task](
                 collect_dir
             )
 
-        embodiment = setup_embodiment_env(
-            **env_params, 
-            sensor_params=sensor_params,
-            show_gui=True, #quick_mode=True 
+        # env_params.update({
+        #     'show_gui': True, 'quick_mode': False
+        # })
+
+        embodiment = setup_embodiment(
+            env_params, sensor_params
         )
 
         collect_data(
-            embodiment,
-            target_df,
-            image_dir
+            embodiment, target_df, image_dir
         )
