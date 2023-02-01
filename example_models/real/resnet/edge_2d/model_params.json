@@ -1,1 +1,0 @@
-{"model_type": "resnet", "model_kwargs": {"layers": [2, 2, 2, 2]}}
