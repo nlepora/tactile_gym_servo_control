@@ -10,6 +10,7 @@ import os
 import argparse
 import time
 import pickle
+
 import shutil
 import numpy as np
 import pandas as pd
@@ -22,20 +23,25 @@ import torch
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from tactile_gym.utils.general_utils import check_dir
-from tactile_gym_servo_control.utils.utils_learning import POSE_LABEL_NAMES
-from tactile_gym_servo_control.utils.utils_learning import get_pose_limits, encode_pose, decode_pose
-from tactile_gym_servo_control.utils.utils_learning import acc_metric, err_metric
-from tactile_gym_servo_control.utils.utils_learning import seed_everything
-from tactile_gym_servo_control.utils.plots_learning import PlotError, PlotTrain
+
+from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.learning.utils_learning import get_pose_limits
+from tactile_gym_servo_control.learning.utils_learning import encode_pose
+from tactile_gym_servo_control.learning.utils_learning import decode_pose
+from tactile_gym_servo_control.learning.utils_learning import acc_metric
+from tactile_gym_servo_control.learning.utils_learning import err_metric
+from tactile_gym_servo_control.learning.utils_learning import seed_everything
+from tactile_gym_servo_control.learning.utils_plots import PlotError
+from tactile_gym_servo_control.learning.utils_plots import PlotTrain
+
 from tactile_gym_servo_control.learning.image_generator import ImageDataGenerator
 from tactile_gym_servo_control.learning.setup_network import setup_network
-from tactile_gym_servo_control.learning.setup_learning import setup_task, setup_learning, setup_model
+from tactile_gym_servo_control.learning.setup_learning import setup_task
+from tactile_gym_servo_control.learning.setup_learning import setup_learning
+from tactile_gym_servo_control.learning.setup_learning import setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real-dobot/tactip-331')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real-dobot/tactip-331')
-
-data_version = '' #'_90deg'
-model_version = data_version #+ '_aug'
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real')
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -50,25 +56,24 @@ def train_model(
     image_processing_params,
     augmentation_params,
     save_dir,
-    plot_during_training=True,  # slows training noticably
+    plot_during_training=False,  # slows training noticably
     device='cpu'
 ):
+
     # data dir - can specify multiple directories combined in generator
     train_data_dirs = [
         os.path.join(data_path, task, 'train')
     ]
-    val_data_dirs = [
-        os.path.join(data_path, task, 'val')
-    ]
     pose_limits = get_pose_limits(train_data_dirs, save_dir)
 
-    # keep record of sensor params
-    shutil.copy(os.path.join(train_data_dirs[0], 'sensor_params.json'), save_dir)
+    validation_data_dirs = [
+        os.path.join(data_path, task, 'train')
+    ]
 
     # set generators and loaders
     generator_args = {**image_processing_params, **augmentation_params}
     train_generator = ImageDataGenerator(data_dirs=train_data_dirs, **generator_args)
-    val_generator = ImageDataGenerator(data_dirs=val_data_dirs, **image_processing_params)
+    val_generator = ImageDataGenerator(data_dirs=validation_data_dirs, **image_processing_params)
 
     train_loader = torch.utils.data.DataLoader(
         train_generator,
@@ -295,6 +300,7 @@ if __name__ == "__main__":
     tasks = args.tasks
     models = args.models
     device = args.device
+    version = ''
 
     for task in tasks:
         for model_type in models:
@@ -303,9 +309,13 @@ if __name__ == "__main__":
             out_dim, label_names = setup_task(task)        
 
             # setup save dir
-            save_dir = os.path.join(model_path, model_type, task + model_version)
+            task += version
+            save_dir = os.path.join(model_path, model_type, task)
             check_dir(save_dir)
             os.makedirs(save_dir, exist_ok=True)
+
+            # keep record of sensor params
+            shutil.copy(os.path.join(data_path, task, 'train', 'sensor_params.json'), save_dir)
 
             # setup parameters            
             network_params = setup_model(model_type, save_dir)
@@ -322,7 +332,7 @@ if __name__ == "__main__":
             )
 
             train_model(
-                task + data_version,
+                task,
                 network,
                 label_names,
                 learning_params,

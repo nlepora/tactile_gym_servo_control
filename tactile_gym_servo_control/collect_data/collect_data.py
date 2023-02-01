@@ -10,13 +10,13 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils.setup_embodiment_real import setup_embodiment
-from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
+from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 np.set_printoptions(precision=1, suppress=True)
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
 
 
 def collect_data(
@@ -27,10 +27,6 @@ def collect_data(
     # start above workframe origin
     hover = embodiment.hover
     embodiment.move_linear(hover)
-
-    # collect reference image
-    image_outfile = os.path.join(image_dir, 'image_0.png')
-    embodiment.sensor.process(image_outfile)
 
     # ==== data collection loop ====
     for _, row in target_df.iterrows():
@@ -48,20 +44,20 @@ def collect_data(
         pose += obj_pose
 
         # move to above new pose (avoid changing pose in contact with object)
-        embodiment.move_linear(pose - move + hover)
+        embodiment.move_linear(np.array(pose) - np.array(move) + np.array(hover))
  
         # move down to offset position
-        embodiment.move_linear(pose - move)
+        embodiment.move_linear(np.array(pose) - np.array(move))
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(pose)
+        embodiment.move_linear(np.array(pose))
 
-        # collect and process tactile image
+        # process tactile image
         image_outfile = os.path.join(image_dir, sensor_image)
-        embodiment.sensor.process(image_outfile)
+        embodiment.sensor_process(outfile=image_outfile)
 
         # move to target positon inducing shear effects
-        embodiment.move_linear(pose + hover)
+        embodiment.move_linear(np.array(pose) + np.array(hover))
 
     # finish above workframe origin
     embodiment.move_linear(hover)
@@ -85,22 +81,22 @@ if __name__ == "__main__":
     for task in tasks:
 
         collect_dir = os.path.join(
-            data_path, task, 'data'
-        )
-
-        env_params, sensor_params, target_df, image_dir = \
-            setup_collect_data[task](
-                collect_dir, 5000
+                data_path, task, 'data'
             )
 
-        # env_params.update({
-        #     'show_gui': True, 'quick_mode': False
-        # })
+        target_df, image_dir, env_params, sensor_params = \
+            setup_collect_data[task](
+                collect_dir
+            )
 
-        embodiment = setup_embodiment(
-            env_params, sensor_params
+        embodiment = setup_embodiment_env(
+            **env_params, 
+            sensor_params=sensor_params,
+            show_gui=True, #quick_mode=True 
         )
 
         collect_data(
-            embodiment, target_df, image_dir
+            embodiment,
+            target_df,
+            image_dir
         )

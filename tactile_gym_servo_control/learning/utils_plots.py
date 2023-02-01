@@ -6,7 +6,7 @@ import seaborn as sns
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-from tactile_gym_servo_control.utils.utils_learning import POSE_LABEL_NAMES
+from tactile_gym_servo_control.learning.utils_learning import POSE_LABEL_NAMES
 
 sns.set_theme(style="darkgrid")
 model_path = os.path.join(os.path.dirname(__file__), '../../example_models')
@@ -64,8 +64,8 @@ class PlotError:
             )
             ax.set(xlabel=f"target {pose_label}", ylabel=f"predicted {pose_label}")
 
-            pose_llim = min(targ_df[pose_label])
-            pose_ulim = max(targ_df[pose_label])
+            pose_llim = np.round(min(targ_df[pose_label]))
+            pose_ulim = np.round(max(targ_df[pose_label]))
             ax.set_xlim(pose_llim, pose_ulim)
             ax.set_ylim(pose_llim, pose_ulim)
 

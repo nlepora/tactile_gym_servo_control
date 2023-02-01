@@ -1,11 +1,12 @@
-def setup_edge_2d_servo_control(stimulus=None):
+def setup_edge_2d_servo_control():
 
-    env_params = {
-        'work_frame': [285, 0, -93+10, 0, 0, 0], # square, circle
+    env_params_list = [
+    {
+        'workframe': [285, 0, -93, 0, 0, 0], # square, circle
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]    
-    }
+    }]
 
     control_params = {
         'ep_len': 100,
@@ -15,7 +16,7 @@ def setup_edge_2d_servo_control(stimulus=None):
         'i_clip': [[-5, 0, 0, 0, 0, -45], [-5, 0, 0, 0, 0, 45]]
     }
 
-    return env_params, control_params
+    return env_params_list, control_params
 
 
 setup_servo_control = {

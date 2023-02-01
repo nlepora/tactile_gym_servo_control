@@ -52,11 +52,11 @@ def setup_network(in_dim, out_dim, network_params,
             saved_model_dir, 'best_model.pth'), map_location='cpu')
         )
 
-    print(summary(
-        model,
-        torch.zeros((1, 1, *in_dim)).to(device),
-        show_input=True
-    ))
+    # print(summary(
+    #     model,
+    #     torch.zeros((1, 1, *in_dim)).to(device),
+    #     show_input=True
+    # ))
 
     return model
 

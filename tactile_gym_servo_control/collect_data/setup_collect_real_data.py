@@ -1,8 +1,9 @@
 import os
 
 from tactile_gym.utils.general_utils import save_json_obj
-from tactile_gym_servo_control.utils.utils_collect_data import make_target_df_rand
-from tactile_gym_servo_control.utils.utils_collect_data import create_data_dir
+
+from tactile_gym_servo_control.collect_data.utils_collect_data import make_target_df_rand
+from tactile_gym_servo_control.collect_data.utils_collect_data import create_data_dir
 
 data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
 
@@ -14,7 +15,9 @@ def setup_sensor(
         'source': 0,
         'exposure': -7,
         'gray': True,
-        'bbox': [320-160, 240-160+25, 320+160, 240+160+25]
+        'bbox': [320-128, 240-128+25, 320+128, 240+128+25],
+        'thresh': True,
+        'circle_mask_radius': 150
         }
 
     save_json_obj(sensor_params, os.path.join(collect_dir, 'sensor_params'))
@@ -24,10 +27,11 @@ def setup_sensor(
 
 def setup_edge_2d(
     collect_dir,
-    num_samples=10
+    num_samples=10,
+    shuffle_data=True,
 ):
     env_params = {
-        'work_frame': [285, 0, -93, 0, 0, 180],
+        'workframe': [285, 0, -93, 0, 0, 180],
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]
@@ -38,34 +42,33 @@ def setup_edge_2d(
         'pose_ulims': [ 5, 0,  1, 0, 0,  180],
         'move_llims': [-5, -5,  0, 0, 0,  -5],
         'move_ulims': [ 5,  5,  0, 0, 0,   5],
-        'obj_poses': [[0, 0, 0, 0, 0, 0]],
-        'shuffle_data': False
+        'obj_poses': [[0, 0, 0, 0, 0, 0]]
     }
 
     target_df = make_target_df_rand(
-        num_samples, **pose_params
+        num_samples, shuffle_data, **pose_params
     )
 
     image_dir = create_data_dir(collect_dir, target_df)
 
     sensor_params = setup_sensor(collect_dir)
 
-    save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
+    save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return env_params, sensor_params, target_df, image_dir 
+    return target_df, image_dir, env_params, sensor_params
 
 
 def setup_edge_3d(
     collect_dir,
-    num_samples=10
+    num_samples=10,
+    shuffle_data=True,
 ):
     env_params = {
-        'work_frame': [285, 0, -93, 0, 0, 180],
+        'workframe': [285, 0, -93, 0, 0, 180],
         'linear_speed': 10, 
         'angular_speed': 10,
-        'tcp_pose': [0, 0, 0, 0, 0, 0],
-        'shuffle_data': False
+        'tcp_pose': [0, 0, 0, 0, 0, 0]
     }
 
     pose_params = {
@@ -77,7 +80,7 @@ def setup_edge_3d(
     }
 
     target_df = make_target_df_rand(
-        num_samples, **pose_params
+        num_samples, shuffle_data, **pose_params
     )
 
     image_dir = create_data_dir(collect_dir, target_df)
@@ -87,7 +90,7 @@ def setup_edge_3d(
     save_json_obj(pose_params, os.path.join(collect_dir, 'pose_params'))
     save_json_obj(env_params, os.path.join(collect_dir, 'env_params'))
 
-    return env_params, sensor_params, target_df, image_dir 
+    return target_df, image_dir, env_params, sensor_params
 
 
 setup_collect_data = {

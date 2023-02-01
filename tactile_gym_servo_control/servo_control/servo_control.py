@@ -12,23 +12,21 @@ import numpy as np
 import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
-from cri.transforms import transform_pose, inv_transform_pose
 
-from tactile_gym_servo_control.utils.setup_embodiment_real import setup_embodiment
+from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
-from tactile_gym_servo_control.servo_control.setup_servo_control_real import setup_servo_control
-from tactile_gym_servo_control.utils.utils_servo_control import Slider
-from tactile_gym_servo_control.utils.utils_servo_control import Model
-from tactile_gym_servo_control.utils.plots_servo_control import PlotContour3D as PlotContour
+from tactile_gym_servo_control.servo_control.setup_sim_servo_control import setup_servo_control
+from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
+from tactile_gym_servo_control.servo_control.utils_servo_control import Model
+from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
+from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
 
 np.set_printoptions(precision=1, suppress=True)
 
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models/real/simple_cnn")
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
-
-model_version = ''
 
 
 def run_servo_control(
@@ -44,9 +42,10 @@ def run_servo_control(
     if record_vid:
         render_frames = []
 
-    # initialize slider and plot
-    slider = Slider(ref_pose)
-    plotContour = PlotContour(embodiment.coord_frame)
+    if embodiment.show_gui:
+        slider = Slider(embodiment.slider, ref_pose)
+
+    # plotContour = PlotContour(embodiment.workframe)#, embodiment.stim_name)
 
     # initialise pose and integral term
     pose = [0, 0, 0, 0, 0, 0]
@@ -61,9 +60,15 @@ def run_servo_control(
     for i in range(ep_len):
 
         # get current tactile observation
-        tactile_image = embodiment.sensor.process()
+        tactile_image = embodiment.sensor_process()
 
-        # predict pose from observations
+        # get current TCP pose
+        if embodiment.sim:
+            tcp_pose = embodiment.get_tcp_pose()
+        else:
+            tcp_pose = pose
+
+        # predict pose from observation
         pred_pose = model.predict(tactile_image)
 
         # find deviation of prediction from reference
@@ -76,15 +81,19 @@ def run_servo_control(
         output = p_gains * delta  +  i_gains * int_delta 
         
         # new pose combines output pose with tcp_pose 
-        tcp_pose = embodiment.pose # need to test on real
         pose = inv_transform_pose(output, tcp_pose)
 
         # move to new pose
         embodiment.move_linear(pose)
 
         # slider control
-        ref_pose = slider.read(ref_pose)
-       
+        if embodiment.show_gui:
+            ref_pose = slider.slide(ref_pose)
+           
+        # show tcp if sim
+        if embodiment.show_gui and embodiment.sim:
+            embodiment.arm.draw_TCP(lifetime=10.0)
+        
         # render frames
         if record_vid:
             render_img = embodiment.render()
@@ -92,9 +101,7 @@ def run_servo_control(
 
         # report
         print(f'\nstep {i+1}: pose: {pose}', end='')
-        plotContour.update(pose)
-        # if embodiment.show_gui and embodiment.sim:
-        #     embodiment.controller._client._sim_env.arm.draw_TCP(lifetime=10.0)
+        # plotContour.update(pose)
 
     # move to above final pose
     embodiment.move_linear(pose + hover)
@@ -115,19 +122,19 @@ if __name__ == '__main__':
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['edge_2d']
+        default=['surface_3d']
     )
     parser.add_argument(
         '-s', '--stimuli',
         nargs='+',
         help="Choose stimulus from ['circle', 'square', 'clover', 'foil', 'saddle', 'bowl'].",
-        default=['circle']
+        default=['square']
     )
     parser.add_argument(
         '-d', '--device',
         type=str,
         help="Choose device from ['cpu', 'cuda'].",
-        default='cuda'
+        default='cpu'
     )
 
     # parse arguments
@@ -135,11 +142,13 @@ if __name__ == '__main__':
     tasks = args.tasks
     stimuli = args.stimuli
     device = args.device
+    version = ''
 
     for task in tasks:
 
         # set saved model dir
-        model_dir = os.path.join(model_path, task + model_version)
+        task += version
+        model_dir = os.path.join(model_path, task)
 
         # load model and sensor params
         network_params = load_json_obj(os.path.join(model_dir, 'model_params'))
@@ -149,18 +158,26 @@ if __name__ == '__main__':
         pose_params = load_json_obj(os.path.join(model_dir, 'pose_params'))
         out_dim, label_names = setup_task(task)
 
+        cam_params = {
+            'image_size': [512, 512],
+            'dist': 0.25,
+            'yaw': 90.0,
+            'pitch': -25.0,
+            'pos': [0.6, 0.0, 0.0525],
+            'fov': 75.0,
+            'near_val': 0.1,
+            'far_val': 100.0
+        }
+
+
         # perform the servo control
         for stimulus in stimuli:
 
             env_params, control_params = setup_servo_control[task](stimulus)
 
-            env_params.update({
-                'show_gui': True, 'show_tactile': True, 'quick_mode': False
-            })
-
-            embodiment = setup_embodiment(
-                env_params, 
-                sensor_params
+            embodiment = setup_embodiment_env(
+                **env_params,
+                sensor_params=sensor_params, camera_params=cam_params, quick_mode=False
             )
 
             network = setup_network(

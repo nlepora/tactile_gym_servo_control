@@ -1,48 +1,49 @@
+import numpy as np
+
 def setup_stim(stimulus, task):
 
-    stim_pose = [600, 0, 0, 0, 0, 0]
-    work_frame = {
-        'edge':    [650,   0, 40-3, -180, 0, 0],
-        'surface': [610, -55, 40-3, -180, 0, 0],
-        'saddle':  [600, -65, 55-3, -180, 0, 0]
+    stim_pose = [600, 0, 12.5, 0, 0, 0]
+    workframe = {
+        'edge':    [650,   0, 52.5 - 3, -180, 0, 0],
+        'surface': [610, -55, 52.5 - 3, -180, 0, 0]
     }
 
     stim_params_dict = {
         'saddle_surface': {
             'stim_name': 'saddle',
             'stim_pose': stim_pose,
-            'work_frame': work_frame['saddle'], 
+            'workframe': [600, -60, 65, -180, 0, 0], 
         },
         'saddle_edge': {
             'stim_name': 'saddle',
             'stim_pose': stim_pose,
-            'work_frame': work_frame['saddle'], 
+            'workframe': [600, -65, 70, -180, 0, 0], 
         },
         'bowl_surface': {
             'stim_name': 'bowl',
-            'stim_pose': [600, 0, 60, 90, 0, 0],
+            'stim_pose': stim_pose + np.array([0, 0, 37.5, 90, 0, 0]),
             'stim_scale': 0.3,
-            'work_frame': [600, 0, 25, -180, 0, 0], 
+            'workframe': [600, -70, 75, -230, 0, 0], 
         },
         'square_'+task: {
             'stim_name': 'square', 
             'stim_pose': stim_pose,
-            'work_frame': work_frame[task]
+            'workframe': workframe[task]
         },
         'circle_'+task: {
             'stim_name': 'circle', 
             'stim_pose': stim_pose,
-            'work_frame': work_frame[task] 
+            'workframe': workframe[task] 
         },
         'clover_'+task: {
             'stim_name': 'clover', 
             'stim_pose': stim_pose,
-            'work_frame': work_frame[task] 
+            'workframe': workframe[task] 
         },
         'foil_'+task: {
             'stim_name': 'foil', 
             'stim_pose': stim_pose,
-            'workframe': work_frame[task]
+            'workframe': workframe[task]
         }
     }
 
@@ -56,8 +57,8 @@ def setup_surface_3d_servo_control(stimulus):
     env_params = setup_stim(stimulus, 'surface')
 
     control_params = {
-        'ep_len': 500,
-        'ref_pose': [0, -1, 3, 0, 0, 0],
+        'ep_len': 75,
+        'ref_pose': [0, -2, 3, 0, 0, 0],
         'p_gains': [1, 1, 0.5, 0.5, 0.5, 1],
         'i_gains': [0, 0, 0.3, 0.1, 0.1, 0],
         'i_clip': [[0, 0, 0, -30, -30, 0], [0, 0, 5, 30, 30, 0]]
@@ -87,8 +88,8 @@ def setup_edge_3d_servo_control(stimulus):
 
     control_params = {
         'ep_len': 400,
-        'ref_pose': [0, 1, 3, 0, 0, 0] ,
-        'p_gains': [0.5, 1, 0.5, 0, 0, 0.5],
+        'ref_pose': [1, 0, 3, 0, 0, 0] ,
+        'p_gains': [1, 0.5, 0.5, 0, 0, 0.5],
         'i_gains': [0, 0.3, 0.3, 0, 0, 0.1],
         'i_clip':[[0, -5, 0, 0, 0, -45], [0, 5, 5, 0, 0, 45]]
     }
@@ -102,8 +103,8 @@ def setup_edge_5d_servo_control(stimulus):
 
     control_params = {
         'ep_len': 250,
-        'ref_pose': [0, 1, 3, 0, 0, 0],
-        'p_gains': [0.5, 1, 0.5, 0.5, 0.5, 0.5],
+        'ref_pose': [1, 0, 3, 0, 0, 0],
+        'p_gains': [1, 0.5, 0.5, 0.5, 0.5, 0.5],
         'i_gains': [0, 0.3, 0.3, 0.1, 0.1, 0.1],
         'i_clip': [[0, -5, 0, -30, -30, -45], [0, 5, 5, 30, 30, 45]]
     }
