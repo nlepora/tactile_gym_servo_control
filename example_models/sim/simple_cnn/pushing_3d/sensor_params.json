@@ -1,0 +1,1 @@
+{"name": "tactip", "type": "right_angle", "core": "fixed", "dynamics": {"stiffness": 50, "damping": 100, "friction": 10.0}, "image_size": [128, 128], "turn_off_border": false}
