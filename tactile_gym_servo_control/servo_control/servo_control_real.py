@@ -152,7 +152,9 @@ if __name__ == '__main__':
             env_params, control_params = setup_servo_control[task](stimulus)
 
             # env_params.update({
-            #     'show_gui': True, 'show_tactile': True, 'quick_mode': False
+            #     'show_gui': True, 
+            #     'show_tactile': True, 
+            #     'quick_mode': False
             # })
 
             embodiment = setup_embodiment(

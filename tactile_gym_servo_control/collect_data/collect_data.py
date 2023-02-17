@@ -19,7 +19,9 @@ np.set_printoptions(precision=1, suppress=True)
 data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
 
 collect_params = {
-    'data': 5#000
+    'data': 10,
+    # 'train': 4000,
+    # 'val': 1000
 }
 
 
@@ -91,22 +93,29 @@ if __name__ == "__main__":
         for dir_name, num_samples in collect_params.items():
 
             collect_dir = os.path.join(
-                data_path, task, dir_name
+                data_path, 
+                task, 
+                dir_name
             )
 
             env_params, sensor_params, target_df, image_dir = \
                 setup_collect_data[task](
-                    collect_dir, num_samples
+                    collect_dir, 
+                    num_samples
                 )
 
             # env_params.update({
-            #     'show_gui': True, 'quick_mode': False
+            #     'show_gui': True, 
+            #     'quick_mode': False
             # })
 
             embodiment = setup_embodiment(
-                env_params, sensor_params
+                env_params, 
+                sensor_params
             )
 
             collect_data(
-                embodiment, target_df, image_dir
+                embodiment, 
+                target_df, 
+                image_dir
             )
