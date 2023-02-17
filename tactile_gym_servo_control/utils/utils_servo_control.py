@@ -72,6 +72,7 @@ class Slider:
     ):    
         self.pose_ids = []
         self.tk = tk.Tk()
+        self.tk.geometry("300x500+200+0")
         for i, label_name in enumerate(POSE_LABEL_NAMES):
             self.pose_ids.append(
                 tk.Scale(self.tk, from_=pose_llims[i], to=pose_ulims[i],

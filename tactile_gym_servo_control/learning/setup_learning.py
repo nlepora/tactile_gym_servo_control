@@ -14,7 +14,7 @@ def setup_task(task_name):
 
     elif task_name == 'edge_2d':
         out_dim = 3
-        label_names = ['y', 'Rz']
+        label_names = ['x', 'Rz']
 
     elif task_name == 'surface_2d':
         out_dim = 3

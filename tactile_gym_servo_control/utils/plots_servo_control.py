@@ -22,7 +22,7 @@ class PlotContour2D:
     def __init__(self, 
                 workframe=[0, 0, 0, 0, 0, 90],
                 # poses=[[-60,60], [-10,110]],
-                position=[0, 400],
+                position=[0, 300],
                 r=[-1,1], 
                 inv=-1
     ):
@@ -62,7 +62,7 @@ class PlotContour2D:
 class PlotContour3D:
     def __init__(self, 
                 coord_frame=[0, 0, 0, -180, 0, 0],
-                position=[0, 800],
+                position=[0, 500],
                 r=[-1,1]/np.sqrt(2),
                 inv=1,
                 limits = [[-110,10], [-60,60], [-30,30]] # [[-70,70], [-10,130], [-30,30]] # saddle

@@ -1,15 +1,15 @@
 def setup_edge_2d_servo_control(stimulus=None):
 
     env_params = {
-        'work_frame': [285, 0, -93+10, 0, 0, 0], # square, circle
+        'work_frame': [285, 0, -93, 0, 0, 0], # square, circle
         'linear_speed': 10, 
         'angular_speed': 10,
         'tcp_pose': [0, 0, 0, 0, 0, 0]    
     }
 
     control_params = {
-        'ep_len': 100,
-        'ref_pose': [0, 3, 0, 0, 0, 0],
+        'ep_len': 150,
+        'ref_pose': [0, 3, 0, 0, 0, 15],
         'p_gains': [0.5, 1, 0, 0, 0, 0.5],
         'i_gains': [0.3, 0, 0, 0, 0, 0.1],
         'i_clip': [[-5, 0, 0, 0, 0, -45], [-5, 0, 0, 0, 0, 45]]

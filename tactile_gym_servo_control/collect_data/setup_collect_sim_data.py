@@ -59,7 +59,7 @@ def setup_edge_2d_collect_data(
     env_params = {
         'stim_name': 'square',
         'stim_pose': [600, 0, 0,    0, 0, 0],
-        'workframe': [650, 0, 40, -180, 0, 0]
+        'work_frame': [650, 0, 40, -180, 0, 0]
     }
 
     pose_params = {

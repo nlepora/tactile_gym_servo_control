@@ -10,13 +10,17 @@ import os
 import argparse
 import numpy as np
 
-from tactile_gym_servo_control.utils.setup_embodiment_real import setup_embodiment
-from tactile_gym_servo_control.collect_data.setup_collect_real_data import setup_collect_data
+from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
+from tactile_gym_servo_control.collect_data.setup_collect_sim_data import setup_collect_data
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 np.set_printoptions(precision=1, suppress=True)
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/sim')
+
+collect_params = {
+    'data': 5#000
+}
 
 
 def collect_data(
@@ -75,7 +79,7 @@ if __name__ == "__main__":
         '-t', '--tasks',
         nargs='+',
         help="Choose task from [surface_3d edge_2d edge_3d edge_5d].",
-        default=['edge_2d']
+        default=['surface_3d']
     )
 
     # parse arguments
@@ -84,23 +88,25 @@ if __name__ == "__main__":
     
     for task in tasks:
 
-        collect_dir = os.path.join(
-            data_path, task, 'data'
-        )
+        for dir_name, num_samples in collect_params.items():
 
-        env_params, sensor_params, target_df, image_dir = \
-            setup_collect_data[task](
-                collect_dir, 5000
+            collect_dir = os.path.join(
+                data_path, task, dir_name
             )
 
-        # env_params.update({
-        #     'show_gui': True, 'quick_mode': False
-        # })
+            env_params, sensor_params, target_df, image_dir = \
+                setup_collect_data[task](
+                    collect_dir, num_samples
+                )
 
-        embodiment = setup_embodiment(
-            env_params, sensor_params
-        )
+            # env_params.update({
+            #     'show_gui': True, 'quick_mode': False
+            # })
 
-        collect_data(
-            embodiment, target_df, image_dir
-        )
+            embodiment = setup_embodiment(
+                env_params, sensor_params
+            )
+
+            collect_data(
+                embodiment, target_df, image_dir
+            )

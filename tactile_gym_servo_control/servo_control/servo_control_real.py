@@ -14,20 +14,20 @@ import imageio
 from tactile_gym.utils.general_utils import load_json_obj
 from cri.transforms import transform_pose, inv_transform_pose
 
-from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
+from tactile_gym_servo_control.utils.setup_embodiment_real import setup_embodiment
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
-from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setup_servo_control
+from tactile_gym_servo_control.servo_control.setup_servo_control_real import setup_servo_control
 from tactile_gym_servo_control.utils.utils_servo_control import Slider, Model
 from tactile_gym_servo_control.utils.plots_servo_control import PlotContour3D as PlotContour
 
 np.set_printoptions(precision=1, suppress=True)
 
-model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
+model_path = os.path.join(os.path.dirname(__file__), "../../example_models/real/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
 
-model_version = ''
+model_version = '_aug'
 
 
 def run_servo_control(

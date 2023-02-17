@@ -31,11 +31,12 @@ from tactile_gym_servo_control.learning.image_generator import ImageDataGenerato
 from tactile_gym_servo_control.learning.setup_network import setup_network
 from tactile_gym_servo_control.learning.setup_learning import setup_task, setup_learning, setup_model
 
-data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real-dobot/tactip-331')
-model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real-dobot/tactip-331')
+data_path = os.path.join(os.path.dirname(__file__), '../../example_data/real')
+model_path = os.path.join(os.path.dirname(__file__), '../../example_models/real')
 
 data_version = '' #'_90deg'
-model_version = data_version #+ '_aug'
+train_version = ''
+model_version = data_version + train_version #+ '_aug'
 
 # tolerances for accuracy metric
 POS_TOL = 0.25  # mm
@@ -55,10 +56,10 @@ def train_model(
 ):
     # data dir - can specify multiple directories combined in generator
     train_data_dirs = [
-        os.path.join(data_path, task, 'train')
+        os.path.join(data_path, task, 'train'+train_version)
     ]
     val_data_dirs = [
-        os.path.join(data_path, task, 'val')
+        os.path.join(data_path, task, 'val'+train_version)
     ]
     pose_limits = get_pose_limits(train_data_dirs, save_dir)
 
