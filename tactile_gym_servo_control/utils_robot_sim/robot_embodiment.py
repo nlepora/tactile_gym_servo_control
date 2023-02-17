@@ -2,7 +2,8 @@ import numpy as np
 import cv2
 
 from tactile_gym.robots.arms.robot import Robot
-from tactile_gym.rl_envs.example_envs.example_arm_env.rest_poses import rest_poses_dict
+# from tactile_gym.rl_envs.example_envs.example_arm_env.rest_poses import rest_poses_dict
+from tactile_gym.rl_envs.nonprehensile_manipulation.object_push.rest_poses import rest_poses_dict
 
 POSE_UNITS = np.array([1e-3, 1e-3, 1e-3, np.pi/180, np.pi/180, np.pi/180])
 
