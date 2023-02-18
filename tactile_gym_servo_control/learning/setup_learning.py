@@ -28,6 +28,14 @@ def setup_task(task_name):
         out_dim = 8
         label_names = ['x', 'z', 'Rx', 'Ry', 'Rz']
 
+    elif task_name == 'pushing_2d':
+        out_dim = 3
+        label_names = ['y', 'Rz']
+
+    elif task_name == 'pushing_3d':
+        out_dim = 5
+        label_names = ['z', 'Rx', 'Ry']
+
     else:
         raise ValueError('Incorrect task_name specified: {}'.format(task_name))
 
