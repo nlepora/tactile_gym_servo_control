@@ -13,18 +13,18 @@ import numpy as np
 import imageio
 
 from tactile_gym.utils.general_utils import load_json_obj
+from cri.transforms import transform_pose, inv_transform_pose
 
-from tactile_gym_servo_control.utils_robot_sim.setup_embodiment_env import setup_embodiment_env
+from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
-from tactile_gym_servo_control.tactile_pushing.setup_sim_tactile_pushing import setup_tactile_pushing
-from tactile_gym_servo_control.tactile_pushing.controller import PIDController
-from tactile_gym_servo_control.tactile_pushing.utils_tactile_pushing import Namespace, transform_euler, inv_transform_euler
-from tactile_gym_servo_control.servo_control.utils_servo_control import Slider
-from tactile_gym_servo_control.servo_control.utils_servo_control import Model
-from tactile_gym_servo_control.servo_control.utils_plots import PlotContour3D as PlotContour
-from tactile_gym_servo_control.utils.pose_transforms import transform_pose, inv_transform_pose
+from tactile_gym_servo_control.pushing.setup_pushing_sim import setup_tactile_pushing
+from tactile_gym_servo_control.pushing.controller import PIDController
+from tactile_gym_servo_control.pushing.utils_pushing import Namespace, transform_euler, inv_transform_euler
+
+from tactile_gym_servo_control.utils.utils_servoing import Slider, Model
+from tactile_gym_servo_control.utils.plots_servoing import PlotContour3D as PlotContour
 
 
 np.set_printoptions(precision=1, suppress=True)
@@ -271,26 +271,30 @@ if __name__ == '__main__':
         pose_params = load_json_obj(os.path.join(model_dir, 'pose_params'))
         out_dim, label_names = setup_task(task)
 
-        # set debug camera position
-        cam_params = {
-            'image_size': [512, 512],
-            'dist': 1.2,
-            'yaw': 90.0,
-            'pitch': -45.0,
-            'pos': [0.1, 0.0, -0.35],
-            'fov': 75.0,
-            'near_val': 0.1,
-            'far_val': 100.0
-        }
-
         # perform the servo control
         for stimulus in stimuli:
 
             env_params, control_params = setup_tactile_pushing[task](stimulus)
 
-            embodiment = setup_embodiment_env(
-                **env_params,
-                sensor_params=sensor_params, camera_params=cam_params, quick_mode=False
+            cam_params = {
+                'image_size': [512, 512],
+                'dist': 1.2,
+                'yaw': 90.0,
+                'pitch': -45.0,
+                'pos': [0.1, 0.0, -0.35],
+                'fov': 75.0,
+                'near_val': 0.1,
+                'far_val': 100.0
+            }
+
+            env_params.update({
+                'cam_params': cam_params,
+                'quick_mode': False
+            })
+
+            embodiment = setup_embodiment(
+                env_params,
+                sensor_params=sensor_params, 
             )
 
             network = setup_network(

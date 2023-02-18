@@ -18,9 +18,9 @@ from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodimen
 from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
-from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setup_servo_control
-from tactile_gym_servo_control.utils.utils_servo_control import Slider, Model
-from tactile_gym_servo_control.utils.plots_servo_control import PlotContour3D as PlotContour
+from tactile_gym_servo_control.servoing.setup_servo_sim import setup_servo
+from tactile_gym_servo_control.utils.utils_servoing import Slider, Model
+from tactile_gym_servo_control.utils.plots_servoing import PlotContour3D as PlotContour
 
 np.set_printoptions(precision=1, suppress=True)
 
@@ -149,7 +149,7 @@ if __name__ == '__main__':
         # perform the servo control
         for stimulus in stimuli:
 
-            env_params, control_params = setup_servo_control[task](stimulus)
+            env_params, control_params = setup_servo[task](stimulus)
 
             # env_params.update({
             #     'show_gui': True, 

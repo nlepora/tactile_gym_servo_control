@@ -51,7 +51,7 @@ def setup_stim(stimulus, task):
     return stim_params
 
 
-def setup_surface_3d_servo_control(stimulus):
+def setup_surface_3d_servo(stimulus):
 
     env_params = setup_stim(stimulus, 'surface')
 
@@ -66,7 +66,7 @@ def setup_surface_3d_servo_control(stimulus):
     return env_params, control_params
 
 
-def setup_edge_2d_servo_control(stimulus):
+def setup_edge_2d_servo(stimulus):
 
     env_params = setup_stim(stimulus, 'edge')
 
@@ -81,7 +81,7 @@ def setup_edge_2d_servo_control(stimulus):
     return env_params, control_params
 
 
-def setup_edge_3d_servo_control(stimulus):
+def setup_edge_3d_servo(stimulus):
 
     env_params = setup_stim(stimulus, 'edge')
 
@@ -96,7 +96,7 @@ def setup_edge_3d_servo_control(stimulus):
     return env_params, control_params
 
 
-def setup_edge_5d_servo_control(stimulus):
+def setup_edge_5d_servo(stimulus):
 
     env_params = setup_stim(stimulus, 'edge')
 
@@ -111,11 +111,11 @@ def setup_edge_5d_servo_control(stimulus):
     return env_params, control_params
 
 
-setup_servo_control = {
-    "surface_3d": setup_surface_3d_servo_control,
-    "edge_2d": setup_edge_2d_servo_control,
-    "edge_3d": setup_edge_3d_servo_control,
-    "edge_5d": setup_edge_5d_servo_control
+setup_servo = {
+    "surface_3d": setup_surface_3d_servo,
+    "edge_2d": setup_edge_2d_servo,
+    "edge_3d": setup_edge_3d_servo,
+    "edge_5d": setup_edge_5d_servo
 }
 
 

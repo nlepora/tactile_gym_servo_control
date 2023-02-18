@@ -1,5 +1,3 @@
-import numpy as np
-
 def setup_stim(stimulus, task):
 
     stim_pose = [450, -100, 40.0, 0, 0, 0]
@@ -33,7 +31,7 @@ def setup_stim(stimulus, task):
     return stim_params
 
 
-def setup_3d_tactile_pushing(stimulus):
+def setup_3d_push(stimulus):
 
     env_params = setup_stim(stimulus, 'pushing_3d')
 
@@ -50,7 +48,7 @@ def setup_3d_tactile_pushing(stimulus):
 
 
 setup_tactile_pushing = {
-    "pushing_3d": setup_3d_tactile_pushing,
+    "pushing_3d": setup_3d_push,
 }
 
 

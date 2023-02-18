@@ -12,9 +12,9 @@ import numpy as np
 from cri.transforms import inv_transform_pose
 
 from tactile_gym_servo_control.utils.setup_embodiment_sim import setup_embodiment
-from tactile_gym_servo_control.servo_control.setup_servo_control_sim import setup_servo_control
-from tactile_gym_servo_control.utils.utils_servo_control import ManualControl
-from tactile_gym_servo_control.utils.plots_servo_control import PlotContour3D as PlotContour
+from tactile_gym_servo_control.servoing.setup_servo_sim import setup_servo
+from tactile_gym_servo_control.utils.utils_servoing import ManualControl
+from tactile_gym_servo_control.utils.plots_servoing import PlotContour3D as PlotContour
 
 np.set_printoptions(precision=1, suppress=True)
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     for task in tasks:
         for stimulus in stimuli:
 
-            env_params, control_params = setup_servo_control[task](stimulus)
+            env_params, control_params = setup_servo[task](stimulus)
             
             env_params.update({
                 'show_gui': True, 'show_tactile': True, 'quick_mode': False

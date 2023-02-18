@@ -1,4 +1,4 @@
-def setup_edge_2d_servo_control(stimulus=None):
+def setup_edge_2d_servo(stimulus=None):
 
     env_params = {
         'work_frame': [285, 0, -93, 0, 0, 0], # square, circle
@@ -18,8 +18,8 @@ def setup_edge_2d_servo_control(stimulus=None):
     return env_params, control_params
 
 
-setup_servo_control = {
-    "edge_2d": setup_edge_2d_servo_control
+setup_servo = {
+    "edge_2d": setup_edge_2d_servo
 }
 
 
