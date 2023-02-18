@@ -38,7 +38,7 @@ def se3_error(y, r):
     err = inv_transform_euler(r, y_inv, 'sxyz')
     return err
 
-def run_tactile_pushing(
+def run_push_control(
             embodiment, model,
             ep_len=100,
             ref_pose=[0, 0, 0, 0, 0, 0],
@@ -90,8 +90,7 @@ def run_tactile_pushing(
     if record_vid:
         render_frames = []
 
-    if embodiment.show_gui:
-        slider = Slider(embodiment.slider, ref_pose)
+    slider = Slider(ref_pose)
 
     # plotContour = PlotContour(embodiment.workframe)#, embodiment.stim_name)
 
@@ -111,11 +110,11 @@ def run_tactile_pushing(
     # while True:
     #     embodiment.move_linear(pose)
 
-    def get_tcp_pose():
-        if embodiment.sim:
-            return embodiment.get_tcp_pose()
-        else:
-            return pose
+    # def get_tcp_pose():
+    #     if embodiment.sim:
+    #         return embodiment.get_tcp_pose()
+    #     else:
+    #         return pose
 
 
     # iterate through servo control
@@ -134,13 +133,14 @@ def run_tactile_pushing(
         # embodiment.move_linear(pose) # move to pose in workframe (sensor frame)
 
         # Tapping motion move forward
-        tcp_pose = get_tcp_pose()
+        tcp_pose = embodiment.pose
+        # tcp_pose = get_tcp_pose()
         # pose_sensor = transform_pose(sensor_tap_move[0], tcp_offset)
         pose = inv_transform_pose(sensor_tap_move[0], tcp_pose.copy()) 
         embodiment.move_linear(pose) # move to pose in workframe
 
         # get current tactile observation
-        tactile_image = embodiment.sensor_process()
+        tactile_image = embodiment.sensor.process()
 
         # Tapping motion move back
         # pose_sensor = transform_pose(sensor_tap_move[1], tcp_offset)
@@ -159,7 +159,7 @@ def run_tactile_pushing(
         # print('sensor_servo: {}'.format(sensor_servo))
 
         # Compute servo control frame wrt work frame
-        work_sensor_frame = get_tcp_pose()
+        work_sensor_frame = embodiment.pose#get_tcp_pose()
         work_servo_frame = inv_transform_euler(sensor_servo, work_sensor_frame.copy(), robot_axes)
         servo_target = transform_euler(work_target_pose, work_servo_frame.copy(), robot_axes)
 
@@ -200,12 +200,14 @@ def run_tactile_pushing(
         embodiment.move_linear(work_align)
 
         # slider control
-        if embodiment.show_gui:
-            ref_pose = slider.slide(ref_pose)
+        ref_pose = slider.read(ref_pose)
+        # if embodiment.show_gui:
+        #     ref_pose = slider.slide(ref_pose)
            
         # show tcp if sim
-        if embodiment.show_gui and embodiment.sim:
-            embodiment.arm.draw_TCP(lifetime=10.0)
+        # embodiment.controller._client._sim_env.arm.draw_TCP(lifetime=10.0)
+        # if embodiment.show_gui and embodiment.sim:
+        #     embodiment.arm.draw_TCP(lifetime=10.0)
         
         # render frames
         if record_vid:
@@ -314,7 +316,7 @@ if __name__ == '__main__':
                 device=device
             )
 
-            run_tactile_pushing(
+            run_push_control(
                 embodiment,
                 model,
                 **control_params
