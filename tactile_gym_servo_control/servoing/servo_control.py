@@ -19,10 +19,10 @@ from tactile_gym_servo_control.learning.setup_learning import setup_task
 from tactile_gym_servo_control.learning.setup_network import setup_network
 
 from tactile_gym_servo_control.servoing.setup_servo_sim import setup_servo
+
+from tactile_gym_servo_control.utils.controller import PIDController
 from tactile_gym_servo_control.utils.utils_servoing import Slider, Model
 from tactile_gym_servo_control.utils.plots_servoing import PlotContour3D as PlotContour
-
-np.set_printoptions(precision=1, suppress=True)
 
 model_path = os.path.join(os.path.dirname(__file__), "../../example_models/sim/simple_cnn")
 videos_path = os.path.join(os.path.dirname(__file__), "../../example_videos")
@@ -33,23 +33,21 @@ model_version = ''
 def run_servo_control(
             embodiment, model,
             ep_len=100,
+            pid_params={},
             ref_pose=[0, 0, 0, 0, 0, 0],
-            p_gains=[0, 0, 0, 0, 0, 0],
-            i_gains=[0, 0, 0, 0, 0, 0],
-            i_clip=[-np.inf, np.inf],
             record_vid=False
         ):
 
     if record_vid:
         render_frames = []
 
-    # initialize slider and plot
+    # initialize peripherals
     slider = Slider(ref_pose)
-    plotContour = PlotContour(embodiment.coord_frame)
+    # plotContour = PlotContour(embodiment.coord_frame)
 
-    # initialise pose and integral term
+    # initialise controller and pose
+    controller = PIDController(**pid_params)
     pose = [0, 0, 0, 0, 0, 0]
-    int_delta = [0, 0, 0, 0, 0, 0]
 
     # move to initial pose from above workframe
     hover = embodiment.hover
@@ -61,21 +59,16 @@ def run_servo_control(
 
         # get current tactile observation
         tactile_image = embodiment.sensor.process()
+        tcp_pose = embodiment.pose
 
         # predict pose from observations
         pred_pose = model.predict(tactile_image)
 
-        # find deviation of prediction from reference
-        delta = transform_pose(ref_pose, pred_pose)
-
-        # apply pi(d) control to reduce delta
-        int_delta += delta
-        int_delta = np.clip(int_delta, *i_clip)
-        output = p_gains * delta  +  i_gains * int_delta 
+        # aervo control output in sensor frame
+        servo = controller.update(pred_pose, ref_pose)
         
-        # new pose combines output pose with tcp_pose 
-        tcp_pose = embodiment.pose
-        pose = inv_transform_pose(output, tcp_pose)
+        # new pose applies servo to tcp_pose 
+        pose = inv_transform_pose(servo, tcp_pose)
 
         # move to new pose
         embodiment.move_linear(pose)
@@ -89,8 +82,9 @@ def run_servo_control(
             render_frames.append(render_img)
 
         # report
-        print(f'\nstep {i+1}: pose: {pose}', end='')
-        plotContour.update(pose)
+        with np.printoptions(precision=1, suppress=True):
+            print(f'\n step {i+1}: pose: {pose}')
+        # plotContour.update(pose)
         # embodiment.controller._client._sim_env.arm.draw_TCP(lifetime=10.0)
 
     # move to above final pose
@@ -112,13 +106,13 @@ if __name__ == '__main__':
         '-t', '--tasks',
         nargs='+',
         help="Choose task from ['surface_3d', 'edge_2d', 'edge_3d', 'edge_5d'].",
-        default=['edge_2d']
+        default=['edge_5d']
     )
     parser.add_argument(
         '-s', '--stimuli',
         nargs='+',
         help="Choose stimulus from ['circle', 'square', 'clover', 'foil', 'saddle', 'bowl'].",
-        default=['circle']
+        default=['saddle']
     )
     parser.add_argument(
         '-d', '--device',
@@ -150,12 +144,6 @@ if __name__ == '__main__':
         for stimulus in stimuli:
 
             env_params, control_params = setup_servo[task](stimulus)
-
-            # env_params.update({
-            #     'show_gui': True, 
-            #     'show_tactile': True, 
-            #     'quick_mode': False
-            # })
 
             embodiment = setup_embodiment(
                 env_params, 

@@ -28,19 +28,17 @@ class Controller(ABC):
 
 
 class PIDController(Controller):
-    def __init__(self, t0=0, u0=0.0, kp=0.0, ki=0.0, kd=0.0, ep_min=-np.inf, ep_max=np.inf,
-                 ei_min=-np.inf, ei_max=np.inf, ed_min=-np.inf, ed_max=np.inf,
+    def __init__(self, 
+                 t0=0, u0=0.0, kp=0.0, ki=0.0, kd=0.0, 
+                 ep_clip=[-np.inf, np.inf], ei_clip=[-np.inf, np.inf], ed_clip=[-np.inf, np.inf],
                  alpha=1.0, error=lambda y, r: r-y):
         super().__init__(t0=t0, u0=np.array(u0))
         self.kp = np.array(kp)
         self.ki = np.array(ki)
         self.kd = np.array(kd)
-        self.ep_min = np.array(ep_min)
-        self.ep_max = np.array(ep_max)
-        self.ei_min = np.array(ei_min)
-        self.ei_max = np.array(ei_max)
-        self.ed_min = np.array(ed_min)
-        self.ed_max = np.array(ed_max)
+        self.ep_clip = np.array(ep_clip)
+        self.ei_clip = np.array(ei_clip)
+        self.ed_clip = np.array(ed_clip)
         self.alpha = np.array(alpha)
         self.error = error
 
@@ -59,10 +57,10 @@ class PIDController(Controller):
 
     def _policy(self, y, r):
         e = self.error(y, r)
-        ep = np.minimum(np.maximum(e, self.ep_min), self.ep_max)
+        ep = np.clip(e, *self.ep_clip) 
 
         self.ei += e
-        self.ei = np.minimum(np.maximum(self.ei, self.ei_min), self.ei_max)
+        self.ei = np.clip(self.ei, *self.ei_clip) 
 
         if self.t == self.t0:
             self.ef = e
@@ -70,7 +68,7 @@ class PIDController(Controller):
         else:
             self.ef = (1.0 - self.alpha) * self.ef + self.alpha * e
             ed = self.ef - self.ef_prev
-        ed = np.minimum(np.maximum(ed, self.ed_min), self.ed_max)
+        ed = np.clip(ed, *self.ed_clip) 
 
         u = self.kp * ep + self.ki * self.ei + self.kd * ed
 
@@ -114,3 +112,4 @@ class PIDController(Controller):
         self.ed_hist = []
         self.ef_hist = []
         self.u_hist = []
+        

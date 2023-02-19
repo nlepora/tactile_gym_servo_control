@@ -148,12 +148,13 @@ class Model:
         # decode the prediction
         predictions_dict = decode_pose(raw_predictions, self.label_names, self.pose_limits)
 
-        print("\nPredictions: ", end="")
+        print("\n Predictions: ", end="")
         predictions_arr = np.zeros(6)
         for label_name in self.label_names:
             predicted_val = predictions_dict[label_name].detach().cpu().numpy() 
             predictions_arr[POSE_LABEL_NAMES.index(label_name)] = predicted_val
-            print(label_name, predicted_val, end=" ")
+            with np.printoptions(precision=1, suppress=True):
+                print(label_name, predicted_val, end="")
 
         return predictions_arr
 

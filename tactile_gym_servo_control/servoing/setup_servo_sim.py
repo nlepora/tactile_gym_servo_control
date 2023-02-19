@@ -1,3 +1,5 @@
+from cri.transforms import transform_pose
+
 def setup_stim(stimulus, task):
 
     stim_pose = [600, 0, 0, 0, 0, 0]
@@ -42,13 +44,19 @@ def setup_stim(stimulus, task):
         'foil_'+task: {
             'stim_name': 'foil', 
             'stim_pose': stim_pose,
-            'workframe': work_frame[task]
+            'work_frame': work_frame[task]
         }
     }
 
-    stim_params = stim_params_dict[stimulus + '_' + task]
+    env_params = stim_params_dict[stimulus + '_' + task]
 
-    return stim_params
+    env_params.update({
+        'show_gui': True, 
+        'show_tactile': True, 
+        'quick_mode': False
+    })
+
+    return env_params
 
 
 def setup_surface_3d_servo(stimulus):
@@ -57,10 +65,13 @@ def setup_surface_3d_servo(stimulus):
 
     control_params = {
         'ep_len': 500,
-        'ref_pose': [0, -1, 3, 0, 0, 0],
-        'p_gains': [1, 1, 0.5, 0.5, 0.5, 1],
-        'i_gains': [0, 0, 0.3, 0.1, 0.1, 0],
-        'i_clip': [[0, 0, 0, -30, -30, 0], [0, 0, 5, 30, 30, 0]]
+        'pid_params': {
+            'kp': [1, 1, 0.5, 0.5, 0.5, 1],                 
+            'ki': [0, 0, 0.3, 0.1, 0.1, 0],                
+            'ei_clip': [[0, 0, 0, -30, -30, 0], [0, 0, 5, 30, 30, 0]],        
+            'error': lambda y, r: transform_pose(r, y)  # SE(3) error
+        },
+        'ref_pose': [0, -1, 3, 0, 0, 0]              
     }
 
     return env_params, control_params
@@ -71,11 +82,14 @@ def setup_edge_2d_servo(stimulus):
     env_params = setup_stim(stimulus, 'edge')
 
     control_params = {
-        'ep_len': 160,
-        'ref_pose': [0, 1, 0, 0, 0, 0],
-        'p_gains': [0.5, 1, 0, 0, 0, 0.5],
-        'i_gains': [0.3, 1, 0, 0, 0, 0.1],
-        'i_clip': [[-5, 0, 0, 0, 0, -45], [5, 0, 0, 0, 0, 45]]
+        'ep_len': 100,#60,
+        'pid_params': {
+            'kp': [0.5, 1, 0, 0, 0, 0.5],                 
+            'ki': [0.3, 0, 0, 0, 0, 0.1],                
+            'ei_clip': [[-5, 0, 0, 0, 0, -45], [5, 0, 0, 0, 0,  45]],          
+            'error': lambda y, r: transform_pose(r, y)  # SE(3) error
+        },
+        'ref_pose': [0, 1, 0, 0, 0, 0],              
     }
 
     return env_params, control_params
@@ -87,10 +101,13 @@ def setup_edge_3d_servo(stimulus):
 
     control_params = {
         'ep_len': 400,
-        'ref_pose': [0, 1, 3, 0, 0, 0] ,
-        'p_gains': [0.5, 1, 0.5, 0, 0, 0.5],
-        'i_gains': [0, 0.3, 0.3, 0, 0, 0.1],
-        'i_clip':[[0, -5, 0, 0, 0, -45], [0, 5, 5, 0, 0, 45]]
+        'pid_params': {
+            'kp': [0.5, 1, 0.5, 0, 0, 0.5],                 
+            'ki': [0.3, 0, 0.3, 0, 0, 0.1],                
+            'ei_clip': [[0, -5, 0, 0, 0, -45], [0, 5, 5, 0, 0, 45]],
+            'error': lambda y, r: transform_pose(r, y)  # SE(3) error
+        },
+        'ref_pose': [0, 1, 3, 0, 0, 0],              
     }
 
     return env_params, control_params
@@ -102,10 +119,13 @@ def setup_edge_5d_servo(stimulus):
 
     control_params = {
         'ep_len': 250,
-        'ref_pose': [0, 1, 3, 0, 0, 0],
-        'p_gains': [0.5, 1, 0.5, 0.5, 0.5, 0.5],
-        'i_gains': [0, 0.3, 0.3, 0.1, 0.1, 0.1],
-        'i_clip': [[0, -5, 0, -30, -30, -45], [0, 5, 5, 30, 30, 45]]
+        'pid_params': {
+            'kp': [1, 0.5, 0.5, 0.5, 0.5, 0.5],                
+            'ki': [0, 0.3, 0.3, 0.1, 0.1, 0.1],
+            'ei_clip': [[0, -5, 0, -30, -30, -45], [0, 5, 5, 30, 30, 45]],
+            'error': lambda y, r: transform_pose(r, y)  # SE(3) error
+        },
+        'ref_pose': [1, 0, 3, 0, 0, 0],              
     }
 
     return env_params, control_params
