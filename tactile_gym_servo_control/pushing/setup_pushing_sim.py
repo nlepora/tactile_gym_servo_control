@@ -59,14 +59,14 @@ def setup_3d_push(stimulus):
             'alpha': 0.5,                                          # differential error filtering coeff
             'error': lambda y, r: transform_pose(r, y),            # SE(3) error
         },
-        'ref_pose': [1.5, 0, 0, 0, 0, 0],                       # flat surface ref pose
+        'ref_pose': [1.5, 0, 0, 0, 0, 0],                          # flat surface ref pose
         'pid_align_params': {
             'kp': 0.2,                                             # proportional gain
             'kd': 0.9,                                             # differential gain
-            'ep_clip': [-10, 10],                                       # proportional error clipping
+            'ep_clip': [-10, 10],                                  # proportional error clipping
             'alpha': 0.5,                                          # differential error filtering coeff
         },
-        'ref_align': 0,                                          # target bearing (in servo frame)        
+        'ref_align': 0,                                            # target bearing (in servo frame)        
         'target_pose': env_params['target_pose']
     }
 
