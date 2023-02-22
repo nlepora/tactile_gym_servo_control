@@ -2,10 +2,10 @@ from cri.transforms import transform_pose
 
 def setup_stim(stimulus, task):
 
-    stim_pose = [450, -100, 40.0, 0, 0, 0]
+    stim_pose = [450, -100, 40, 0, 0, 0]
     work_frame = {
         'pushing_2d': [400, 0, 52.5-3, -180, 0, 90],
-        'pushing_3d': [stim_pose[0], stim_pose[1]-40.0, stim_pose[2], -180, 0, -90]
+        'pushing_3d': [stim_pose[0], stim_pose[1]-40.0, stim_pose[2], -180, 0, 90]
     }
 
     stim_params_dict = {
@@ -14,14 +14,14 @@ def setup_stim(stimulus, task):
             'stim_pose': stim_pose,
             'stim_fixed': False,
             'work_frame': work_frame[task],
-            'target_pose': [200, 300, 0,  0, 0, 0]
+            'target_pose': [400+200, 300, 0,  0, 0, 0]
         },
         'circle_'+task: {
             'stim_name': 'circle', 
             'stim_pose': stim_pose,
             'stim_fixed': False,
             'work_frame': work_frame[task],
-            'target_pose': [200, 300, 0,  0, 0, 0]
+            'target_pose': [400+200, 300, 0,  0, 0, 00]
         },
     }
 
